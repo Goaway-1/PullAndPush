@@ -16,18 +16,11 @@ class PULLANDPUSH_API APlayableCharacter : public ACharacter
 
 public:
 	APlayableCharacter();
-
 	virtual void Tick(float DeltaTime) override;
-
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
 protected:
 	virtual void BeginPlay() override;
-
-	void MoveForward(float NewAxisValue);
-	void MoveRight(float NewAxisValue);
-	void LookUp(float NewAxisValue);
-	void Turn(float NewAxisValue);
 
 	UPROPERTY(EditDefaultsOnly)
 	USpringArmComponent* SpringArmComp;
@@ -36,6 +29,24 @@ protected:
 	UCameraComponent* CameraComp;
 
 private:
-	
-	
+	void MoveForward(float NewAxisValue);
+	void MoveRight(float NewAxisValue);
+	void LookUp(float NewAxisValue);
+	void Turn(float NewAxisValue);
+
+	void TryLaunch();
+	void ChargingLaunch();
+	void EndLaunch();
+
+	// Charging Value
+	float ChargingTime;
+	bool bIsCharging;
+	const float DecideChargingTimeSec = 0.2f;
+	const float CanLaunchedTime = 1.0f;
+
+	// if Charging
+	const float MaxMoveSpeed = 600.f;
+	const float MinMoveSpeed = 200.f;
+	const float MaxJumpVelocity = 420.f;
+	const float MinJumpVelocity = 210.f;
 };
