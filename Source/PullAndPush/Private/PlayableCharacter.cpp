@@ -51,15 +51,19 @@ void APlayableCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputC
 
 	PlayerInputComponent->BindAction("Jump",IE_Pressed,this, &APlayableCharacter::Jump);
 }
-
 void APlayableCharacter::MoveForward(float NewAxisValue) {
-	AddMovementInput(FRotationMatrix(GetControlRotation()).GetUnitAxis(EAxis::X), NewAxisValue);
+	const FRotator ControlRotation = GetControlRotation();
+	const FRotator YawRotation(0.0f, ControlRotation.Yaw, 0.0f);
+	const FVector Direction = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::X);
+	AddMovementInput(Direction, NewAxisValue);
 }
 
 void APlayableCharacter::MoveRight(float NewAxisValue) {
-	AddMovementInput(FRotationMatrix(GetControlRotation()).GetUnitAxis(EAxis::Y), NewAxisValue);
+	const FRotator ControlRotation = GetControlRotation();
+	const FRotator YawRotation(0.0f, ControlRotation.Yaw, 0.0f);
+	const FVector Direction = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::Y);
+	AddMovementInput(Direction, NewAxisValue);
 }
-
 void APlayableCharacter::LookUp(float NewAxisValue)
 {
 	AddControllerPitchInput(NewAxisValue);
