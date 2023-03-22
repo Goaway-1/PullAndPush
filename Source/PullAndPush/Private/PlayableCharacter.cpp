@@ -51,16 +51,18 @@ void APlayableCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputC
 	PlayerInputComponent->BindAxis("Turn", this, &APlayableCharacter::Turn);
 
 	PlayerInputComponent->BindAction("Jump",IE_Pressed,this, &APlayableCharacter::Jump);
-
-	// Launch Punch
-	PlayerInputComponent->BindAction("Launch",IE_Pressed,this, &APlayableCharacter::TryLaunch);
-	PlayerInputComponent->BindAction("Launch",IE_Released,this, &APlayableCharacter::EndLaunch);
 }
 void APlayableCharacter::MoveForward(float NewAxisValue) {
-	AddMovementInput(FRotationMatrix(GetControlRotation()).GetUnitAxis(EAxis::X), NewAxisValue);
+	const FRotator ControlRotation = GetControlRotation();
+	const FRotator YawRotation(0.0f, ControlRotation.Yaw, 0.0f);
+	const FVector Direction = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::X);
+	AddMovementInput(Direction, NewAxisValue);
 }
 void APlayableCharacter::MoveRight(float NewAxisValue) {
-	AddMovementInput(FRotationMatrix(GetControlRotation()).GetUnitAxis(EAxis::Y), NewAxisValue);
+	const FRotator ControlRotation = GetControlRotation();
+	const FRotator YawRotation(0.0f, ControlRotation.Yaw, 0.0f);
+	const FVector Direction = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::Y);
+	AddMovementInput(Direction, NewAxisValue);
 }
 void APlayableCharacter::LookUp(float NewAxisValue)
 {
