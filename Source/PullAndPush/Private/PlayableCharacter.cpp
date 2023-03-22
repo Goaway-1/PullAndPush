@@ -83,7 +83,7 @@ void APlayableCharacter::TryLaunch()
 void APlayableCharacter::ChargingLaunch()
 {
 	if (bIsCharging) {
-		ChargingTime += DeltaTime;
+		ChargingTime += GetWorld()->GetDeltaSeconds();
 
 		// Time to recognize what is currently being charged
 		if (ChargingTime > DecideChargingTimeSec) {
@@ -107,4 +107,3 @@ void APlayableCharacter::EndLaunch()
 	}
 	UE_LOG(LogTemp, Log, TEXT("EndLaunch ChargingTime : %f"), ChargingTime);
 }
-
