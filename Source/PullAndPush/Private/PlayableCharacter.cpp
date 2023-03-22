@@ -1,4 +1,5 @@
 #include "PlayableCharacter.h"
+#include "AttackComponent.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "Camera/CameraComponent.h"
 #include "Components/CapsuleComponent.h"
@@ -10,6 +11,7 @@ APlayableCharacter::APlayableCharacter()
 
 	SpringArmComp = CreateDefaultSubobject<USpringArmComponent>(TEXT("SpringArmComp"));
 	CameraComp = CreateDefaultSubobject<UCameraComponent>(TEXT("CameraComp"));
+	AttackComp = CreateDefaultSubobject<UAttackComponent>(TEXT("AttackComp"));
 
 	SpringArmComp->SetupAttachment(GetCapsuleComponent());
 	CameraComp->SetupAttachment(SpringArmComp);
@@ -26,23 +28,18 @@ APlayableCharacter::APlayableCharacter()
 
 	GetCharacterMovement()->bOrientRotationToMovement = true;
 	GetCharacterMovement()->RotationRate = FRotator(0.f,700.f,0.f);
-	GetCharacterMovement()->MaxWalkSpeed = MaxMoveSpeed;
-	GetCharacterMovement()->JumpZVelocity = MaxJumpVelocity;
 
-	// Charging Value
-	ChargingTime = 0.f;
-	bIsCharging = false;
+	AttackComp->OnCharging.BindUObject(this, &APlayableCharacter::SetMovementSpeed);
 }
 void APlayableCharacter::BeginPlay()
 {
 	Super::BeginPlay();
-	
+
 }
 void APlayableCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	ChargingLaunch();
 }
 void APlayableCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
@@ -75,35 +72,18 @@ void APlayableCharacter::Turn(float NewAxisValue)
 }
 void APlayableCharacter::TryLaunch()
 {
-	ChargingTime = 0.f;
-	bIsCharging = true;
-
-	UE_LOG(LogTemp, Log, TEXT("Try Launch"));
+	AttackComp->TryLaunch();
 }
 void APlayableCharacter::ChargingLaunch()
 {
-	if (bIsCharging) {
-		ChargingTime += GetWorld()->GetDeltaSeconds();
-
-		// Time to recognize what is currently being charged
-		if (ChargingTime > DecideChargingTimeSec) {
-			GetCharacterMovement()->MaxWalkSpeed = MinMoveSpeed;
-			GetCharacterMovement()->JumpZVelocity = MinJumpVelocity;
-			
-
-			// @TODO : Move Camera (ZoomIn/Out)
-		}
-	}
+	AttackComp->ChargingLaunch();
 }
 void APlayableCharacter::EndLaunch()
 {
-	bIsCharging = false;
-	GetCharacterMovement()->MaxWalkSpeed = MaxMoveSpeed;
-	GetCharacterMovement()->JumpZVelocity = MaxJumpVelocity;
-
-	if (ChargingTime >= CanLaunchedTime) {
-		// @TODO : Launch Punch!
-		UE_LOG(LogTemp, Log, TEXT("Launched Punch!"));
-	}
-	UE_LOG(LogTemp, Log, TEXT("EndLaunch ChargingTime : %f"), ChargingTime);
+	AttackComp->EndLaunch();
+}
+void APlayableCharacter::SetMovementSpeed(const float& NewMoveSpeed, const float& NewJumpVelocity)
+{
+	GetCharacterMovement()->MaxWalkSpeed = NewMoveSpeed;
+	GetCharacterMovement()->JumpZVelocity = NewJumpVelocity;
 }
