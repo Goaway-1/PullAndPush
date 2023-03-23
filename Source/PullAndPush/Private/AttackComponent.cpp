@@ -8,7 +8,7 @@ UAttackComponent::UAttackComponent()
 	// Charging
 	ChargingTime = 0.f;
 	bIsCharging = false;
-	bIsChangedSpeed = false;
+	bIsChangeValue = false;
 }
 void UAttackComponent::BeginPlay(){
 	Super::BeginPlay();
@@ -24,29 +24,27 @@ void UAttackComponent::TryLaunch()
 {
 	ChargingTime = 0.f;
 	bIsCharging = true;
-	bIsChangedSpeed = false;
-
-	UE_LOG(LogTemp, Log, TEXT("Try Launch"));
+	bIsChangeValue = false;
 }
 void UAttackComponent::ChargingLaunch()
 {
-	if (bIsCharging) {
+	if (bIsCharging && MaxChargingTime >= ChargingTime) {
 		ChargingTime += GetWorld()->GetDeltaSeconds();
 
-		// Time to recognize what is currently being charged
-		if (ChargingTime > DecideChargingTimeSec) {
-			if(!bIsChangedSpeed) ChangeMovementSpeed(MinMoveSpeed, MinJumpVelocity);
-
-			// @TODO : Move Camera (ZoomIn/Out)
+		// Change Speed & View if Charging
+		if (!bIsChangeValue && ChargingTime > DecideChargingTime) {
+			ChangeMovementSpeed(MinMoveSpeed, MinJumpVelocity, MaxChargingTime);
 		}
 	}
 }
 void UAttackComponent::EndLaunch()
 {
 	bIsCharging = false;
-	bIsChangedSpeed = false;
-	ChangeMovementSpeed(MaxMoveSpeed, MaxJumpVelocity);
-
+	bIsChangeValue = false;
+	ChangeMovementSpeed(MaxMoveSpeed, MaxJumpVelocity, MinChargingTime);
+	
+	// Clamp ChargingTime and Check is can launch
+	ChargingTime = FMath::Clamp(ChargingTime, MinChargingTime, MaxChargingTime);
 	if (ChargingTime >= CanLaunchedTime) {
 		// @TODO : Launch Punch!
 		UE_LOG(LogTemp, Log, TEXT("Launched Punch!"));
@@ -54,10 +52,10 @@ void UAttackComponent::EndLaunch()
 	UE_LOG(LogTemp, Log, TEXT("EndLaunch ChargingTime : %f"), ChargingTime);
 }
 
-void UAttackComponent::ChangeMovementSpeed(const float& NewMoveSpeed, const float& NewJumpVelocity)
+void UAttackComponent::ChangeMovementSpeed(const float& NewMoveSpeed, const float& NewJumpVelocity, const float& CameraMoveSpeed)
 {	
 	UE_LOG(LogTemp, Log, TEXT("[AttackComponent] ChangeCharging Delegate is called!"));
 
-	bIsChangedSpeed = true;
-	OnCharging.Execute(NewMoveSpeed,NewJumpVelocity);
+	bIsChangeValue = true;
+	OnCharging.Execute(NewMoveSpeed,NewJumpVelocity, CameraMoveSpeed);
 }

@@ -6,7 +6,7 @@
 #include "Components/ActorComponent.h"
 #include "AttackComponent.generated.h"
 
-DECLARE_DELEGATE_TwoParams(FAttackComponentOnChangedSignature, const float&, const float&)
+DECLARE_DELEGATE_ThreeParams(FAttackComponentOnChangedSignature, const float&, const float&, const float&)
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class PULLANDPUSH_API UAttackComponent : public UActorComponent
@@ -26,12 +26,18 @@ public:
 	void ChargingLaunch();
 	void EndLaunch();
 
+	// Change Player Move Speed & Camera View
+	FAttackComponentOnChangedSignature OnCharging;
+
+private:
 	// Charging Value
 	float ChargingTime;
 	bool bIsCharging;
-	bool bIsChangedSpeed;
-	const float DecideChargingTimeSec = 0.2f;
+	bool bIsChangeValue;
+	const float DecideChargingTime = 0.2f;
 	const float CanLaunchedTime = 1.0f;
+	const float MaxChargingTime = 2.5f;
+	const float MinChargingTime = 0.2f;
 
 	// PlayalbeCharacter.h
 	const float MaxMoveSpeed = 600.f;
@@ -39,9 +45,5 @@ public:
 	const float MaxJumpVelocity = 420.f;
 	const float MinJumpVelocity = 210.f;
 
-	// Delegate
-	FAttackComponentOnChangedSignature OnCharging;
-	void ChangeMovementSpeed(const float& NewMoveSpeed, const float& NewJumpVelocity);
-
-		
+	void ChangeMovementSpeed(const float& NewMoveSpeed, const float& NewJumpVelocity, const float& CameraMoveSpeed);
 };
