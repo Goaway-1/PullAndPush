@@ -4,10 +4,18 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
+#include "Components/TimelineComponent.h" // Ãß°¡
 #include "PlayableCharacter.generated.h"
 
 class USpringArmComponent;
 class UCameraComponent;
+
+
+UENUM(BlueprintType)
+enum class EPlayerAttackCondition : uint8 {
+	EPAC_Idle = 0		UMETA(DisplayName = "Idle"),
+	EPAC_Charging		UMETA(DisplayName = "Charging")
+};
 
 UCLASS()
 class PULLANDPUSH_API APlayableCharacter : public ACharacter
@@ -16,26 +24,51 @@ class PULLANDPUSH_API APlayableCharacter : public ACharacter
 
 public:
 	APlayableCharacter();
-
 	virtual void Tick(float DeltaTime) override;
-
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
+
+	FORCEINLINE EPlayerAttackCondition GetPlayerAttackCondition() {return PlayerAttackCondition;}
+	FORCEINLINE void SetPlayerAttackCondition(const EPlayerAttackCondition& NewPlayerAttackCondition) { PlayerAttackCondition = NewPlayerAttackCondition;}
 
 protected:
 	virtual void BeginPlay() override;
 
+	UPROPERTY(EditDefaultsOnly, Category = "Camera")
+	USpringArmComponent* SpringArmComp;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Camera")
+	UCameraComponent* CameraComp;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
+	TObjectPtr<class UAttackComponent> AttackComp;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Camera")
+	class UTimelineComponent* ZoomTimeline;
+
+private:
 	void MoveForward(float NewAxisValue);
 	void MoveRight(float NewAxisValue);
 	void LookUp(float NewAxisValue);
 	void Turn(float NewAxisValue);
 
-	UPROPERTY(EditDefaultsOnly)
-	USpringArmComponent* SpringArmComp;
+	void TryLaunch();
+	void EndLaunch();
 
-	UPROPERTY(EditDefaultsOnly)
-	UCameraComponent* CameraComp;
+	/** Charging */
+	UPROPERTY(VisibleAnywhere, Category = "Condition")
+	EPlayerAttackCondition PlayerAttackCondition;
 
-private:
-	
-	
+	UPROPERTY(EditDefaultsOnly, Category = "Camera", Meta = (AllowPrivateAccess = true))
+	class UCurveFloat* ZoomCurve;
+
+	FOnTimelineFloat ZoomInterpFunction;
+
+	UFUNCTION()
+	void UpdateSpringArmLength(const float NewArmLength);
+
+	void SetMovementSpeed(const float& NewMoveSpeed, const float& NewJumpVelocity);
+	void InitSpringArm(USpringArmComponent* SpringArm, const float& NewTargetArmLength, const FVector& NewSocketOffset);
+	void SetPlayerView();
+	void InitZoomTimeLine();
+	void ZoomInOut(const EPlayerAttackCondition NewCondition);
 };
