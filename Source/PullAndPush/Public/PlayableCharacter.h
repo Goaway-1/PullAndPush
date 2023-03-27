@@ -4,10 +4,12 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
+#include "Components/TimelineComponent.h" // Ãß°¡
 #include "PlayableCharacter.generated.h"
 
 class USpringArmComponent;
 class UCameraComponent;
+
 
 UENUM(BlueprintType)
 enum class EPlayerAttackCondition : uint8 {
@@ -31,20 +33,17 @@ public:
 protected:
 	virtual void BeginPlay() override;
 
-	UPROPERTY(EditDefaultsOnly)
-	USceneComponent* SceneeComp;
-
-	UPROPERTY(EditDefaultsOnly)
+	UPROPERTY(EditDefaultsOnly, Category = "Camera")
 	USpringArmComponent* SpringArmComp;
 
-	UPROPERTY(EditDefaultsOnly)
-	USpringArmComponent* ChargingSpringArmComp;
-
-	UPROPERTY(EditDefaultsOnly)
+	UPROPERTY(EditDefaultsOnly, Category = "Camera")
 	UCameraComponent* CameraComp;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
 	TObjectPtr<class UAttackComponent> AttackComp;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Camera")
+	class UTimelineComponent* ZoomTimeline;
 
 private:
 	void MoveForward(float NewAxisValue);
@@ -53,15 +52,23 @@ private:
 	void Turn(float NewAxisValue);
 
 	void TryLaunch();
-	void ChargingLaunch();
 	void EndLaunch();
-	void SetMovementSpeed(const float& NewMoveSpeed, const float& NewJumpVelocity, const float& CameraMoveSpeed);
 
-	void InitSpringArm(USpringArmComponent* SpringArm, const float& NewTargetArmLength, const FVector& NewSocketOffset);
-	void SetPlayerView();
-	void ZoomInOut(USpringArmComponent* NewSpringArm, const float& CameraMoveSpeed);
-
+	/** Charging */
 	UPROPERTY(VisibleAnywhere, Category = "Condition")
 	EPlayerAttackCondition PlayerAttackCondition;
 
+	UPROPERTY(EditDefaultsOnly, Category = "Camera", Meta = (AllowPrivateAccess = true))
+	class UCurveFloat* ZoomCurve;
+
+	FOnTimelineFloat ZoomInterpFunction;
+
+	UFUNCTION()
+	void UpdateSpringArmLength(const float NewArmLength);
+
+	void SetMovementSpeed(const float& NewMoveSpeed, const float& NewJumpVelocity);
+	void InitSpringArm(USpringArmComponent* SpringArm, const float& NewTargetArmLength, const FVector& NewSocketOffset);
+	void SetPlayerView();
+	void InitZoomTimeLine();
+	void ZoomInOut(const EPlayerAttackCondition NewCondition);
 };

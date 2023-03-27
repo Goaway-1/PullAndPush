@@ -6,22 +6,24 @@
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Kismet/KismetSystemLibrary.h"
 
+#include "Curves/CurveFloat.h"
+
 APlayableCharacter::APlayableCharacter()
 {
 	PrimaryActorTick.bCanEverTick = true;
 
-	SceneeComp = CreateDefaultSubobject<USceneComponent>(TEXT("SceneeComp"));
 	SpringArmComp = CreateDefaultSubobject<USpringArmComponent>(TEXT("SpringArmComp"));
-	ChargingSpringArmComp = CreateDefaultSubobject<USpringArmComponent>(TEXT("ChargingSpringArmComp"));
 	CameraComp = CreateDefaultSubobject<UCameraComponent>(TEXT("CameraComp"));
 	AttackComp = CreateDefaultSubobject<UAttackComponent>(TEXT("AttackComp"));
 
 	// Camera Setting
-	SceneeComp->SetupAttachment(GetCapsuleComponent());
 	InitSpringArm(SpringArmComp, 450.f, FVector(0.f, 0.f, 60.f));
-	InitSpringArm(ChargingSpringArmComp, 100.f, FVector(0.f, 40.f, 70.f));
 	CameraComp->SetupAttachment(SpringArmComp);
 	bUseControllerRotationYaw = false;
+
+	// ZoomIn & Out
+	ZoomTimeline = CreateDefaultSubobject<UTimelineComponent>(TEXT("ZoomTimeline"));
+	ZoomInterpFunction.BindUFunction(this, FName("UpdateSpringArmLength"));
 
 	GetCharacterMovement()->bOrientRotationToMovement = true;
 	GetCharacterMovement()->RotationRate = FRotator(0.f,700.f,0.f);
@@ -33,6 +35,7 @@ void APlayableCharacter::BeginPlay()
 {
 	Super::BeginPlay();
 
+	InitZoomTimeLine();
 }
 void APlayableCharacter::Tick(float DeltaTime)
 {
@@ -77,39 +80,23 @@ void APlayableCharacter::TryLaunch()
 {
 	AttackComp->TryLaunch();
 }
-void APlayableCharacter::ChargingLaunch()
-{
-	AttackComp->ChargingLaunch();
-}
 void APlayableCharacter::EndLaunch()
 {
 	AttackComp->EndLaunch();
 }
-void APlayableCharacter::SetMovementSpeed(const float& NewMoveSpeed, const float& NewJumpVelocity, const float& CameraMoveSpeed)
+void APlayableCharacter::SetMovementSpeed(const float& NewMoveSpeed, const float& NewJumpVelocity)
 {
-	USpringArmComponent* Arm;
-	EPlayerAttackCondition NewPlayerAttackCondition;
-
 	// Check is Zoom In or Out?
-	if(GetCharacterMovement()->MaxWalkSpeed > NewMoveSpeed) 
-	{
-		Arm = ChargingSpringArmComp;
-		NewPlayerAttackCondition = EPlayerAttackCondition::EPAC_Charging;
-	}
-	else
-	{
-		Arm = SpringArmComp;	
-		NewPlayerAttackCondition = EPlayerAttackCondition::EPAC_Idle;
-	}
+	const EPlayerAttackCondition NewPlayerAttackCondition = (GetCharacterMovement()->MaxWalkSpeed > NewMoveSpeed) ?
+		EPlayerAttackCondition::EPAC_Charging : EPlayerAttackCondition::EPAC_Idle;
 
-	SetPlayerAttackCondition(NewPlayerAttackCondition);
-	ZoomInOut(Arm, CameraMoveSpeed);
+	ZoomInOut(NewPlayerAttackCondition);
 	GetCharacterMovement()->MaxWalkSpeed = NewMoveSpeed;
 	GetCharacterMovement()->JumpZVelocity = NewJumpVelocity;
 }
 void APlayableCharacter::InitSpringArm(USpringArmComponent* SpringArm, const float& NewTargetArmLength, const FVector& NewSocketOffset)
 {
-	SpringArm->SetupAttachment(SceneeComp);
+	SpringArm->SetupAttachment(GetCapsuleComponent());
 	SpringArm->bUsePawnControlRotation = true;
 	SpringArm->TargetArmLength = NewTargetArmLength;
 	SpringArm->SocketOffset = NewSocketOffset;
@@ -128,11 +115,28 @@ void APlayableCharacter::SetPlayerView()
 		SetActorRotation(NewRot);
 	}
 }
-void APlayableCharacter::ZoomInOut(USpringArmComponent* NewSpringArm, const float& CameraMoveSpeed) 
+void APlayableCharacter::InitZoomTimeLine()
 {
-	CameraComp->AttachToComponent(NewSpringArm, FAttachmentTransformRules(EAttachmentRule::KeepWorld, false));
-
-	FLatentActionInfo LatentInfo;
-	LatentInfo.CallbackTarget = this;
-	UKismetSystemLibrary::MoveComponentTo(CameraComp, FVector(0.f), FRotator(0.f), false, false, CameraMoveSpeed, true, EMoveComponentAction::Type::Move, LatentInfo);
+	if (ZoomTimeline && ZoomCurve)
+	{
+		ZoomTimeline->AddInterpFloat(ZoomCurve, ZoomInterpFunction);
+		ZoomTimeline->SetLooping(false);
+	}
+	else UE_LOG(LogTemp, Warning, TEXT("[PlayerableCharacter] ZoomCurve is not exist"));
+}
+void APlayableCharacter::ZoomInOut(const EPlayerAttackCondition NewCondition)
+{
+	if (NewCondition == EPlayerAttackCondition::EPAC_Charging) {
+		ZoomTimeline->Play();
+		ZoomTimeline->SetPlayRate(1.f);
+	}
+	else {
+		ZoomTimeline->Reverse();
+		ZoomTimeline->SetPlayRate(3.f);
+	}
+	SetPlayerAttackCondition(NewCondition);
+}
+void APlayableCharacter::UpdateSpringArmLength(const float NewArmLength)
+{
+	SpringArmComp->TargetArmLength = NewArmLength;
 }

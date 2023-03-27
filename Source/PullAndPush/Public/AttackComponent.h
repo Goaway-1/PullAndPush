@@ -6,7 +6,7 @@
 #include "Components/ActorComponent.h"
 #include "AttackComponent.generated.h"
 
-DECLARE_DELEGATE_ThreeParams(FAttackComponentOnChangedSignature, const float&, const float&, const float&)
+DECLARE_DELEGATE_TwoParams(FAttackComponentOnChangedSignature, const float&, const float&)
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class PULLANDPUSH_API UAttackComponent : public UActorComponent
@@ -45,5 +45,5 @@ private:
 	const float MaxJumpVelocity = 420.f;
 	const float MinJumpVelocity = 210.f;
 
-	void ChangeMovementSpeed(const float& NewMoveSpeed, const float& NewJumpVelocity, const float& CameraMoveSpeed);
+	void ChangeMovementSpeed(const float& NewMoveSpeed, const float& NewJumpVelocity);
 };

@@ -33,7 +33,7 @@ void UAttackComponent::ChargingLaunch()
 
 		// Change Speed & View if Charging
 		if (!bIsChangeValue && ChargingTime > DecideChargingTime) {
-			ChangeMovementSpeed(MinMoveSpeed, MinJumpVelocity, MaxChargingTime);
+			ChangeMovementSpeed(MinMoveSpeed, MinJumpVelocity);
 		}
 	}
 }
@@ -41,7 +41,7 @@ void UAttackComponent::EndLaunch()
 {
 	bIsCharging = false;
 	bIsChangeValue = false;
-	ChangeMovementSpeed(MaxMoveSpeed, MaxJumpVelocity, MinChargingTime);
+	ChangeMovementSpeed(MaxMoveSpeed, MaxJumpVelocity);
 	
 	// Clamp ChargingTime and Check is can launch
 	ChargingTime = FMath::Clamp(ChargingTime, MinChargingTime, MaxChargingTime);
@@ -52,10 +52,10 @@ void UAttackComponent::EndLaunch()
 	UE_LOG(LogTemp, Log, TEXT("EndLaunch ChargingTime : %f"), ChargingTime);
 }
 
-void UAttackComponent::ChangeMovementSpeed(const float& NewMoveSpeed, const float& NewJumpVelocity, const float& CameraMoveSpeed)
+void UAttackComponent::ChangeMovementSpeed(const float& NewMoveSpeed, const float& NewJumpVelocity)
 {	
 	UE_LOG(LogTemp, Log, TEXT("[AttackComponent] ChangeCharging Delegate is called!"));
 
 	bIsChangeValue = true;
-	OnCharging.Execute(NewMoveSpeed,NewJumpVelocity, CameraMoveSpeed);
+	OnCharging.Execute(NewMoveSpeed,NewJumpVelocity);
 }
