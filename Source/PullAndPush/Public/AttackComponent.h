@@ -46,4 +46,11 @@ private:
 	const float MinJumpVelocity = 210.f;
 
 	void ChangeMovementSpeed(const float& NewMoveSpeed, const float& NewJumpVelocity);
+
+protected:
+	UPROPERTY(EditAnywhere, Category = "Weapon")
+	TSubclassOf<class ARocketPunch> RocketPunchClass;
+
+	UPROPERTY(VisibleAnywhere, Category = "Weapon")
+	TObjectPtr<class ARocketPunch> RocketPunch;
 };

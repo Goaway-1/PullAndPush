@@ -1,18 +1,22 @@
 #include "AttackComponent.h"
+#include "RocketPunch.h"
 #include "GameFramework/CharacterMovementComponent.h"
 
-UAttackComponent::UAttackComponent()
+UAttackComponent::UAttackComponent() 
+	:
+	ChargingTime(0.f), bIsCharging(false), bIsChangeValue(false),
+	RocketPunch(nullptr)
 {
 	PrimaryComponentTick.bCanEverTick = true;
 
-	// Charging
-	ChargingTime = 0.f;
-	bIsCharging = false;
-	bIsChangeValue = false;
 }
 void UAttackComponent::BeginPlay(){
 	Super::BeginPlay();
 
+	// 추가적으로 부가적인 기능이 있어야 함 -> 꺼둔다던지...
+	RocketPunch = GetWorld()->SpawnActor<ARocketPunch>(RocketPunchClass);
+	RocketPunch->SetActorLocation(GetOwner()->GetActorLocation());
+	RocketPunch->SetOwner(GetOwner());
 }
 void UAttackComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
 {
@@ -46,8 +50,8 @@ void UAttackComponent::EndLaunch()
 	// Clamp ChargingTime and Check is can launch
 	ChargingTime = FMath::Clamp(ChargingTime, MinChargingTime, MaxChargingTime);
 	if (ChargingTime >= CanLaunchedTime) {
-		// @TODO : Launch Punch!
-		UE_LOG(LogTemp, Log, TEXT("Launched Punch!"));
+		check(RocketPunch);
+		RocketPunch->ReadyToLaunch(ChargingTime);
 	}
 	UE_LOG(LogTemp, Log, TEXT("EndLaunch ChargingTime : %f"), ChargingTime);
 }
