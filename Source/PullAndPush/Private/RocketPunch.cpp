@@ -3,6 +3,7 @@
 #include "Components/StaticMeshComponent.h"
 #include "Kismet/KismetMathLibrary.h"
 #include "RPMovementComponent.h"
+#include "AttackComponent.h"
 
 ARocketPunch::ARocketPunch()
 {

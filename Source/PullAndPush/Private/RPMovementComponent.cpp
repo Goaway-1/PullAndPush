@@ -71,6 +71,7 @@ void URPMovementComponent::Launch() {
 		}
 		else {
 			SetIsLaunch(false);
+			SetCanLaunch(true);
 			OwnerActor->SetActorHiddenInGame(true);
 			OwnerActor->SetActorTickEnabled(false);
 		}
@@ -86,4 +87,9 @@ void URPMovementComponent::UpdateRotation()
 const AActor* URPMovementComponent::GetRPOwner()
 {
 	return OwnerActor->GetOwnerActor();
+}
+void URPMovementComponent::SetCanLaunch(const bool& Val)
+{
+	UE_LOG(LogTemp, Log, TEXT("[RPMovementComponent] OnReturn Delegate is called!"));
+	OnReturn.Execute(Val);
 }

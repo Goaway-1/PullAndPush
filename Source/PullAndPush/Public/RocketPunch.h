@@ -18,7 +18,7 @@ protected:
 public:	
 	virtual void Tick(float DeltaTime) override;
 
-protected:
+//protected:
 	UPROPERTY(EditDefaultsOnly)
 	TObjectPtr<class USphereComponent> CollisionComp;
 
@@ -32,6 +32,7 @@ public:
 	void SetOwner(class AActor* OwnActor);
 
 	FORCEINLINE const AActor* GetOwnerActor() {return OwnerActor;}
+	FORCEINLINE const URPMovementComponent* GetRPMovementComponent() {return RPMovementComponent;}
 private:
 	UPROPERTY()
 	TObjectPtr<class AActor> OwnerActor;

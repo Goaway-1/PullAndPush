@@ -39,13 +39,18 @@ private:
 	const float MaxChargingTime = 2.5f;
 	const float MinChargingTime = 0.2f;
 
-	// PlayalbeCharacter.h
 	const float MaxMoveSpeed = 600.f;
 	const float MinMoveSpeed = 200.f;
 	const float MaxJumpVelocity = 420.f;
 	const float MinJumpVelocity = 210.f;
 
 	void ChangeMovementSpeed(const float& NewMoveSpeed, const float& NewJumpVelocity);
+	
+	// Delegate : Make it possible to attack again
+	bool bIsCanLaunch;
+
+	UFUNCTION()
+	void SetCanLaunch(const bool& Val);
 
 protected:
 	UPROPERTY(EditAnywhere, Category = "Weapon")
