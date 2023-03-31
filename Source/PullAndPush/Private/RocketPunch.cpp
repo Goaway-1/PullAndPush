@@ -3,7 +3,6 @@
 #include "Components/StaticMeshComponent.h"
 #include "Kismet/KismetMathLibrary.h"
 #include "RPMovementComponent.h"
-#include "AttackComponent.h"
 
 ARocketPunch::ARocketPunch()
 {
@@ -28,16 +27,8 @@ void ARocketPunch::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 
 }
-void ARocketPunch::SetOwner(AActor* OwnActor) {
-	OwnerActor = OwnActor;
-}
-void ARocketPunch::ReadyToLaunch(const float& Force)
+void ARocketPunch::ReadyToLaunch(const float& Force, AActor* InOwnerPlayerActor)
 {
-	if (GetOwnerActor()) {
-		RPMovementComponent->ReadyToLaunch(Force);
-		UE_LOG(LogTemp, Log, TEXT("Launch RocketPunch!!"));
-	}
-	else {
-		UE_LOG(LogTemp, Log, TEXT("Can't Launch RocketPunch!! OwnerActor is not exist"));
-	}
+	RPMovementComponent->Launch(Force, InOwnerPlayerActor);
+	UE_LOG(LogTemp, Log, TEXT("[ReadyToLaunch] Launch RocketPunch!! %f"), Force);
 }

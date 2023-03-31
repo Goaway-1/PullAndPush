@@ -18,7 +18,6 @@ protected:
 public:	
 	virtual void Tick(float DeltaTime) override;
 
-//protected:
 	UPROPERTY(EditDefaultsOnly)
 	TObjectPtr<class USphereComponent> CollisionComp;
 
@@ -28,13 +27,7 @@ public:
 	UPROPERTY(VisibleAnywhere)
 	TObjectPtr<class URPMovementComponent> RPMovementComponent;
 public:
-	void ReadyToLaunch(const float& Force);
-	void SetOwner(class AActor* OwnActor);
+	void ReadyToLaunch(const float& Force, AActor* InOwnerPlayerActor);
 
-	FORCEINLINE const AActor* GetOwnerActor() {return OwnerActor;}
-	FORCEINLINE const URPMovementComponent* GetRPMovementComponent() {return RPMovementComponent;}
-private:
-	UPROPERTY()
-	TObjectPtr<class AActor> OwnerActor;
-
+	FORCEINLINE URPMovementComponent* GetRPMovementComponent() const {return RPMovementComponent;}
 };

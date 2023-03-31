@@ -23,27 +23,29 @@ void URPMovementComponent::TickComponent(float DeltaTime, ELevelTick TickType, F
 }
 void URPMovementComponent::InitSetting()
 {
-	OwnerActor = Cast<ARocketPunch>(GetOwner());
-	OwnerActor->SetActorEnableCollision(false);
-	OwnerActor->SetActorHiddenInGame(true);
-	OwnerActor->SetActorTickEnabled(false);
+	Owner = GetOwner();
+	Owner->SetActorEnableCollision(false);
+	Owner->SetActorHiddenInGame(true);
+	Owner->SetActorTickEnabled(false);
 }
 void URPMovementComponent::CheckMovement()
 {
 	if (GetIsLaunch()) {
 		if (GetIsReturn()) UpdateRotation();
-		Launch();
+		UpdateLocation();
 	}
 }
-void URPMovementComponent::ReadyToLaunch(const float& Force)
+void URPMovementComponent::Launch(const float& Force, AActor* InOwnerPlayerActor)
 {
-	OwnerActor->SetActorLocationAndRotation(GetRPOwner()->GetActorLocation(), GetRPOwner()->GetActorRotation());
-	OwnerActor->SetActorEnableCollision(true);
-	OwnerActor->SetActorHiddenInGame(false);
-	OwnerActor->SetActorTickEnabled(true);
+	OwnerPlayerActor = InOwnerPlayerActor;
 
-	StartLoc = OwnerActor->GetActorLocation();
-	EndLoc = StartLoc + (OwnerActor->GetActorForwardVector() * DefaultForce * Force);
+	Owner->SetActorLocationAndRotation(OwnerPlayerActor->GetActorLocation(), OwnerPlayerActor->GetActorRotation());
+	Owner->SetActorEnableCollision(true);
+	Owner->SetActorHiddenInGame(false);
+	Owner->SetActorTickEnabled(true);
+
+	StartLoc = Owner->GetActorLocation();
+	EndLoc = StartLoc + (Owner->GetActorForwardVector() * DefaultForce * Force);
 	PreDistance = (EndLoc - StartLoc).Size();
 
 	SetIsLaunch(true);
@@ -52,41 +54,37 @@ void URPMovementComponent::ReadyToLaunch(const float& Force)
 
 	UE_LOG(LogTemp, Log, TEXT("Launch RocketPunch!!"));
 }
-void URPMovementComponent::Launch() {
-	OwnerActor->SetActorLocation(OwnerActor->GetActorLocation() + (OwnerActor->GetActorForwardVector() * CurMoveSpeed));
+void URPMovementComponent::UpdateLocation() {
+	Owner->SetActorLocation(Owner->GetActorLocation() + (Owner->GetActorForwardVector() * CurMoveSpeed));
 
-	CurDistance = (EndLoc - OwnerActor->GetActorLocation()).Size();
+	CurDistance = (EndLoc - Owner->GetActorLocation()).Size();
 
 	// TODO : Check Overlap...!
-	if (PreDistance <= CurDistance && GetRPOwner()) {
-		StartLoc = OwnerActor->GetActorLocation();
-		EndLoc = GetRPOwner()->GetActorLocation();
-		PreDistance = (EndLoc - OwnerActor->GetActorLocation()).Size();
+	if (PreDistance <= CurDistance && OwnerPlayerActor) {
+		StartLoc = Owner->GetActorLocation();
+		EndLoc = OwnerPlayerActor->GetActorLocation();
+		PreDistance = (EndLoc - Owner->GetActorLocation()).Size();
 
 		// Return or Invisible
 		if (!bIsReturn) {
 			SetIsReturn(true);
-			OwnerActor->SetActorEnableCollision(false);
+			Owner->SetActorEnableCollision(false);
 			SetCurMoveSpeed(MaxMoveSpeed);
 		}
 		else {
 			SetIsLaunch(false);
 			SetCanLaunch(true);
-			OwnerActor->SetActorHiddenInGame(true);
-			OwnerActor->SetActorTickEnabled(false);
+			Owner->SetActorHiddenInGame(true);
+			Owner->SetActorTickEnabled(false);
 		}
 	}
 	else PreDistance = CurDistance;
 }
 void URPMovementComponent::UpdateRotation() 
 {
-	const FRotator NewRot = UKismetMathLibrary::FindLookAtRotation(OwnerActor->GetActorLocation(), GetRPOwner()->GetActorLocation());
-	OwnerActor->SetActorRotation(NewRot);
-	EndLoc = GetRPOwner()->GetActorLocation();
-}
-const AActor* URPMovementComponent::GetRPOwner()
-{
-	return OwnerActor->GetOwnerActor();
+	const FRotator NewRot = UKismetMathLibrary::FindLookAtRotation(Owner->GetActorLocation(), OwnerPlayerActor->GetActorLocation());
+	Owner->SetActorRotation(NewRot);
+	EndLoc = OwnerPlayerActor->GetActorLocation();
 }
 void URPMovementComponent::SetCanLaunch(const bool& Val)
 {

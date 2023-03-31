@@ -6,7 +6,7 @@
 UAttackComponent::UAttackComponent() 
 	:
 	ChargingTime(0.f), bIsCharging(false), bIsChangeValue(false),
-	RocketPunch(nullptr), bIsCanLaunch(true) 
+	bIsCanLaunch(true), RocketPunch(nullptr)
 {
 	PrimaryComponentTick.bCanEverTick = true;
 
@@ -16,7 +16,6 @@ void UAttackComponent::BeginPlay(){
 
 	RocketPunch = GetWorld()->SpawnActor<ARocketPunch>(RocketPunchClass);
 	RocketPunch->SetActorLocation(GetOwner()->GetActorLocation());
-	RocketPunch->SetOwner(GetOwner());
 	RocketPunch->RPMovementComponent->OnReturn.BindUObject(this, &UAttackComponent::SetCanLaunch);
 }
 void UAttackComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
@@ -58,7 +57,7 @@ void UAttackComponent::EndLaunch()
 	UE_LOG(LogTemp, Log, TEXT("EndLaunch ChargingTime : %f"), ChargingTime);
 	if (ChargingTime >= CanLaunchedTime) {
 		check(RocketPunch);
-		RocketPunch->ReadyToLaunch(ChargingTime);
+		RocketPunch->ReadyToLaunch(ChargingTime,GetOwner());
 	}
 	else bIsCanLaunch = true;
 }

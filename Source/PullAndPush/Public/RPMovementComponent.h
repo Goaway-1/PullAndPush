@@ -21,7 +21,8 @@ protected:
 
 public:	
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
-	void ReadyToLaunch(const float& Force);
+
+	void Launch(const float& Force, AActor* InOwnerPlayerActor);
 
 	// Make it possible to attack again
 	FRPMovementComponentOnReturn OnReturn;
@@ -44,21 +45,23 @@ private:
 	double CurMoveSpeed;
 
 	UPROPERTY()
-	TObjectPtr<class ARocketPunch> OwnerActor;
+	TObjectPtr<class AActor> Owner;			// RocketPunch
 
-	void Launch();
+	UPROPERTY()
+	TObjectPtr<class AActor> OwnerPlayerActor;		// RocketPunch의 소유자
+
+	void UpdateLocation();
 	void UpdateRotation();
 	void CheckMovement();
 	void InitSetting();
-	const AActor* GetRPOwner();
 
 	// Related to FRPMovementComponentOnReturn
 	UFUNCTION()
 	void SetCanLaunch(const bool& Val);
 
-	FORCEINLINE bool GetIsReturn() { return bIsReturn; }
+	FORCEINLINE bool GetIsReturn() const { return bIsReturn; }
 	FORCEINLINE void SetIsReturn(const bool Val) { bIsReturn = Val; }
-	FORCEINLINE bool GetIsLaunch() { return bIsLaunch; }
+	FORCEINLINE bool GetIsLaunch() const { return bIsLaunch; }
 	FORCEINLINE void SetIsLaunch(const bool Val) { bIsLaunch = Val; }
 	FORCEINLINE void SetCurMoveSpeed(const double Val) { CurMoveSpeed = Val; }
 };
