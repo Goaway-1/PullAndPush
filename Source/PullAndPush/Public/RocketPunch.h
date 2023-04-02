@@ -27,7 +27,7 @@ public:
 	UPROPERTY(VisibleAnywhere)
 	TObjectPtr<class URPMovementComponent> RPMovementComponent;
 public:
-	void ReadyToLaunch(const float& Force, AActor* InOwnerPlayerActor);
+	void ReadyToLaunch(const float& Force, AActor* InOwnerPlayerActor, const FVector& InVec, const FRotator& InRot);
 
 	FORCEINLINE URPMovementComponent* GetRPMovementComponent() const {return RPMovementComponent;}
 };

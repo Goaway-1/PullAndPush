@@ -5,7 +5,7 @@
 #include "Components/CapsuleComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Kismet/KismetSystemLibrary.h"
-
+#include "Kismet/KismetMathLibrary.h"
 #include "Curves/CurveFloat.h"
 
 APlayableCharacter::APlayableCharacter()
@@ -132,7 +132,7 @@ void APlayableCharacter::ZoomInOut(const EPlayerAttackCondition NewCondition)
 	}
 	else {
 		ZoomTimeline->Reverse();
-		ZoomTimeline->SetPlayRate(3.f);
+		ZoomTimeline->SetPlayRate(2.f);
 	}
 	SetPlayerAttackCondition(NewCondition);
 }

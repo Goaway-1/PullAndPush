@@ -35,11 +35,11 @@ void URPMovementComponent::CheckMovement()
 		UpdateLocation();
 	}
 }
-void URPMovementComponent::Launch(const float& Force, AActor* InOwnerPlayerActor)
+void URPMovementComponent::Launch(const float& Force, AActor* InOwnerPlayerActor, const FVector& InVec, const FRotator& InRot)
 {
 	OwnerPlayerActor = InOwnerPlayerActor;
 
-	Owner->SetActorLocationAndRotation(OwnerPlayerActor->GetActorLocation(), OwnerPlayerActor->GetActorRotation());
+	Owner->SetActorLocationAndRotation(InVec, InRot);
 	Owner->SetActorEnableCollision(true);
 	Owner->SetActorHiddenInGame(false);
 	Owner->SetActorTickEnabled(true);

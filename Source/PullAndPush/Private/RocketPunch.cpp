@@ -2,6 +2,7 @@
 #include "Components/SphereComponent.h"
 #include "Components/StaticMeshComponent.h"
 #include "Kismet/KismetMathLibrary.h"
+#include "Engine/SkeletalMeshSocket.h"
 #include "RPMovementComponent.h"
 
 ARocketPunch::ARocketPunch()
@@ -27,8 +28,8 @@ void ARocketPunch::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 
 }
-void ARocketPunch::ReadyToLaunch(const float& Force, AActor* InOwnerPlayerActor)
+void ARocketPunch::ReadyToLaunch(const float& Force, AActor* InOwnerPlayerActor, const FVector& InVec, const FRotator& InRot)
 {
-	RPMovementComponent->Launch(Force, InOwnerPlayerActor);
+	RPMovementComponent->Launch(Force, InOwnerPlayerActor, InVec, InRot);
 	UE_LOG(LogTemp, Log, TEXT("[ReadyToLaunch] Launch RocketPunch!! %f"), Force);
 }

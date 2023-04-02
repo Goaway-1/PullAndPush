@@ -52,6 +52,9 @@ private:
 	UFUNCTION()
 	void SetCanLaunch(const bool& Val);
 
+	TObjectPtr<class ACharacter> OwnerCharacter;
+	USkeletalMeshSocket const* RocketPunchSocket;
+
 protected:
 	UPROPERTY(EditAnywhere, Category = "Weapon")
 	TSubclassOf<class ARocketPunch> RocketPunchClass;

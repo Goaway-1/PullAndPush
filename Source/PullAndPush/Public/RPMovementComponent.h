@@ -22,7 +22,7 @@ protected:
 public:	
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
-	void Launch(const float& Force, AActor* InOwnerPlayerActor);
+	void Launch(const float& Force, AActor* InOwnerPlayerActor, const FVector& InVec, const FRotator& InRot);
 
 	// Make it possible to attack again
 	FRPMovementComponentOnReturn OnReturn;

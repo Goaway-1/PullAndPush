@@ -1,6 +1,9 @@
 #include "AttackComponent.h"
 #include "RocketPunch.h"
 #include "RPMovementComponent.h"
+#include "GameFramework/Character.h"
+#include "Engine/SkeletalMeshSocket.h"
+#include "Math/Quat.h"
 #include "GameFramework/CharacterMovementComponent.h"
 
 UAttackComponent::UAttackComponent() 
@@ -17,6 +20,11 @@ void UAttackComponent::BeginPlay(){
 	RocketPunch = GetWorld()->SpawnActor<ARocketPunch>(RocketPunchClass);
 	RocketPunch->SetActorLocation(GetOwner()->GetActorLocation());
 	RocketPunch->RPMovementComponent->OnReturn.BindUObject(this, &UAttackComponent::SetCanLaunch);
+	
+	// Get Socket
+	OwnerCharacter = Cast<ACharacter>(GetOwner());
+	RocketPunchSocket = OwnerCharacter->GetMesh()->GetSocketByName("RocketPunch");
+	check(RocketPunchSocket);
 }
 void UAttackComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
 {
@@ -55,9 +63,12 @@ void UAttackComponent::EndLaunch()
 	// Clamp ChargingTime and Check is can launch
 	ChargingTime = FMath::Clamp(ChargingTime, MinChargingTime, MaxChargingTime);
 	UE_LOG(LogTemp, Log, TEXT("EndLaunch ChargingTime : %f"), ChargingTime);
-	if (ChargingTime >= CanLaunchedTime) {
-		check(RocketPunch);
-		RocketPunch->ReadyToLaunch(ChargingTime,GetOwner());
+	if (RocketPunch && RocketPunchSocket && ChargingTime >= CanLaunchedTime) {
+		//Location & Rotator
+		const FVector LaunchLocation = RocketPunchSocket->GetSocketLocation(OwnerCharacter->GetMesh());
+		const FRotator LaunchRotation = OwnerCharacter->GetControlRotation();
+		
+		RocketPunch->ReadyToLaunch(ChargingTime, GetOwner(), LaunchLocation, LaunchRotation);
 	}
 	else bIsCanLaunch = true;
 }
