@@ -37,7 +37,7 @@ void URPMovementComponent::CheckMovement()
 }
 void URPMovementComponent::Launch(const float& Force, AActor* InOwnerPlayerActor, const FVector& InVec, const FRotator& InRot)
 {
-	if(OwnerPlayerActor == nullptr) OwnerPlayerActor = InOwnerPlayerActor;
+	if (OwnerPlayerActor == nullptr) OwnerPlayerActor = InOwnerPlayerActor;
 
 	Owner->SetActorLocationAndRotation(InVec, InRot);
 	Owner->SetActorEnableCollision(true);

@@ -35,16 +35,16 @@ protected:
 	virtual void BeginPlay() override;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Camera")
-	USpringArmComponent* SpringArmComp;
+	TObjectPtr<USpringArmComponent> SpringArmComp;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Camera")
-	UCameraComponent* CameraComp;
+	TObjectPtr<UCameraComponent> CameraComp;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
 	TObjectPtr<class UAttackComponent> AttackComp;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Camera")
-	class UTimelineComponent* ZoomTimeline;
+	TObjectPtr<UTimelineComponent> ZoomTimeline;
 
 private:
 	void MoveForward(float NewAxisValue);
@@ -60,7 +60,7 @@ private:
 	EPlayerAttackCondition PlayerAttackCondition;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Camera", Meta = (AllowPrivateAccess = true))
-	class UCurveFloat* ZoomCurve;
+	TObjectPtr<UCurveFloat> ZoomCurve;
 
 	FOnTimelineFloat ZoomInterpFunction;
 
