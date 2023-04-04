@@ -12,7 +12,12 @@ ARocketPunch::ARocketPunch()
  	PrimaryActorTick.bCanEverTick = true;
 
 	CollisionComp = CreateDefaultSubobject<USphereComponent>(TEXT("SphereComp"));
-	CollisionComp->InitSphereRadius(5.0f);
+	CollisionComp->InitSphereRadius(35.0f);
+	CollisionComp->SetSimulatePhysics(true);
+	CollisionComp->SetEnableGravity(false);
+	CollisionComp->SetNotifyRigidBodyCollision(true);
+	CollisionComp->SetGenerateOverlapEvents(false);
+	CollisionComp->SetCollisionProfileName(CollisionName);
 	SetRootComponent(CollisionComp);
 	
 	StaticMeshComp = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("StaticMeshComp"));
@@ -25,7 +30,7 @@ void ARocketPunch::BeginPlay()
 	Super::BeginPlay();
 
 	// Set Overlap Collision
-	CollisionComp->OnComponentBeginOverlap.AddDynamic(this, &ARocketPunch::OnOverlapBegin);
+	CollisionComp->OnComponentHit.AddDynamic(this, &ARocketPunch::OnHit);
 }
 void ARocketPunch::Tick(float DeltaTime)
 {
@@ -43,9 +48,9 @@ void ARocketPunch::ReadyToLaunch(const float& Force, AActor* InOwnerPlayerActor,
 	FString AttackType = (bIsPush) ? TEXT("PUSH") : TEXT("PULL");
 	UE_LOG(LogTemp, Log, TEXT("[ARocketPunch] %s RocketPunch!! %f"), *AttackType, Force);
 }
-void ARocketPunch::OnOverlapBegin(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult) 
+void ARocketPunch::OnHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComponent, FVector NormalImpulse, const FHitResult& Hit)
 {
 	if (OtherActor != OwnerPlayerActor) {
-		UE_LOG(LogTemp, Log, TEXT("[ARocketPunch] Overrlap Type is '%s', Name is '%s'"), *OtherComp->GetCollisionProfileName().ToString(), *OtherActor->GetName());
+		UE_LOG(LogTemp, Warning, TEXT("[ARocketPunch] Overrlap Type is '%s', Name is '%s'"), *OtherComponent->GetCollisionProfileName().ToString(), *OtherActor->GetName());
 	}
 }

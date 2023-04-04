@@ -32,11 +32,10 @@ public:
 	FORCEINLINE URPMovementComponent* GetRPMovementComponent() const {return RPMovementComponent;}
 
 private:
-	AActor* OwnerPlayerActor;
+	TObjectPtr<AActor> OwnerPlayerActor;
+	uint8 bIsPush : 1;
+	const FName CollisionName = TEXT("RocketPunch");
 
 	UFUNCTION()
-	void OnOverlapBegin(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
-
-	//teste
-	uint8 bIsPush : 1;
+	void OnHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComponent, FVector NormalImpulse, const FHitResult& Hit);
 };
