@@ -29,8 +29,8 @@ public:
 
 private:
 	// Is RocketPunch is return to Player? Or Launched?
-	bool bIsReturn;
-	bool bIsLaunch;
+	uint8 bIsReturn:1;
+	uint8 bIsLaunch:1;
 
 	// Decide to Return or End
 	double PreDistance;

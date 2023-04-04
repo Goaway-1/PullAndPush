@@ -53,8 +53,10 @@ void APlayableCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputC
 	PlayerInputComponent->BindAxis("Turn", this, &APlayableCharacter::Turn);
 
 	PlayerInputComponent->BindAction("Jump",IE_Pressed,this, &APlayableCharacter::Jump);
-	PlayerInputComponent->BindAction("Launch", IE_Pressed, this, &APlayableCharacter::TryLaunch);
-	PlayerInputComponent->BindAction("Launch", IE_Released, this, &APlayableCharacter::EndLaunch);
+	PlayerInputComponent->BindAction<FInputSwitchInventoryDelegate>("Push", IE_Pressed, this, &APlayableCharacter::TryLaunch,true);
+	PlayerInputComponent->BindAction<FInputSwitchInventoryDelegate>("Pull", IE_Pressed, this, &APlayableCharacter::TryLaunch,false);
+	PlayerInputComponent->BindAction("Push", IE_Released, this, &APlayableCharacter::EndLaunch);
+	PlayerInputComponent->BindAction("Pull", IE_Released, this, &APlayableCharacter::EndLaunch);
 }
 void APlayableCharacter::MoveForward(float NewAxisValue) {
 	const FRotator ControlRotation = GetControlRotation();
@@ -76,13 +78,16 @@ void APlayableCharacter::Turn(float NewAxisValue)
 {
 	AddControllerYawInput(NewAxisValue);
 }
-void APlayableCharacter::TryLaunch()
+void APlayableCharacter::TryLaunch(bool IsPush)
 {
-	AttackComp->TryLaunch();
+	if (AttackComp->TryLaunch()) {
+		// Set Attack Type if can Charnging
+		bIsPush = IsPush;
+	}
 }
 void APlayableCharacter::EndLaunch()
 {
-	AttackComp->EndLaunch();
+	AttackComp->EndLaunch(bIsPush);
 }
 void APlayableCharacter::SetMovementSpeed(const float& NewMoveSpeed, const float& NewJumpVelocity)
 {

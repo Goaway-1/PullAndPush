@@ -10,6 +10,7 @@
 class USpringArmComponent;
 class UCameraComponent;
 
+DECLARE_DELEGATE_OneParam(FInputSwitchInventoryDelegate, const bool);
 
 UENUM(BlueprintType)
 enum class EPlayerAttackCondition : uint8 {
@@ -52,7 +53,7 @@ private:
 	void LookUp(float NewAxisValue);
 	void Turn(float NewAxisValue);
 
-	void TryLaunch();
+	void TryLaunch(bool IsPush);
 	void EndLaunch();
 
 	/** Charging */
@@ -63,6 +64,8 @@ private:
 	TObjectPtr<UCurveFloat> ZoomCurve;
 
 	FOnTimelineFloat ZoomInterpFunction;
+
+	uint8 bIsPush : 1;
 
 	UFUNCTION()
 	void UpdateSpringArmLength(const float NewArmLength);

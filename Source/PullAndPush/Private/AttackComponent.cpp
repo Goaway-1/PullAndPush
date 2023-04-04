@@ -32,13 +32,14 @@ void UAttackComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActo
 
 	ChargingLaunch();
 }
-void UAttackComponent::TryLaunch()
+bool UAttackComponent::TryLaunch()
 {
-	if (!bIsCanLaunch) return;
+	if (!bIsCanLaunch) return false;
 
 	ChargingTime = 0.f;
 	bIsCharging = true;
 	bIsChangeValue = false;
+	return true;
 }
 void UAttackComponent::ChargingLaunch()
 {
@@ -52,7 +53,7 @@ void UAttackComponent::ChargingLaunch()
 		}
 	}
 }
-void UAttackComponent::EndLaunch()
+void UAttackComponent::EndLaunch(bool bIsPush)
 {
 	if (!bIsCharging) return;
 
@@ -68,7 +69,7 @@ void UAttackComponent::EndLaunch()
 		const FVector LaunchLocation = RocketPunchSocket->GetSocketLocation(OwnerCharacter->GetMesh());
 		const FRotator LaunchRotation = OwnerCharacter->GetControlRotation();
 		
-		RocketPunch->ReadyToLaunch(ChargingTime, GetOwner(), LaunchLocation, LaunchRotation);
+		RocketPunch->ReadyToLaunch(ChargingTime, GetOwner(), bIsPush ,LaunchLocation, LaunchRotation);
 	}
 	else bIsCanLaunch = true;
 }

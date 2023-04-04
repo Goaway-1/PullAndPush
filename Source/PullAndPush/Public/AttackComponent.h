@@ -22,9 +22,9 @@ protected:
 public:	
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
-	void TryLaunch();
+	bool TryLaunch();
 	void ChargingLaunch();
-	void EndLaunch();
+	void EndLaunch(bool bIsPush);
 
 	// Change Player Move Speed & Camera View
 	FAttackComponentOnChangedSignature OnCharging;
@@ -32,8 +32,8 @@ public:
 private:
 	// Charging Value
 	float ChargingTime;
-	bool bIsCharging;
-	bool bIsChangeValue;
+	uint8 bIsCharging:1;
+	uint8 bIsChangeValue:1;
 	const float DecideChargingTime = 0.2f;
 	const float CanLaunchedTime = 1.0f;
 	const float MaxChargingTime = 2.5f;
@@ -47,7 +47,7 @@ private:
 	void ChangeMovementSpeed(const float& NewMoveSpeed, const float& NewJumpVelocity);
 	
 	// Delegate : Make it possible to attack again
-	bool bIsCanLaunch;
+	uint8 bIsCanLaunch:1;
 
 	UFUNCTION()
 	void SetCanLaunch(const bool& Val);

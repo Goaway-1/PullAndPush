@@ -6,6 +6,8 @@
 #include "RPMovementComponent.h"
 
 ARocketPunch::ARocketPunch()
+	: 
+	bIsPush(false)
 {
  	PrimaryActorTick.bCanEverTick = true;
 
@@ -30,12 +32,16 @@ void ARocketPunch::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 
 }
-void ARocketPunch::ReadyToLaunch(const float& Force, AActor* InOwnerPlayerActor, const FVector& InVec, const FRotator& InRot)
+void ARocketPunch::ReadyToLaunch(const float& Force, AActor* InOwnerPlayerActor, const bool& IsPush, const FVector& InVec, const FRotator& InRot)
 {
 	if(OwnerPlayerActor == nullptr) OwnerPlayerActor = InOwnerPlayerActor;
 
+	bIsPush = IsPush;
 	RPMovementComponent->Launch(Force, OwnerPlayerActor, InVec, InRot);
-	UE_LOG(LogTemp, Log, TEXT("[ARocketPunch] Launch RocketPunch!! %f"), Force);
+	
+	// LOG
+	FString AttackType = (bIsPush) ? TEXT("PUSH") : TEXT("PULL");
+	UE_LOG(LogTemp, Log, TEXT("[ARocketPunch] %s RocketPunch!! %f"), *AttackType, Force);
 }
 void ARocketPunch::OnOverlapBegin(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult) 
 {
