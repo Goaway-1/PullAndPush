@@ -1,6 +1,7 @@
 #include "AttackComponent.h"
 #include "RocketPunch.h"
 #include "RPMovementComponent.h"
+#include "RPCollisionComponent.h"
 #include "GameFramework/Character.h"
 #include "Engine/SkeletalMeshSocket.h"
 #include "Math/Quat.h"
@@ -20,7 +21,7 @@ void UAttackComponent::BeginPlay(){
 	RocketPunch = GetWorld()->SpawnActor<ARocketPunch>(RocketPunchClass);
 	RocketPunch->SetActorLocation(GetOwner()->GetActorLocation());
 	RocketPunch->RPMovementComponent->OnReturn.BindUObject(this, &UAttackComponent::SetCanLaunch);
-	
+
 	// Get Socket
 	OwnerCharacter = Cast<ACharacter>(GetOwner());
 	RocketPunchSocket = OwnerCharacter->GetMesh()->GetSocketByName("RocketPunch");
@@ -83,6 +84,8 @@ void UAttackComponent::ChangeMovementSpeed(const float& NewMoveSpeed, const floa
 void UAttackComponent::SetCanLaunch(const bool& Val)
 {
 	UE_LOG(LogTemp, Log, TEXT("[UAttackComponent] Make it possible to attack again"));
-
 	bIsCanLaunch = Val;
+
+	// Reset OverlapActors Array
+	RocketPunch->RPCollisionComponent->OnReset.Execute();
 }
