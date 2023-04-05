@@ -27,10 +27,19 @@ public:
 	// Make it possible to attack again
 	FRPMovementComponentOnReturn OnReturn;
 
+	UFUNCTION()
+	void SetIsForceReturn(const bool& Val);
+
 private:
 	// Is RocketPunch is return to Player? Or Launched?
+	UPROPERTY(VisibleAnywhere, Category="Info", meta=(AllowPrivateAccess = "true"))
 	uint8 bIsReturn:1;
+
+	UPROPERTY(VisibleAnywhere, Category = "Info", meta = (AllowPrivateAccess = "true"))
 	uint8 bIsLaunch:1;
+
+	UPROPERTY(VisibleAnywhere, Category = "Info", meta = (AllowPrivateAccess = "true"))
+	uint8 bIsForceReturn : 1;
 
 	// Decide to Return or End
 	double PreDistance;
@@ -64,4 +73,6 @@ private:
 	FORCEINLINE bool GetIsLaunch() const { return bIsLaunch; }
 	FORCEINLINE void SetIsLaunch(const bool Val) { bIsLaunch = Val; }
 	FORCEINLINE void SetCurMoveSpeed(const double Val) { CurMoveSpeed = Val; }
+	FORCEINLINE bool GetIsForceReturn() const { return bIsForceReturn; }
+
 };

@@ -6,12 +6,8 @@
 #include "Components/ActorComponent.h"
 #include "RPCollisionComponent.generated.h"
 
-/// <summary>
-/// 충돌한 오브젝트...?
-/// </summary>
-
-
 DECLARE_DELEGATE(FRPCollisionComponentReset)
+DECLARE_DELEGATE_OneParam(FRPCollisionComponentForceReturn, const bool&)
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class PULLANDPUSH_API URPCollisionComponent : public UActorComponent
@@ -32,6 +28,7 @@ public:
 	void ResetOverlapActors();
 
 	FRPCollisionComponentReset OnReset;
+	FRPCollisionComponentForceReturn OnForceReturn;		// Set RocketPunch Force Return
 
 private:
 	UPROPERTY(VisibleAnywhere, Category = "OverlapActors")

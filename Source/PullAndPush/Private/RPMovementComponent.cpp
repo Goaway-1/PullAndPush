@@ -4,7 +4,7 @@
 
 URPMovementComponent::URPMovementComponent()
 	:
-	bIsReturn(false), bIsLaunch(false), CurMoveSpeed(MinMoveSpeed)
+	bIsReturn(false), bIsLaunch(false), CurMoveSpeed(MinMoveSpeed), bIsForceReturn(false)
 {
 	PrimaryComponentTick.bCanEverTick = true;
 
@@ -30,8 +30,8 @@ void URPMovementComponent::InitSetting()
 }
 void URPMovementComponent::CheckMovement()
 {
-	if (GetIsLaunch()) {
-		if (GetIsReturn()) UpdateRotation();
+	if (bIsLaunch) {
+		if (bIsReturn) UpdateRotation();
 		UpdateLocation();
 	}
 }
@@ -48,8 +48,9 @@ void URPMovementComponent::Launch(const float& Force, AActor* InOwnerPlayerActor
 	EndLoc = StartLoc + (Owner->GetActorForwardVector() * DefaultForce * Force);
 	PreDistance = (EndLoc - StartLoc).Size();
 
-	SetIsLaunch(true);
-	SetIsReturn(false);
+	bIsLaunch = true;
+	bIsReturn = false;
+	bIsForceReturn = false;
 	SetCurMoveSpeed(MinMoveSpeed);
 
 	UE_LOG(LogTemp, Log, TEXT("Launch RocketPunch!!"));
@@ -57,25 +58,25 @@ void URPMovementComponent::Launch(const float& Force, AActor* InOwnerPlayerActor
 void URPMovementComponent::UpdateLocation() {
 	Owner->SetActorLocation(Owner->GetActorLocation() + (Owner->GetActorForwardVector() * CurMoveSpeed));
 
+	// Check is nearby target pos
 	CurDistance = (EndLoc - Owner->GetActorLocation()).Size();
-
-	// TODO : Check Overlap...!
-	if (PreDistance <= CurDistance && OwnerPlayerActor) {
+	if (GetIsForceReturn() || (PreDistance <= CurDistance && OwnerPlayerActor)) {
 		StartLoc = Owner->GetActorLocation();
 		EndLoc = OwnerPlayerActor->GetActorLocation();
 		PreDistance = (EndLoc - Owner->GetActorLocation()).Size();
 
 		// Return or Invisible
-		if (!bIsReturn) {
-			SetIsReturn(true);
+		if (!GetIsReturn()) {
+			bIsReturn = true;
+			bIsForceReturn = false;
 			Owner->SetActorEnableCollision(false);
 			SetCurMoveSpeed(MaxMoveSpeed);
 		}
 		else {
-			SetIsLaunch(false);
+			bIsLaunch = false;
 			SetCanLaunch(true);
 			Owner->SetActorHiddenInGame(true);
-			Owner->SetActorTickEnabled(false);
+			Owner->SetActorTickEnabled(true);
 		}
 	}
 	else PreDistance = CurDistance;
@@ -90,4 +91,8 @@ void URPMovementComponent::SetCanLaunch(const bool& Val)
 {
 	UE_LOG(LogTemp, Log, TEXT("[RPMovementComponent] OnReturn Delegate is called!"));
 	OnReturn.Execute(Val);
+}
+void URPMovementComponent::SetIsForceReturn(const bool& Val)
+{
+	bIsForceReturn = Val;
 }

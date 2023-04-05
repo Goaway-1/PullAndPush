@@ -34,6 +34,14 @@ public:
 
 	FORCEINLINE URPMovementComponent* GetRPMovementComponent() const {return RPMovementComponent;}
 
+	// For Log
+	// TODO : 추후 색상이 아닌 메시로 변경해야 함.
+	UPROPERTY(EditDefaultsOnly, Category="Materials")
+	TObjectPtr<class UMaterial> PushMaterial;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Materials")
+	TObjectPtr<class UMaterial> PullMaterial;
+
 private:
 	TObjectPtr<AActor> OwnerPlayerActor;
 	uint8 bIsPush : 1;

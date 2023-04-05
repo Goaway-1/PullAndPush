@@ -33,6 +33,9 @@ void ARocketPunch::BeginPlay()
 
 	// Set Overlap Collision
 	CollisionComp->OnComponentHit.AddDynamic(this, &ARocketPunch::OnHit);
+
+	// Set RocketPunch Force Return
+	RPCollisionComponent->OnForceReturn.BindUObject(RPMovementComponent, &URPMovementComponent::SetIsForceReturn);
 }
 void ARocketPunch::Tick(float DeltaTime)
 {
@@ -46,8 +49,29 @@ void ARocketPunch::ReadyToLaunch(const float& Force, AActor* InOwnerPlayerActor,
 	bIsPush = IsPush;
 	RPMovementComponent->Launch(Force, OwnerPlayerActor, InVec, InRot);
 	
+	// For Log
+	// TODO : 추후 색의 차이가 아닌, 새로운 매시로 구분하고 함수로 제작
+	if(!PushMaterial || !PullMaterial) {
+		UE_LOG(LogTemp, Warning, TEXT("[RocketPunch] Materials ared not exsit"));
+		return;
+	}
+
 	FString AttackType = (bIsPush) ? TEXT("PUSH") : TEXT("PULL");
+	UMaterial* CurMaterial;
+
+	if (bIsPush)
+	{
+		AttackType = TEXT("PUSH");
+		CurMaterial = PushMaterial;
+	}
+	else
+	{
+		AttackType = TEXT("PULL");
+		CurMaterial = PullMaterial;
+	}
+
 	UE_LOG(LogTemp, Log, TEXT("[ARocketPunch] %s RocketPunch!! %f"), *AttackType, Force);
+	StaticMeshComp->SetMaterial(0, CurMaterial);
 }
 void ARocketPunch::OnHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComponent, FVector NormalImpulse, const FHitResult& Hit)
 {
