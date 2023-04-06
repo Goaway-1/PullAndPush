@@ -23,7 +23,7 @@ void URPMovementComponent::TickComponent(float DeltaTime, ELevelTick TickType, F
 }
 void URPMovementComponent::InitSetting()
 {
-	Owner = GetOwner();
+	Owner = Cast<ARocketPunch>(GetOwner());
 	Owner->SetActorEnableCollision(false);
 	Owner->SetActorHiddenInGame(true);
 	Owner->SetActorTickEnabled(false);
@@ -39,21 +39,23 @@ void URPMovementComponent::Launch(const float& Force, AActor* InOwnerPlayerActor
 {
 	if (OwnerPlayerActor == nullptr) OwnerPlayerActor = InOwnerPlayerActor;
 
+	// Rocket Punch Setting
 	Owner->SetActorLocationAndRotation(InVec, InRot);
 	Owner->SetActorEnableCollision(true);
 	Owner->SetActorHiddenInGame(false);
 	Owner->SetActorTickEnabled(true);
+	Owner->SetCollisionSimulatePhysics(true);
 
-	StartLoc = Owner->GetActorLocation();
-	EndLoc = StartLoc + (Owner->GetActorForwardVector() * DefaultForce * Force);
-	PreDistance = (EndLoc - StartLoc).Size();
-
+	// Movement Setting
 	bIsLaunch = true;
 	bIsReturn = false;
 	bIsForceReturn = false;
 	SetCurMoveSpeed(MinMoveSpeed);
 
-	UE_LOG(LogTemp, Log, TEXT("Launch RocketPunch!!"));
+	// to Target Distance
+	StartLoc = Owner->GetActorLocation();
+	EndLoc = StartLoc + (Owner->GetActorForwardVector() * DefaultForce * Force);
+	PreDistance = (EndLoc - StartLoc).Size();
 }
 void URPMovementComponent::UpdateLocation() {
 	Owner->SetActorLocation(Owner->GetActorLocation() + (Owner->GetActorForwardVector() * CurMoveSpeed));
@@ -70,6 +72,7 @@ void URPMovementComponent::UpdateLocation() {
 			bIsReturn = true;
 			bIsForceReturn = false;
 			Owner->SetActorEnableCollision(false);
+			Owner->SetCollisionSimulatePhysics(false);
 			SetCurMoveSpeed(MaxMoveSpeed);
 		}
 		else {

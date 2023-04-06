@@ -54,7 +54,7 @@ private:
 	double CurMoveSpeed;
 
 	UPROPERTY()
-	TObjectPtr<class AActor> Owner;			// RocketPunch
+	TObjectPtr<class ARocketPunch> Owner;			// RocketPunch
 
 	UPROPERTY()
 	TObjectPtr<class AActor> OwnerPlayerActor;		// RocketPunch의 소유자

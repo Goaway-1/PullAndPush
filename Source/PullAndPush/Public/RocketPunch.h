@@ -42,6 +42,9 @@ public:
 	UPROPERTY(EditDefaultsOnly, Category = "Materials")
 	TObjectPtr<class UMaterial> PullMaterial;
 
+	UFUNCTION()
+	void SetCollisionSimulatePhysics(bool Val);
+
 private:
 	TObjectPtr<AActor> OwnerPlayerActor;
 	uint8 bIsPush : 1;
