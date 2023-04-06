@@ -73,6 +73,10 @@ void ARocketPunch::ReadyToLaunch(const float& Force, AActor* InOwnerPlayerActor,
 	UE_LOG(LogTemp, Log, TEXT("[ARocketPunch] %s RocketPunch!! %f"), *AttackType, Force);
 	StaticMeshComp->SetMaterial(0, CurMaterial);
 }
+void ARocketPunch::SetCollisionSimulatePhysics(bool Val)
+{
+	if(CollisionComp) CollisionComp->SetSimulatePhysics(Val);
+}
 void ARocketPunch::OnHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComponent, FVector NormalImpulse, const FHitResult& Hit)
 {
 	if (OtherActor != OwnerPlayerActor) {
