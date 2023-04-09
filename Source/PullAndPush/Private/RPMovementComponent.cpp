@@ -4,10 +4,11 @@
 
 URPMovementComponent::URPMovementComponent()
 	:
-	bIsReturn(false), bIsLaunch(false), CurMoveSpeed(MinMoveSpeed), bIsForceReturn(false)
+	bIsReturn(false), bIsLaunch(false), bIsForceReturn(false)
 {
 	PrimaryComponentTick.bCanEverTick = true;
 
+	CurMoveSpeed = MinMoveSpeed;
 }
 void URPMovementComponent::BeginPlay()
 {
@@ -35,9 +36,9 @@ void URPMovementComponent::CheckMovement()
 		UpdateLocation();
 	}
 }
-void URPMovementComponent::Launch(const float& Force, AActor* InOwnerPlayerActor, const FVector& InVec, const FRotator& InRot)
+void URPMovementComponent::Launch(const float& Force, AActor* InCasterActor, const FVector& InVec, const FRotator& InRot)
 {
-	if (OwnerPlayerActor == nullptr) OwnerPlayerActor = InOwnerPlayerActor;
+	if (CasterActor == nullptr) CasterActor = InCasterActor;
 
 	// Rocket Punch Setting
 	Owner->SetActorLocationAndRotation(InVec, InRot);
@@ -62,9 +63,9 @@ void URPMovementComponent::UpdateLocation() {
 
 	// Check is nearby target pos
 	CurDistance = (EndLoc - Owner->GetActorLocation()).Size();
-	if (GetIsForceReturn() || (PreDistance <= CurDistance && OwnerPlayerActor)) {
+	if (GetIsForceReturn() || (PreDistance <= CurDistance && CasterActor)) {
 		StartLoc = Owner->GetActorLocation();
-		EndLoc = OwnerPlayerActor->GetActorLocation();
+		EndLoc = CasterActor->GetActorLocation();
 		PreDistance = (EndLoc - Owner->GetActorLocation()).Size();
 
 		// Return or Invisible
@@ -86,9 +87,9 @@ void URPMovementComponent::UpdateLocation() {
 }
 void URPMovementComponent::UpdateRotation() 
 {
-	const FRotator NewRot = UKismetMathLibrary::FindLookAtRotation(Owner->GetActorLocation(), OwnerPlayerActor->GetActorLocation());
+	const FRotator NewRot = UKismetMathLibrary::FindLookAtRotation(Owner->GetActorLocation(), CasterActor->GetActorLocation());
 	Owner->SetActorRotation(NewRot);
-	EndLoc = OwnerPlayerActor->GetActorLocation();
+	EndLoc = CasterActor->GetActorLocation();
 }
 void URPMovementComponent::SetCanLaunch(const bool& Val)
 {

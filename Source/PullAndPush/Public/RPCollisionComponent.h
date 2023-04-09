@@ -22,12 +22,12 @@ protected:
 
 public:
 	UFUNCTION()
-	void OnHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComponent, FVector NormalImpulse, const FHitResult& Hit, const bool IsPush);
+	void OnHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComponent, FVector NormalImpulse, const FHitResult& Hit, AActor* CasterActor, const bool IsPush);
 
 	UFUNCTION()
 	void ResetOverlapActors();
 
-	FRPCollisionComponentReset OnReset;
+	FRPCollisionComponentReset OnArrayReset;			// Reset Overlap Actors
 	FRPCollisionComponentForceReturn OnForceReturn;		// Set RocketPunch Force Return
 
 private:

@@ -22,7 +22,7 @@ protected:
 public:	
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
-	void Launch(const float& Force, AActor* InOwnerPlayerActor, const FVector& InVec, const FRotator& InRot);
+	void Launch(const float& Force, AActor* InCasterActor, const FVector& InVec, const FRotator& InRot);
 
 	// Make it possible to attack again
 	FRPMovementComponentOnReturn OnReturn;
@@ -57,7 +57,7 @@ private:
 	TObjectPtr<class ARocketPunch> Owner;			// RocketPunch
 
 	UPROPERTY()
-	TObjectPtr<class AActor> OwnerPlayerActor;		// RocketPunch의 소유자
+	TObjectPtr<class AActor> CasterActor;		// RocketPunch의 소유자
 
 	void UpdateLocation();
 	void UpdateRotation();

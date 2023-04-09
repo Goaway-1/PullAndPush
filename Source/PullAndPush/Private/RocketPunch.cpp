@@ -34,6 +34,9 @@ void ARocketPunch::BeginPlay()
 	// Set Overlap Collision
 	CollisionComp->OnComponentHit.AddDynamic(this, &ARocketPunch::OnHit);
 
+	// Set Weapon Out of use!
+	RPMovementComponent->OnReturn.BindUObject(this, &ARocketPunch::IsOutOfUse);
+
 	// Set RocketPunch Force Return
 	RPCollisionComponent->OnForceReturn.BindUObject(RPMovementComponent, &URPMovementComponent::SetIsForceReturn);
 }
@@ -42,15 +45,15 @@ void ARocketPunch::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 
 }
-void ARocketPunch::ReadyToLaunch(const float& Force, AActor* InOwnerPlayerActor, const bool IsPush, const FVector& InVec, const FRotator& InRot)
+void ARocketPunch::ReadyToLaunch(const float& Force, AActor* InCasterActor, const bool IsPush, const FVector& InVec, const FRotator& InRot)
 {
-	if(OwnerPlayerActor == nullptr) OwnerPlayerActor = InOwnerPlayerActor;
+	if(CasterActor == nullptr) CasterActor = InCasterActor;
 
 	bIsPush = IsPush;
-	RPMovementComponent->Launch(Force, OwnerPlayerActor, InVec, InRot);
+	RPMovementComponent->Launch(Force, CasterActor, InVec, InRot);
 	
 	// For Log
-	// TODO : 추후 색의 차이가 아닌, 새로운 매시로 구분하고 함수로 제작
+	// @TODO : 추후 색의 차이가 아닌, 새로운 매시로 구분하고 함수로 제작
 	if(!PushMaterial || !PullMaterial) {
 		UE_LOG(LogTemp, Warning, TEXT("[RocketPunch] Materials ared not exsit"));
 		return;
@@ -70,8 +73,20 @@ void ARocketPunch::ReadyToLaunch(const float& Force, AActor* InOwnerPlayerActor,
 		CurMaterial = PullMaterial;
 	}
 
-	UE_LOG(LogTemp, Log, TEXT("[ARocketPunch] %s RocketPunch!! %f"), *AttackType, Force);
+	UE_LOG(LogTemp, Log, TEXT("[ARocketPunch] RocketPunch Type is : %s , Force :  %f"), *AttackType, Force);
 	StaticMeshComp->SetMaterial(0, CurMaterial);
+}
+void ARocketPunch::IsOutOfUse(const bool& Val)
+{
+	OutOfUse.Execute(Val);
+
+	// Reset OverlapActors Array
+	RPCollisionComponent->OnArrayReset.Execute();
+}
+AActor* ARocketPunch::GetCasterActor()
+{
+	if(CasterActor) return CasterActor;
+	return nullptr;
 }
 void ARocketPunch::SetCollisionSimulatePhysics(bool Val)
 {
@@ -79,7 +94,7 @@ void ARocketPunch::SetCollisionSimulatePhysics(bool Val)
 }
 void ARocketPunch::OnHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComponent, FVector NormalImpulse, const FHitResult& Hit)
 {
-	if (OtherActor != OwnerPlayerActor) {
-		RPCollisionComponent->OnHit(HitComponent,OtherActor,OtherComponent, NormalImpulse,Hit, bIsPush);
+	if (OtherActor != CasterActor) {
+		RPCollisionComponent->OnHit(HitComponent,OtherActor,OtherComponent, NormalImpulse, Hit, GetCasterActor(), bIsPush);
 	}
 }

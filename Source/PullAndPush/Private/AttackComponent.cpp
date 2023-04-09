@@ -1,5 +1,6 @@
 #include "AttackComponent.h"
 #include "RocketPunch.h"
+#include "AttackWeapon.h"
 #include "RPMovementComponent.h"
 #include "RPCollisionComponent.h"
 #include "GameFramework/Character.h"
@@ -20,7 +21,7 @@ void UAttackComponent::BeginPlay(){
 
 	RocketPunch = GetWorld()->SpawnActor<ARocketPunch>(RocketPunchClass);
 	RocketPunch->SetActorLocation(GetOwner()->GetActorLocation());
-	RocketPunch->RPMovementComponent->OnReturn.BindUObject(this, &UAttackComponent::SetCanLaunch);
+	RocketPunch->OutOfUse.BindUObject(this, &UAttackComponent::SetCanLaunch);	
 
 	// Get Socket
 	OwnerCharacter = Cast<ACharacter>(GetOwner());
@@ -70,7 +71,12 @@ void UAttackComponent::EndLaunch(bool bIsPush)
 		const FVector LaunchLocation = RocketPunchSocket->GetSocketLocation(OwnerCharacter->GetMesh());
 		const FRotator LaunchRotation = OwnerCharacter->GetControlRotation();
 		
-		RocketPunch->ReadyToLaunch(ChargingTime, GetOwner(), bIsPush ,LaunchLocation, LaunchRotation);
+		// @TODO : RocketPunch가 아닌 다른 무기인 경우 -> CurAttackWeapon에 대입만하고 사용하면 된다.
+		CurAttackWeapon = RocketPunch;
+		if (CurAttackWeapon)
+		{
+			CurAttackWeapon->ReadyToLaunch(ChargingTime, GetOwner(), bIsPush, LaunchLocation, LaunchRotation);
+		}
 	}
 	else bIsCanLaunch = true;
 }
@@ -85,7 +91,4 @@ void UAttackComponent::SetCanLaunch(const bool& Val)
 {
 	UE_LOG(LogTemp, Log, TEXT("[UAttackComponent] Make it possible to attack again"));
 	bIsCanLaunch = Val;
-
-	// Reset OverlapActors Array
-	RocketPunch->RPCollisionComponent->OnReset.Execute();
 }

@@ -1,11 +1,12 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "AttackWeapon.h"
 #include "GameFramework/Actor.h"
 #include "RocketPunch.generated.h"
 
 UCLASS()
-class PULLANDPUSH_API ARocketPunch : public AActor
+class PULLANDPUSH_API ARocketPunch : public AActor, public IAttackWeapon
 {
 	GENERATED_BODY()
 	
@@ -30,12 +31,15 @@ public:
 	UPROPERTY(VisibleAnywhere)
 	TObjectPtr<class URPCollisionComponent> RPCollisionComponent;
 
-	void ReadyToLaunch(const float& Force, AActor* InOwnerPlayerActor, const bool IsPush, const FVector& InVec, const FRotator& InRot);
+	virtual void ReadyToLaunch(const float& Force, AActor* InCasterActor, const bool IsPush, const FVector& InVec, const FRotator& InRot) override;
+	virtual void IsOutOfUse(const bool& Val) override;
+	virtual AActor* GetCasterActor() override;
 
 	FORCEINLINE URPMovementComponent* GetRPMovementComponent() const {return RPMovementComponent;}
+	FORCEINLINE URPCollisionComponent* GetRPCollisionComponent() const {return RPCollisionComponent;}
 
 	// For Log
-	// TODO : 추후 색상이 아닌 메시로 변경해야 함.
+	// @TODO : 추후 색상이 아닌 메시로 변경해야 함.
 	UPROPERTY(EditDefaultsOnly, Category="Materials")
 	TObjectPtr<class UMaterial> PushMaterial;
 
@@ -46,7 +50,7 @@ public:
 	void SetCollisionSimulatePhysics(bool Val);
 
 private:
-	TObjectPtr<AActor> OwnerPlayerActor;
+	TObjectPtr<AActor> CasterActor;
 	uint8 bIsPush : 1;
 	const FName CollisionName = TEXT("RocketPunch");
 

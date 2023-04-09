@@ -1,20 +1,20 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
-
 #include "RPCollisionComponent.h"
+#include "CollisionActionHandler.h"
 
 URPCollisionComponent::URPCollisionComponent()
 {
 	PrimaryComponentTick.bCanEverTick = false;
 
-	OnReset.BindUObject(this, &URPCollisionComponent::ResetOverlapActors);
+	OnArrayReset.BindUObject(this, &URPCollisionComponent::ResetOverlapActors);
 }
 void URPCollisionComponent::BeginPlay()
 {
 	Super::BeginPlay();
 	
 }
-void URPCollisionComponent::OnHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComponent, FVector NormalImpulse, const FHitResult& Hit, const bool IsPush)
+void URPCollisionComponent::OnHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComponent, FVector NormalImpulse, const FHitResult& Hit, AActor* CasterActor, const bool IsPush)
 {
 	// Check if the object is already processed
 	if (OverlapActors.Find(OtherActor)) return;
@@ -24,12 +24,16 @@ void URPCollisionComponent::OnHit(UPrimitiveComponent* HitComponent, AActor* Oth
 	// TODO : 함수로 구분.
 	if (IsPush) {	// Push	
 		if (OtherCompCollsionName == "BlockAll") {
-			// @TODO: 시전자 뒤로 밀치며, 투사체 복귀 (인터페이스 사용)
+			// test 시전자 뒤로 밀치며, 투사체 복귀 
+			ICollisionActionHandler* ActionHandler = Cast<ICollisionActionHandler>(CasterActor);
+			if (ActionHandler) {
+				ActionHandler->TestAction();
+			}
 
 			OnForceReturn.Execute(true);
 		}
 		else if (OtherCompCollsionName == "PhysicsActor" || OtherCompCollsionName == "Item") {
-			// @TODO: 오브젝트를 모두 밀침
+			// 오브젝트를 모두 밀침
 			FVector ImpulseDirection = -Hit.Normal;
             float ImpulseStrength = 1000.0f;
 			OtherComponent->AddImpulse(ImpulseDirection * ImpulseStrength, NAME_None, true);
@@ -50,7 +54,6 @@ void URPCollisionComponent::OnHit(UPrimitiveComponent* HitComponent, AActor* Oth
 	OverlapActors.Add(OtherActor);
 	UE_LOG(LogTemp, Warning, TEXT("[URPCollisionComponent] Overrlap Type is '%s', Name is '%s'"), *OtherComponent->GetCollisionProfileName().ToString(), *OtherActor->GetName());
 }
-
 void URPCollisionComponent::ResetOverlapActors()
 {
 	OverlapActors.Reset();

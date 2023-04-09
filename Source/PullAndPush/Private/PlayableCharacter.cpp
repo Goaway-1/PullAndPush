@@ -145,3 +145,8 @@ void APlayableCharacter::UpdateSpringArmLength(const float NewArmLength)
 {
 	SpringArmComp->TargetArmLength = NewArmLength;
 }
+void APlayableCharacter::TestAction()
+{	
+	//GetCharacterMovement()->AddImpulse(1000.f);
+	UE_LOG(LogTemp,Warning,TEXT("Ha Ha It;s Done!"));
+}

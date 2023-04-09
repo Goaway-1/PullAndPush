@@ -4,7 +4,8 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
-#include "Components/TimelineComponent.h" // Ãß°¡
+#include "CollisionActionHandler.h"
+#include "Components/TimelineComponent.h"
 #include "PlayableCharacter.generated.h"
 
 class USpringArmComponent;
@@ -19,7 +20,7 @@ enum class EPlayerAttackCondition : uint8 {
 };
 
 UCLASS()
-class PULLANDPUSH_API APlayableCharacter : public ACharacter
+class PULLANDPUSH_API APlayableCharacter : public ACharacter, public ICollisionActionHandler
 {
 	GENERATED_BODY()
 
@@ -75,4 +76,7 @@ private:
 	void SetPlayerView();
 	void InitZoomTimeLine();
 	void ZoomInOut(const EPlayerAttackCondition NewCondition);
+public:
+	//test
+	virtual void TestAction() override;
 };
