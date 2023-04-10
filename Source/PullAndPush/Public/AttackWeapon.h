@@ -24,7 +24,7 @@ class PULLANDPUSH_API IAttackWeapon
 
 public:
 	UFUNCTION()
-	virtual void ReadyToLaunch(const float& Force, AActor* InOwnerPlayerActor, const bool IsPush, const FVector& InVec, const FRotator& InRot) = 0;
+	virtual void ReadyToLaunch(const float& InForceAlpha, AActor* InOwnerPlayerActor, const bool IsPush, const FVector& InVec, const FRotator& InRot) = 0;
 
 	UFUNCTION()
 	virtual AActor* GetCasterActor() = 0;

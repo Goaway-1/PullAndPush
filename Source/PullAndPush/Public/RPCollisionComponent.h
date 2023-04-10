@@ -22,7 +22,7 @@ protected:
 
 public:
 	UFUNCTION()
-	void OnHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComponent, FVector NormalImpulse, const FHitResult& Hit, AActor* CasterActor, const bool IsPush);
+	void OnHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComponent, FVector NormalImpulse, const FHitResult& Hit, AActor* CasterActor, const bool IsPush, const float& ForceAlpha);
 
 	UFUNCTION()
 	void ResetOverlapActors();
@@ -33,4 +33,13 @@ public:
 private:
 	UPROPERTY(VisibleAnywhere, Category = "OverlapActors")
 	TSet<TObjectPtr<AActor>> OverlapActors;
+
+	UPROPERTY(EditAnyWhere, Category = "Info", meta = (AllowPrivateAccess = "true"))
+	float MaxKnockBackForce;
+
+	UPROPERTY(EditAnyWhere, Category = "Info", meta = (AllowPrivateAccess = "true"))
+	float MinKnockBackForce;
+
+	void KnockBackActor(class UPrimitiveComponent* HitComponent, AActor* TargetActor, float ImpulseForce);
+	void KnockBackPrimitiveComponent(class UPrimitiveComponent* OtherComponent, const FHitResult& Hit, float ImpulseForce);
 };

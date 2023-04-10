@@ -4,7 +4,8 @@
 
 URPMovementComponent::URPMovementComponent()
 	:
-	bIsReturn(false), bIsLaunch(false), bIsForceReturn(false)
+	bIsReturn(false), bIsLaunch(false), bIsForceReturn(false),
+	ReturnMoveSpeed(30.f), MaxMoveSpeed(25.f), MinMoveSpeed(15.f), MaxDistance(2000.f), MinDistance(1000.f)
 {
 	PrimaryComponentTick.bCanEverTick = true;
 
@@ -29,6 +30,12 @@ void URPMovementComponent::InitSetting()
 	Owner->SetActorHiddenInGame(true);
 	Owner->SetActorTickEnabled(false);
 }
+void URPMovementComponent::SetPreDistance(bool IsReturn, float InTargetDistance)
+{
+	StartLoc = Owner->GetActorLocation();
+	EndLoc = (!IsReturn) ? StartLoc + (Owner->GetActorForwardVector() * InTargetDistance) : CasterActor->GetActorLocation();
+	PreDistance = (EndLoc - StartLoc).Size();
+}
 void URPMovementComponent::CheckMovement()
 {
 	if (bIsLaunch) {
@@ -36,7 +43,7 @@ void URPMovementComponent::CheckMovement()
 		UpdateLocation();
 	}
 }
-void URPMovementComponent::Launch(const float& Force, AActor* InCasterActor, const FVector& InVec, const FRotator& InRot)
+void URPMovementComponent::Launch(const float& ForceAlpha, AActor* InCasterActor, const FVector& InVec, const FRotator& InRot)
 {
 	if (CasterActor == nullptr) CasterActor = InCasterActor;
 
@@ -51,12 +58,15 @@ void URPMovementComponent::Launch(const float& Force, AActor* InCasterActor, con
 	bIsLaunch = true;
 	bIsReturn = false;
 	bIsForceReturn = false;
-	SetCurMoveSpeed(MinMoveSpeed);
 
-	// to Target Distance
-	StartLoc = Owner->GetActorLocation();
-	EndLoc = StartLoc + (Owner->GetActorForwardVector() * DefaultForce * Force);
-	PreDistance = (EndLoc - StartLoc).Size();
+	// Target Distance & Speed by Lerp
+	float LerpDistance = FMath::Lerp(MinDistance, MaxDistance, ForceAlpha);
+	float LerpMoveSpeed = FMath::Lerp(MinMoveSpeed, MaxMoveSpeed, ForceAlpha);
+
+	SetPreDistance(false, LerpDistance);
+	SetCurMoveSpeed(LerpMoveSpeed);
+
+	UE_LOG(LogTemp, Log, TEXT("[URPMovementComponent] ForceAlpha : %f, Distance : %f , Speed : %f"), ForceAlpha, LerpDistance, LerpMoveSpeed);
 }
 void URPMovementComponent::UpdateLocation() {
 	Owner->SetActorLocation(Owner->GetActorLocation() + (Owner->GetActorForwardVector() * CurMoveSpeed));
@@ -64,9 +74,7 @@ void URPMovementComponent::UpdateLocation() {
 	// Check is nearby target pos
 	CurDistance = (EndLoc - Owner->GetActorLocation()).Size();
 	if (GetIsForceReturn() || (PreDistance <= CurDistance && CasterActor)) {
-		StartLoc = Owner->GetActorLocation();
-		EndLoc = CasterActor->GetActorLocation();
-		PreDistance = (EndLoc - Owner->GetActorLocation()).Size();
+		SetPreDistance(true);
 
 		// Return or Invisible
 		if (!GetIsReturn()) {

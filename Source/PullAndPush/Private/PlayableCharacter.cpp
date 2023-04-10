@@ -7,8 +7,11 @@
 #include "Kismet/KismetSystemLibrary.h"
 #include "Kismet/KismetMathLibrary.h"
 #include "Curves/CurveFloat.h"
+#include "DrawDebugHelpers.h"
 
 APlayableCharacter::APlayableCharacter()
+	:
+	bIsMoveToLocation(false), TargetLocation(FVector::Zero), StartLocation(FVector::Zero), MoveToLocationSpeed(5000.f)
 {
 	PrimaryActorTick.bCanEverTick = true;
 
@@ -42,6 +45,9 @@ void APlayableCharacter::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 
 	SetPlayerView();
+
+	// If Hit Event is Called.
+	MoveToLocation(DeltaTime);
 }
 void APlayableCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
@@ -145,8 +151,30 @@ void APlayableCharacter::UpdateSpringArmLength(const float NewArmLength)
 {
 	SpringArmComp->TargetArmLength = NewArmLength;
 }
-void APlayableCharacter::TestAction()
-{	
-	//GetCharacterMovement()->AddImpulse(1000.f);
-	UE_LOG(LogTemp,Warning,TEXT("Ha Ha It;s Done!"));
+void APlayableCharacter::KnockBackActor(const FVector& DirVec)
+{
+	GetCharacterMovement()->AddImpulse(DirVec);
+}
+void APlayableCharacter::SetMoveToLocation(const FVector& HitVector)
+{
+	bIsMoveToLocation = true;
+	TargetLocation = HitVector;
+	StartLocation = GetActorLocation();
+}
+void APlayableCharacter::MoveToLocation(float DeltaTime)
+{
+	if (bIsMoveToLocation) {
+		const FVector Direction = (TargetLocation - StartLocation).GetSafeNormal();	
+		const FVector NewLocation = StartLocation + (Direction * MoveToLocationSpeed * DeltaTime);
+		
+		DrawDebugLine(GetWorld(), StartLocation, NewLocation, FColor::Green, false, 10.f);
+		DrawDebugSphere(GetWorld(),NewLocation, 12.f, 25,FColor::Red,false, 10.f);
+		StartLocation = NewLocation;
+		SetActorLocation(NewLocation);
+
+		// Stop Moving if close to TargetLocation
+		if (FVector::Distance(NewLocation, TargetLocation) < StopToMoveDistance) {
+			bIsMoveToLocation = false;
+		}
+	}
 }

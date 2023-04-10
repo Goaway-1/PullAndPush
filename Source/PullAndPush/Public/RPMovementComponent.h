@@ -22,7 +22,7 @@ protected:
 public:	
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
-	void Launch(const float& Force, AActor* InCasterActor, const FVector& InVec, const FRotator& InRot);
+	void Launch(const float& ForceAlpha, AActor* InCasterActor, const FVector& InVec, const FRotator& InRot);
 
 	// Make it possible to attack again
 	FRPMovementComponentOnReturn OnReturn;
@@ -32,37 +32,45 @@ public:
 
 private:
 	// Is RocketPunch is return to Player? Or Launched?
-	UPROPERTY(VisibleAnywhere, Category="Info", meta=(AllowPrivateAccess = "true"))
 	uint8 bIsReturn:1;
-
-	UPROPERTY(VisibleAnywhere, Category = "Info", meta = (AllowPrivateAccess = "true"))
 	uint8 bIsLaunch:1;
-
-	UPROPERTY(VisibleAnywhere, Category = "Info", meta = (AllowPrivateAccess = "true"))
 	uint8 bIsForceReturn : 1;
 
 	// Decide to Return or End
-	double PreDistance;
-	double CurDistance;
+	float PreDistance;
+	float CurDistance;
 	FVector StartLoc;
 	FVector EndLoc;
 
-	// Speed
-	const double DefaultForce = 1000.f;
-	const double MaxMoveSpeed = 25.f;
-	const double MinMoveSpeed = 15.f;
-	double CurMoveSpeed;
+	// Max Min Speed & Distance
+	UPROPERTY(EditAnyWhere, Category = "Info", meta = (AllowPrivateAccess = "true"))
+	float ReturnMoveSpeed;
+
+	UPROPERTY(EditAnyWhere, Category = "Info", meta = (AllowPrivateAccess = "true"))
+	float MaxMoveSpeed;
+
+	UPROPERTY(EditAnyWhere, Category = "Info", meta = (AllowPrivateAccess = "true"))
+	float MinMoveSpeed;
+
+	UPROPERTY(EditAnyWhere, Category = "Info", meta = (AllowPrivateAccess = "true"))
+	float MaxDistance;
+
+	UPROPERTY(EditAnyWhere, Category = "Info", meta = (AllowPrivateAccess = "true"))
+	float MinDistance;
+
+	float CurMoveSpeed;
 
 	UPROPERTY()
 	TObjectPtr<class ARocketPunch> Owner;			// RocketPunch
 
 	UPROPERTY()
-	TObjectPtr<class AActor> CasterActor;		// RocketPunch의 소유자
+	TObjectPtr<class AActor> CasterActor;			// RocketPunch의 소유자
 
 	void UpdateLocation();
 	void UpdateRotation();
 	void CheckMovement();
 	void InitSetting();
+	void SetPreDistance(bool IsReturn, float InTargetDistance = 0.f);
 
 	// Related to FRPMovementComponentOnReturn
 	UFUNCTION()

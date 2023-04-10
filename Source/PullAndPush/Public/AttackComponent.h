@@ -61,8 +61,4 @@ protected:
 
 	UPROPERTY(VisibleAnywhere, Category = "Weapon")
 	TObjectPtr<class ARocketPunch> RocketPunch;
-
-	// TODO : RocketPunch임을 모르고 발사하고 싶다.
-	UPROPERTY()
-	TScriptInterface<class IAttackWeapon> CurAttackWeapon;
 };

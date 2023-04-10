@@ -8,7 +8,7 @@
 
 ARocketPunch::ARocketPunch()
 	: 
-	bIsPush(false)
+	bIsPush(false), ForceAlpha(0.f)
 {
  	PrimaryActorTick.bCanEverTick = true;
 
@@ -45,12 +45,13 @@ void ARocketPunch::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 
 }
-void ARocketPunch::ReadyToLaunch(const float& Force, AActor* InCasterActor, const bool IsPush, const FVector& InVec, const FRotator& InRot)
+void ARocketPunch::ReadyToLaunch(const float& InForceAlpha, AActor* InCasterActor, const bool IsPush, const FVector& InVec, const FRotator& InRot)
 {
 	if(CasterActor == nullptr) CasterActor = InCasterActor;
 
 	bIsPush = IsPush;
-	RPMovementComponent->Launch(Force, CasterActor, InVec, InRot);
+	ForceAlpha = InForceAlpha;
+	RPMovementComponent->Launch(ForceAlpha, CasterActor, InVec, InRot);
 	
 	// For Log
 	// @TODO : 추후 색의 차이가 아닌, 새로운 매시로 구분하고 함수로 제작
@@ -73,7 +74,7 @@ void ARocketPunch::ReadyToLaunch(const float& Force, AActor* InCasterActor, cons
 		CurMaterial = PullMaterial;
 	}
 
-	UE_LOG(LogTemp, Log, TEXT("[ARocketPunch] RocketPunch Type is : %s , Force :  %f"), *AttackType, Force);
+	UE_LOG(LogTemp, Log, TEXT("[ARocketPunch] RocketPunch Type is : %s"), *AttackType);
 	StaticMeshComp->SetMaterial(0, CurMaterial);
 }
 void ARocketPunch::IsOutOfUse(const bool& Val)
@@ -95,6 +96,6 @@ void ARocketPunch::SetCollisionSimulatePhysics(bool Val)
 void ARocketPunch::OnHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComponent, FVector NormalImpulse, const FHitResult& Hit)
 {
 	if (OtherActor != CasterActor) {
-		RPCollisionComponent->OnHit(HitComponent,OtherActor,OtherComponent, NormalImpulse, Hit, GetCasterActor(), bIsPush);
+		RPCollisionComponent->OnHit(HitComponent,OtherActor,OtherComponent, NormalImpulse, Hit, GetCasterActor(), bIsPush, ForceAlpha);
 	}
 }

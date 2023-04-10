@@ -32,7 +32,6 @@ public:
 	UFUNCTION(BlueprintCallable)
 	FORCEINLINE EPlayerAttackCondition GetPlayerAttackCondition() {return PlayerAttackCondition;}
 	FORCEINLINE void SetPlayerAttackCondition(const EPlayerAttackCondition& NewPlayerAttackCondition) { PlayerAttackCondition = NewPlayerAttackCondition;}
-
 protected:
 	virtual void BeginPlay() override;
 
@@ -76,7 +75,19 @@ private:
 	void SetPlayerView();
 	void InitZoomTimeLine();
 	void ZoomInOut(const EPlayerAttackCondition NewCondition);
+
 public:
-	//test
-	virtual void TestAction() override;
+	/** Event of Collision Hit */
+	virtual void KnockBackActor(const FVector& DirVec) override;
+	virtual void SetMoveToLocation(const FVector& HitVector) override;
+	void MoveToLocation(float DeltaTime);
+
+private:
+	uint8 bIsMoveToLocation : 1;
+	FVector TargetLocation;
+	FVector StartLocation;
+	const float StopToMoveDistance = 100.f;
+
+	UPROPERTY(EditAnywhere, Category = "Speed", Meta = (AllowPrivateAccess = true))
+	float MoveToLocationSpeed;
 };

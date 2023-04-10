@@ -19,6 +19,7 @@ UAttackComponent::UAttackComponent()
 void UAttackComponent::BeginPlay(){
 	Super::BeginPlay();
 
+	// @TODO : instigator :: GetWorld()->SpawnActorDeferred<ARocketPunch>()
 	RocketPunch = GetWorld()->SpawnActor<ARocketPunch>(RocketPunchClass);
 	RocketPunch->SetActorLocation(GetOwner()->GetActorLocation());
 	RocketPunch->OutOfUse.BindUObject(this, &UAttackComponent::SetCanLaunch);	
@@ -67,15 +68,15 @@ void UAttackComponent::EndLaunch(bool bIsPush)
 	ChargingTime = FMath::Clamp(ChargingTime, MinChargingTime, MaxChargingTime);
 	UE_LOG(LogTemp, Log, TEXT("EndLaunch ChargingTime : %f"), ChargingTime);
 	if (RocketPunch && RocketPunchSocket && ChargingTime >= CanLaunchedTime) {
-		//Location & Rotator
+		// Location & Rotator & Charging Percent
 		const FVector LaunchLocation = RocketPunchSocket->GetSocketLocation(OwnerCharacter->GetMesh());
 		const FRotator LaunchRotation = OwnerCharacter->GetControlRotation();
+		const float ChargingAlpha = (ChargingTime - CanLaunchedTime) / (MaxChargingTime - CanLaunchedTime);
 		
-		// @TODO : RocketPunch가 아닌 다른 무기인 경우 -> CurAttackWeapon에 대입만하고 사용하면 된다.
-		CurAttackWeapon = RocketPunch;
-		if (CurAttackWeapon)
-		{
-			CurAttackWeapon->ReadyToLaunch(ChargingTime, GetOwner(), bIsPush, LaunchLocation, LaunchRotation);
+		// Set ReadyToLaunch
+		TScriptInterface<class IAttackWeapon> CurAttackWeapon = RocketPunch;
+		if (CurAttackWeapon.GetInterface()) {
+			CurAttackWeapon->ReadyToLaunch(ChargingAlpha, GetOwner(), bIsPush, LaunchLocation, LaunchRotation);
 		}
 	}
 	else bIsCanLaunch = true;

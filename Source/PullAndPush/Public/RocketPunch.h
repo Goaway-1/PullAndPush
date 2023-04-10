@@ -31,7 +31,7 @@ public:
 	UPROPERTY(VisibleAnywhere)
 	TObjectPtr<class URPCollisionComponent> RPCollisionComponent;
 
-	virtual void ReadyToLaunch(const float& Force, AActor* InCasterActor, const bool IsPush, const FVector& InVec, const FRotator& InRot) override;
+	virtual void ReadyToLaunch(const float& InForceAlpha, AActor* InCasterActor, const bool IsPush, const FVector& InVec, const FRotator& InRot) override;
 	virtual void IsOutOfUse(const bool& Val) override;
 	virtual AActor* GetCasterActor() override;
 
@@ -52,6 +52,7 @@ public:
 private:
 	TObjectPtr<AActor> CasterActor;
 	uint8 bIsPush : 1;
+	float ForceAlpha;
 	const FName CollisionName = TEXT("RocketPunch");
 
 	UFUNCTION()
