@@ -1,18 +1,33 @@
 #include "AttackComponent.h"
+#include "RocketPunch.h"
+#include "AttackWeapon.h"
+#include "RPMovementComponent.h"
+#include "RPCollisionComponent.h"
+#include "GameFramework/Character.h"
+#include "Engine/SkeletalMeshSocket.h"
+#include "Math/Quat.h"
 #include "GameFramework/CharacterMovementComponent.h"
 
-UAttackComponent::UAttackComponent()
+UAttackComponent::UAttackComponent() 
+	:
+	ChargingTime(0.f), bIsCharging(false), bIsChangeValue(false),
+	bIsCanLaunch(true), RocketPunch(nullptr)
 {
 	PrimaryComponentTick.bCanEverTick = true;
 
-	// Charging
-	ChargingTime = 0.f;
-	bIsCharging = false;
-	bIsChangeValue = false;
 }
 void UAttackComponent::BeginPlay(){
 	Super::BeginPlay();
 
+	// @TODO : instigator :: GetWorld()->SpawnActorDeferred<ARocketPunch>()
+	RocketPunch = GetWorld()->SpawnActor<ARocketPunch>(RocketPunchClass);
+	RocketPunch->SetActorLocation(GetOwner()->GetActorLocation());
+	RocketPunch->OutOfUse.BindUObject(this, &UAttackComponent::SetCanLaunch);	
+
+	// Get Socket
+	OwnerCharacter = Cast<ACharacter>(GetOwner());
+	RocketPunchSocket = OwnerCharacter->GetMesh()->GetSocketByName("RocketPunch");
+	check(RocketPunchSocket);
 }
 void UAttackComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
 {
@@ -20,11 +35,14 @@ void UAttackComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActo
 
 	ChargingLaunch();
 }
-void UAttackComponent::TryLaunch()
+bool UAttackComponent::TryLaunch()
 {
+	if (!bIsCanLaunch) return false;
+
 	ChargingTime = 0.f;
 	bIsCharging = true;
 	bIsChangeValue = false;
+	return true;
 }
 void UAttackComponent::ChargingLaunch()
 {
@@ -34,28 +52,44 @@ void UAttackComponent::ChargingLaunch()
 		// Change Speed & View if Charging
 		if (!bIsChangeValue && ChargingTime > DecideChargingTime) {
 			ChangeMovementSpeed(MinMoveSpeed, MinJumpVelocity);
+			bIsCanLaunch = false;
 		}
 	}
 }
-void UAttackComponent::EndLaunch()
+void UAttackComponent::EndLaunch(bool bIsPush)
 {
+	if (!bIsCharging) return;
+
 	bIsCharging = false;
 	bIsChangeValue = false;
 	ChangeMovementSpeed(MaxMoveSpeed, MaxJumpVelocity);
 	
 	// Clamp ChargingTime and Check is can launch
 	ChargingTime = FMath::Clamp(ChargingTime, MinChargingTime, MaxChargingTime);
-	if (ChargingTime >= CanLaunchedTime) {
-		// @TODO : Launch Punch!
-		UE_LOG(LogTemp, Log, TEXT("Launched Punch!"));
-	}
 	UE_LOG(LogTemp, Log, TEXT("EndLaunch ChargingTime : %f"), ChargingTime);
+	if (RocketPunch && RocketPunchSocket && ChargingTime >= CanLaunchedTime) {
+		// Location & Rotator & Charging Percent
+		const FVector LaunchLocation = RocketPunchSocket->GetSocketLocation(OwnerCharacter->GetMesh());
+		const FRotator LaunchRotation = OwnerCharacter->GetControlRotation();
+		const float ChargingAlpha = (ChargingTime - CanLaunchedTime) / (MaxChargingTime - CanLaunchedTime);
+		
+		// Set ReadyToLaunch
+		TScriptInterface<class IAttackWeapon> CurAttackWeapon = RocketPunch;
+		if (CurAttackWeapon.GetInterface()) {
+			CurAttackWeapon->ReadyToLaunch(ChargingAlpha, GetOwner(), bIsPush, LaunchLocation, LaunchRotation);
+		}
+	}
+	else bIsCanLaunch = true;
 }
-
 void UAttackComponent::ChangeMovementSpeed(const float& NewMoveSpeed, const float& NewJumpVelocity)
 {	
-	UE_LOG(LogTemp, Log, TEXT("[AttackComponent] ChangeCharging Delegate is called!"));
+	UE_LOG(LogTemp, Log, TEXT("[AttackComponent] ChangeCharging Delegate is called! Excute!!"));
 
 	bIsChangeValue = true;
 	OnCharging.Execute(NewMoveSpeed,NewJumpVelocity);
+}
+void UAttackComponent::SetCanLaunch(const bool& Val)
+{
+	UE_LOG(LogTemp, Log, TEXT("[UAttackComponent] Make it possible to attack again"));
+	bIsCanLaunch = Val;
 }

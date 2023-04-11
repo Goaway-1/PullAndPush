@@ -22,9 +22,9 @@ protected:
 public:	
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
-	void TryLaunch();
+	bool TryLaunch();
 	void ChargingLaunch();
-	void EndLaunch();
+	void EndLaunch(bool bIsPush);
 
 	// Change Player Move Speed & Camera View
 	FAttackComponentOnChangedSignature OnCharging;
@@ -32,18 +32,33 @@ public:
 private:
 	// Charging Value
 	float ChargingTime;
-	bool bIsCharging;
-	bool bIsChangeValue;
+	uint8 bIsCharging:1;
+	uint8 bIsChangeValue:1;
 	const float DecideChargingTime = 0.2f;
 	const float CanLaunchedTime = 1.0f;
 	const float MaxChargingTime = 2.5f;
 	const float MinChargingTime = 0.2f;
 
-	// PlayalbeCharacter.h
 	const float MaxMoveSpeed = 600.f;
 	const float MinMoveSpeed = 200.f;
 	const float MaxJumpVelocity = 420.f;
 	const float MinJumpVelocity = 210.f;
 
 	void ChangeMovementSpeed(const float& NewMoveSpeed, const float& NewJumpVelocity);
+	
+	// Delegate : Make it possible to attack again
+	uint8 bIsCanLaunch:1;
+
+	UFUNCTION()
+	void SetCanLaunch(const bool& Val);
+
+	TObjectPtr<class ACharacter> OwnerCharacter;
+	USkeletalMeshSocket const* RocketPunchSocket;
+
+protected:
+	UPROPERTY(EditAnywhere, Category = "Weapon")
+	TSubclassOf<class ARocketPunch> RocketPunchClass;
+
+	UPROPERTY(VisibleAnywhere, Category = "Weapon")
+	TObjectPtr<class ARocketPunch> RocketPunch;
 };

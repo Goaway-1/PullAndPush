@@ -4,12 +4,14 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
-#include "Components/TimelineComponent.h" // Ãß°¡
+#include "CollisionActionHandler.h"
+#include "Components/TimelineComponent.h"
 #include "PlayableCharacter.generated.h"
 
 class USpringArmComponent;
 class UCameraComponent;
 
+DECLARE_DELEGATE_OneParam(FInputSwitchInventoryDelegate, const bool);
 
 UENUM(BlueprintType)
 enum class EPlayerAttackCondition : uint8 {
@@ -18,7 +20,7 @@ enum class EPlayerAttackCondition : uint8 {
 };
 
 UCLASS()
-class PULLANDPUSH_API APlayableCharacter : public ACharacter
+class PULLANDPUSH_API APlayableCharacter : public ACharacter, public ICollisionActionHandler
 {
 	GENERATED_BODY()
 
@@ -30,21 +32,20 @@ public:
 	UFUNCTION(BlueprintCallable)
 	FORCEINLINE EPlayerAttackCondition GetPlayerAttackCondition() {return PlayerAttackCondition;}
 	FORCEINLINE void SetPlayerAttackCondition(const EPlayerAttackCondition& NewPlayerAttackCondition) { PlayerAttackCondition = NewPlayerAttackCondition;}
-
 protected:
 	virtual void BeginPlay() override;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Camera")
-	USpringArmComponent* SpringArmComp;
+	TObjectPtr<USpringArmComponent> SpringArmComp;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Camera")
-	UCameraComponent* CameraComp;
+	TObjectPtr<UCameraComponent> CameraComp;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
 	TObjectPtr<class UAttackComponent> AttackComp;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Camera")
-	class UTimelineComponent* ZoomTimeline;
+	TObjectPtr<UTimelineComponent> ZoomTimeline;
 
 private:
 	void MoveForward(float NewAxisValue);
@@ -52,7 +53,7 @@ private:
 	void LookUp(float NewAxisValue);
 	void Turn(float NewAxisValue);
 
-	void TryLaunch();
+	void TryLaunch(bool IsPush);
 	void EndLaunch();
 
 	/** Charging */
@@ -60,9 +61,11 @@ private:
 	EPlayerAttackCondition PlayerAttackCondition;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Camera", Meta = (AllowPrivateAccess = true))
-	class UCurveFloat* ZoomCurve;
+	TObjectPtr<UCurveFloat> ZoomCurve;
 
 	FOnTimelineFloat ZoomInterpFunction;
+
+	uint8 bIsPush : 1;
 
 	UFUNCTION()
 	void UpdateSpringArmLength(const float NewArmLength);
@@ -72,4 +75,29 @@ private:
 	void SetPlayerView();
 	void InitZoomTimeLine();
 	void ZoomInOut(const EPlayerAttackCondition NewCondition);
+
+public:
+	/** Event of Collision Hit */
+	virtual void KnockBackActor(const FVector& DirVec) override;
+	virtual void SetMoveToLocation(const FVector& HitVector) override;
+	void MoveToLocation(float DeltaTime);
+
+	virtual void SetMoveToActor(AActor* TargetActor) override;
+	void MoveToActor();
+
+private:
+	uint8 bIsMoveToLocation : 1;
+	FVector TargetLocation;
+	FVector StartLocation;
+	const float StopToMoveDistance = 100.f;
+
+	UPROPERTY(EditAnywhere, Category = "Speed", Meta = (AllowPrivateAccess = true))
+	float MoveToLocationSpeed;
+
+	/** Event of Collision Hit */
+	UPROPERTY(VisibleAnywhere)
+	uint8 bIsMoveToActor : 1;
+
+	UPROPERTY(VisibleAnywhere)
+	TObjectPtr<AActor> MoveTargetActor;
 };

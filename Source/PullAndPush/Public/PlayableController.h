@@ -4,13 +4,13 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/PlayerController.h"
-#include "PlayerableController.generated.h"
+#include "PlayableController.generated.h"
 
 /**
  * 
  */
 UCLASS()
-class PULLANDPUSH_API APlayerableController : public APlayerController
+class PULLANDPUSH_API APlayableController : public APlayerController
 {
 	GENERATED_BODY()
 	

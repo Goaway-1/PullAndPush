@@ -5,10 +5,13 @@
 #include "Components/CapsuleComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Kismet/KismetSystemLibrary.h"
-
+#include "Kismet/KismetMathLibrary.h"
 #include "Curves/CurveFloat.h"
+#include "DrawDebugHelpers.h"
 
 APlayableCharacter::APlayableCharacter()
+	:
+	bIsMoveToLocation(false), TargetLocation(FVector(0.f)), StartLocation(FVector(0.f)), MoveToLocationSpeed(5000.f), bIsMoveToActor(false), MoveTargetActor(nullptr)
 {
 	PrimaryActorTick.bCanEverTick = true;
 
@@ -42,6 +45,10 @@ void APlayableCharacter::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 
 	SetPlayerView();
+
+	// If Hit Event is Called.
+	MoveToLocation(DeltaTime);
+	MoveToActor();
 }
 void APlayableCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
@@ -53,8 +60,10 @@ void APlayableCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputC
 	PlayerInputComponent->BindAxis("Turn", this, &APlayableCharacter::Turn);
 
 	PlayerInputComponent->BindAction("Jump",IE_Pressed,this, &APlayableCharacter::Jump);
-	PlayerInputComponent->BindAction("Launch", IE_Pressed, this, &APlayableCharacter::TryLaunch);
-	PlayerInputComponent->BindAction("Launch", IE_Released, this, &APlayableCharacter::EndLaunch);
+	PlayerInputComponent->BindAction<FInputSwitchInventoryDelegate>("Push", IE_Pressed, this, &APlayableCharacter::TryLaunch,true);
+	PlayerInputComponent->BindAction<FInputSwitchInventoryDelegate>("Pull", IE_Pressed, this, &APlayableCharacter::TryLaunch,false);
+	PlayerInputComponent->BindAction("Push", IE_Released, this, &APlayableCharacter::EndLaunch);
+	PlayerInputComponent->BindAction("Pull", IE_Released, this, &APlayableCharacter::EndLaunch);
 }
 void APlayableCharacter::MoveForward(float NewAxisValue) {
 	const FRotator ControlRotation = GetControlRotation();
@@ -76,13 +85,16 @@ void APlayableCharacter::Turn(float NewAxisValue)
 {
 	AddControllerYawInput(NewAxisValue);
 }
-void APlayableCharacter::TryLaunch()
+void APlayableCharacter::TryLaunch(bool IsPush)
 {
-	AttackComp->TryLaunch();
+	if (AttackComp->TryLaunch()) {
+		// Set Attack Type if can Charnging
+		bIsPush = IsPush;
+	}
 }
 void APlayableCharacter::EndLaunch()
 {
-	AttackComp->EndLaunch();
+	AttackComp->EndLaunch(bIsPush);
 }
 void APlayableCharacter::SetMovementSpeed(const float& NewMoveSpeed, const float& NewJumpVelocity)
 {
@@ -132,11 +144,55 @@ void APlayableCharacter::ZoomInOut(const EPlayerAttackCondition NewCondition)
 	}
 	else {
 		ZoomTimeline->Reverse();
-		ZoomTimeline->SetPlayRate(3.f);
+		ZoomTimeline->SetPlayRate(2.f);
 	}
 	SetPlayerAttackCondition(NewCondition);
 }
 void APlayableCharacter::UpdateSpringArmLength(const float NewArmLength)
 {
 	SpringArmComp->TargetArmLength = NewArmLength;
+}
+void APlayableCharacter::KnockBackActor(const FVector& DirVec)
+{
+	GetCharacterMovement()->AddImpulse(DirVec);
+}
+void APlayableCharacter::SetMoveToLocation(const FVector& HitVector)
+{
+	bIsMoveToLocation = true;
+	TargetLocation = HitVector;
+	StartLocation = GetActorLocation();
+}
+void APlayableCharacter::MoveToLocation(float DeltaTime)
+{
+	if (bIsMoveToLocation) {
+		const FVector Direction = (TargetLocation - StartLocation).GetSafeNormal();	
+		const FVector NewLocation = StartLocation + (Direction * MoveToLocationSpeed * DeltaTime);
+		
+		DrawDebugLine(GetWorld(), StartLocation, NewLocation, FColor::Green, false, 10.f);
+		DrawDebugSphere(GetWorld(),NewLocation, 12.f, 25,FColor::Red,false, 10.f);
+		StartLocation = NewLocation;
+		SetActorLocation(NewLocation);
+
+		// Stop Moving if close to TargetLocation
+		if (FVector::Distance(NewLocation, TargetLocation) < StopToMoveDistance) {
+			bIsMoveToLocation = false;
+		}
+	}
+}
+void APlayableCharacter::SetMoveToActor(AActor* TargetActor)
+{
+	if (IsValid(TargetActor)) {
+		bIsMoveToActor = true;
+		MoveTargetActor = TargetActor;
+	}
+	else {
+		bIsMoveToActor = false;
+		MoveTargetActor = nullptr;
+	}
+}
+void APlayableCharacter::MoveToActor()
+{
+	if (bIsMoveToActor && MoveTargetActor) {
+		SetActorLocation(MoveTargetActor->GetActorLocation());
+	}
 }
