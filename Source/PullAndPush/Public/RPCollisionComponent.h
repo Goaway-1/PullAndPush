@@ -34,6 +34,7 @@ private:
 	UPROPERTY(VisibleAnywhere, Category = "OverlapActors")
 	TSet<TObjectPtr<AActor>> OverlapActors;
 
+	/** Push Event */
 	UPROPERTY(EditAnyWhere, Category = "Info", meta = (AllowPrivateAccess = "true"))
 	float MaxKnockBackForce;
 
@@ -42,4 +43,17 @@ private:
 
 	void KnockBackActor(class UPrimitiveComponent* HitComponent, AActor* TargetActor, float ImpulseForce);
 	void KnockBackPrimitiveComponent(class UPrimitiveComponent* OtherComponent, const FHitResult& Hit, float ImpulseForce);
+	
+	/** Pull Event */
+	UPROPERTY(VisibleAnywhere)
+	TObjectPtr<AActor> GrapActor;
+
+	UPROPERTY(VisibleAnywhere)
+	TObjectPtr<UPrimitiveComponent> GrapUPrimitiveComponent;
+
+	/** Owner Character move to location */
+	void MoveToLocation(class AActor* TargetActor, FVector Location);
+
+	/** if PhysicsActor plz set OtherComponent */
+	void GrapActorToOwnwer(class AActor* TargetActor , class UPrimitiveComponent* OtherComponent = nullptr);
 };

@@ -82,6 +82,9 @@ public:
 	virtual void SetMoveToLocation(const FVector& HitVector) override;
 	void MoveToLocation(float DeltaTime);
 
+	virtual void SetMoveToActor(AActor* TargetActor) override;
+	void MoveToActor();
+
 private:
 	uint8 bIsMoveToLocation : 1;
 	FVector TargetLocation;
@@ -90,4 +93,11 @@ private:
 
 	UPROPERTY(EditAnywhere, Category = "Speed", Meta = (AllowPrivateAccess = true))
 	float MoveToLocationSpeed;
+
+	/** Event of Collision Hit */
+	UPROPERTY(VisibleAnywhere)
+	uint8 bIsMoveToActor : 1;
+
+	UPROPERTY(VisibleAnywhere)
+	TObjectPtr<AActor> MoveTargetActor;
 };

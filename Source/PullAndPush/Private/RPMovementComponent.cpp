@@ -2,6 +2,8 @@
 #include "Kismet/KismetMathLibrary.h"
 #include "RocketPunch.h"
 
+#include "DrawDebugHelpers.h"
+
 URPMovementComponent::URPMovementComponent()
 	:
 	bIsReturn(false), bIsLaunch(false), bIsForceReturn(false),
@@ -87,8 +89,9 @@ void URPMovementComponent::UpdateLocation() {
 		else {
 			bIsLaunch = false;
 			SetCanLaunch(true);
+			Owner->SetActorLocation(FVector(999.f));		// Set Location Safe Place
 			Owner->SetActorHiddenInGame(true);
-			Owner->SetActorTickEnabled(true);
+			Owner->SetActorTickEnabled(false);
 		}
 	}
 	else PreDistance = CurDistance;
@@ -97,7 +100,7 @@ void URPMovementComponent::UpdateRotation()
 {
 	const FRotator NewRot = UKismetMathLibrary::FindLookAtRotation(Owner->GetActorLocation(), CasterActor->GetActorLocation());
 	Owner->SetActorRotation(NewRot);
-	EndLoc = CasterActor->GetActorLocation();
+	EndLoc = CasterActor->GetActorLocation() - ((CasterActor->GetActorLocation() - Owner->GetActorLocation()).GetSafeNormal() * 150.f);
 }
 void URPMovementComponent::SetCanLaunch(const bool& Val)
 {

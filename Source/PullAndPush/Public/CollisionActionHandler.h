@@ -26,4 +26,7 @@ public:
 
 	UFUNCTION()
 	virtual void SetMoveToLocation(const FVector& HitVector) = 0;
+
+	UFUNCTION()
+	virtual void SetMoveToActor(AActor* TargetActor) = 0;
 };

@@ -41,18 +41,23 @@ void URPCollisionComponent::OnHit(UPrimitiveComponent* HitComponent, AActor* Oth
 	}
 	else {
 		if (OtherCompCollsionName == "BlockAll") {			
-			// 시전자가 해당 위치로 이동
-			ICollisionActionHandler* ActionHandler = Cast<ICollisionActionHandler>(CasterActor);
-			if (ActionHandler) {
-				ActionHandler->SetMoveToLocation(Hit.Location);
+			// CasterActor move to hit location
+			MoveToLocation(CasterActor,Hit.Location);
+		}
+		else if (!GrapActor && OtherCompCollsionName == "PhysicsActor" || OtherCompCollsionName == "Pawn" || OtherCompCollsionName == "Item") {
+			// Hit object follow the RP
+			// @TODO : 도중에 방해요소 존재 시 오브젝트 부착 해제
+
+			if (OtherCompCollsionName == "PhysicsActor") 
+			{
+				GrapActorToOwnwer(OtherActor, OtherComponent);
+			}
+			else 
+			{
+				GrapActorToOwnwer(OtherActor);
 			}
 		}
-		else if (OtherCompCollsionName == "PhysicsActor" || OtherCompCollsionName == "Pawn" || OtherCompCollsionName == "Item") {
-			// @TODO: 오브젝트를 투사체에 부착하고, 투사체 복귀	 || 도중에 방해요소 존재 시 오브젝트 부착 해제
 
-			// 안되네...
-			//GetOwner()->AttachToActor(OtherActor, FAttachmentTransformRules::SnapToTargetNotIncludingScale);
-		}
 		OnForceReturn.Execute(true);
 	}
 
@@ -61,12 +66,29 @@ void URPCollisionComponent::OnHit(UPrimitiveComponent* HitComponent, AActor* Oth
 }
 void URPCollisionComponent::ResetOverlapActors()
 {
+	/** Reset Grap Object */
+	// Item, Character of Pull
+	TScriptInterface<class ICollisionActionHandler> ActionHandler = GrapActor;
+	if (ActionHandler.GetInterface()) {
+		ActionHandler->SetMoveToActor(nullptr);
+		GrapActor = nullptr;
+	}
+
+	// PhysicsActor of Pull
+	if (IsValid(GrapActor)) {
+		GrapUPrimitiveComponent->SetSimulatePhysics(true);
+		GrapUPrimitiveComponent->SetAllPhysicsLinearVelocity(FVector::ZeroVector);
+		FDetachmentTransformRules DetachmentRules(EDetachmentRule::KeepWorld, true);
+		GrapActor->DetachFromActor(DetachmentRules);
+		GrapActor = nullptr;
+	}
+
 	OverlapActors.Reset();
 }
 void URPCollisionComponent::KnockBackActor(UPrimitiveComponent* HitComponent, AActor* TargetActor, float ImpulseForce)
 {
-	ICollisionActionHandler* ActionHandler = Cast<ICollisionActionHandler>(TargetActor);
-	if (ActionHandler) {
+	TScriptInterface<class ICollisionActionHandler> ActionHandler = TargetActor;
+	if (ActionHandler.GetInterface()) {
 		FVector ImpulseDirection = HitComponent->GetForwardVector() * ImpulseForce;
 		ActionHandler->KnockBackActor(ImpulseDirection);
 	}
@@ -75,4 +97,27 @@ void URPCollisionComponent::KnockBackPrimitiveComponent(UPrimitiveComponent* Oth
 {
 	FVector ImpulseDirection = -Hit.Normal * (ImpulseForce / 50);
 	OtherComponent->AddImpulse(ImpulseDirection, NAME_None, true);
+}
+void URPCollisionComponent::MoveToLocation(AActor* TargetActor, FVector Location)
+{
+	TScriptInterface<class ICollisionActionHandler> ActionHandler = TargetActor;
+	if (ActionHandler.GetInterface()) {
+		ActionHandler->SetMoveToLocation(Location);
+	}
+}
+void URPCollisionComponent::GrapActorToOwnwer(AActor* TargetActor, UPrimitiveComponent* OtherComponent)
+{
+	GrapActor = TargetActor;
+	GrapUPrimitiveComponent = OtherComponent;
+
+	if (IsValid(GrapUPrimitiveComponent)) {
+		GrapUPrimitiveComponent->SetSimulatePhysics(false);
+		GrapActor->AttachToActor(GetOwner(), FAttachmentTransformRules::KeepWorldTransform);
+	}
+	else{
+		TScriptInterface<class ICollisionActionHandler> ActionHandler = GrapActor;
+		if (ActionHandler.GetInterface()) {
+			ActionHandler->SetMoveToActor(GetOwner());
+		}
+	}
 }

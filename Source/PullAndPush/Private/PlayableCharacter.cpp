@@ -11,7 +11,7 @@
 
 APlayableCharacter::APlayableCharacter()
 	:
-	bIsMoveToLocation(false), TargetLocation(FVector::Zero), StartLocation(FVector::Zero), MoveToLocationSpeed(5000.f)
+	bIsMoveToLocation(false), TargetLocation(FVector(0.f)), StartLocation(FVector(0.f)), MoveToLocationSpeed(5000.f), bIsMoveToActor(false), MoveTargetActor(nullptr)
 {
 	PrimaryActorTick.bCanEverTick = true;
 
@@ -48,6 +48,7 @@ void APlayableCharacter::Tick(float DeltaTime)
 
 	// If Hit Event is Called.
 	MoveToLocation(DeltaTime);
+	MoveToActor();
 }
 void APlayableCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
@@ -176,5 +177,22 @@ void APlayableCharacter::MoveToLocation(float DeltaTime)
 		if (FVector::Distance(NewLocation, TargetLocation) < StopToMoveDistance) {
 			bIsMoveToLocation = false;
 		}
+	}
+}
+void APlayableCharacter::SetMoveToActor(AActor* TargetActor)
+{
+	if (IsValid(TargetActor)) {
+		bIsMoveToActor = true;
+		MoveTargetActor = TargetActor;
+	}
+	else {
+		bIsMoveToActor = false;
+		MoveTargetActor = nullptr;
+	}
+}
+void APlayableCharacter::MoveToActor()
+{
+	if (bIsMoveToActor && MoveTargetActor) {
+		SetActorLocation(MoveTargetActor->GetActorLocation());
 	}
 }
