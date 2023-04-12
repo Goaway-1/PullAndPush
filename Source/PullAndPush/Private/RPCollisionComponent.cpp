@@ -42,7 +42,7 @@ void URPCollisionComponent::OnHit(UPrimitiveComponent* HitComponent, AActor* Oth
 	else {
 		if (OtherCompCollsionName == "BlockAll") {			
 			// CasterActor move to hit location
-			MoveToLocation(CasterActor,Hit.Location);
+			GrapMoveToLocation(CasterActor,Hit.Location);
 		}
 		else if (!GrapActor && OtherCompCollsionName == "PhysicsActor" || OtherCompCollsionName == "Pawn" || OtherCompCollsionName == "Item") {
 			// Hit object follow the RP
@@ -50,11 +50,11 @@ void URPCollisionComponent::OnHit(UPrimitiveComponent* HitComponent, AActor* Oth
 
 			if (OtherCompCollsionName == "PhysicsActor") 
 			{
-				GrapActorToOwnwer(OtherActor, OtherComponent);
+				GrapActorToOwner(OtherActor, OtherComponent);
 			}
 			else 
 			{
-				GrapActorToOwnwer(OtherActor);
+				GrapActorToOwner(OtherActor);
 			}
 		}
 
@@ -98,14 +98,14 @@ void URPCollisionComponent::KnockBackPrimitiveComponent(UPrimitiveComponent* Oth
 	FVector ImpulseDirection = -Hit.Normal * (ImpulseForce / 50);
 	OtherComponent->AddImpulse(ImpulseDirection, NAME_None, true);
 }
-void URPCollisionComponent::MoveToLocation(AActor* TargetActor, FVector Location)
+void URPCollisionComponent::GrapMoveToLocation(AActor* TargetActor, FVector Location)
 {
 	TScriptInterface<class ICollisionActionHandler> ActionHandler = TargetActor;
 	if (ActionHandler.GetInterface()) {
 		ActionHandler->SetMoveToLocation(Location);
 	}
 }
-void URPCollisionComponent::GrapActorToOwnwer(AActor* TargetActor, UPrimitiveComponent* OtherComponent)
+void URPCollisionComponent::GrapActorToOwner(AActor* TargetActor, UPrimitiveComponent* OtherComponent)
 {
 	GrapActor = TargetActor;
 	GrapUPrimitiveComponent = OtherComponent;

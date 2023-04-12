@@ -11,8 +11,6 @@
 class USpringArmComponent;
 class UCameraComponent;
 
-DECLARE_DELEGATE_OneParam(FInputSwitchInventoryDelegate, const bool);
-
 UENUM(BlueprintType)
 enum class EPlayerAttackCondition : uint8 {
 	EPAC_Idle = 0		UMETA(DisplayName = "Idle"),
@@ -48,12 +46,21 @@ protected:
 	TObjectPtr<UTimelineComponent> ZoomTimeline;
 
 private:
+	UFUNCTION()
+	void Move(const FVector2D& Value);
+
+	UFUNCTION()
+	void Look(const FVector2D& AxisValue);
+
 	void MoveForward(float NewAxisValue);
 	void MoveRight(float NewAxisValue);
 	void LookUp(float NewAxisValue);
 	void Turn(float NewAxisValue);
 
-	void TryLaunch(bool IsPush);
+	UFUNCTION()
+	void TryLaunch(const FVector2D& Value);
+
+	UFUNCTION()
 	void EndLaunch();
 
 	/** Charging */
@@ -100,4 +107,24 @@ private:
 
 	UPROPERTY(VisibleAnywhere)
 	TObjectPtr<AActor> MoveTargetActor;
+
+	/** Enhanced Input */
+public:
+	UPROPERTY(EditAnywhere, Category = Input)
+	class UInputMappingContext* DefaultContext;
+
+	UPROPERTY(EditAnywhere, Category = Input)
+	class UInputAction* MoveAction;
+
+	UPROPERTY(EditAnywhere, Category = Input)
+	class UInputAction* LookAction;
+
+	UPROPERTY(EditAnywhere, Category = Input)
+	class UInputAction* JumpAction;
+
+	UPROPERTY(EditAnywhere, Category = Input)
+	class UInputAction* RPAction;
+
+private:
+	void InitEnhancedInput();
 };

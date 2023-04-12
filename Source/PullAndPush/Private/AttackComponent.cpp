@@ -47,7 +47,7 @@ bool UAttackComponent::TryLaunch()
 void UAttackComponent::ChargingLaunch()
 {
 	if (bIsCharging && MaxChargingTime >= ChargingTime) {
-		ChargingTime += GetWorld()->GetDeltaSeconds();
+		ChargingTime += GetWorld()->GetDeltaSeconds();			//ÀÌ°Ô ÇÙ½É..!
 
 		// Change Speed & View if Charging
 		if (!bIsChangeValue && ChargingTime > DecideChargingTime) {

@@ -8,6 +8,11 @@
 #include "Kismet/KismetMathLibrary.h"
 #include "Curves/CurveFloat.h"
 #include "DrawDebugHelpers.h"
+#include "InputAction.h"
+#include "EnhancedInputComponent.h"
+#include "EnhancedInputSubsystems.h"
+#include "InputMappingContext.h"
+
 
 APlayableCharacter::APlayableCharacter()
 	:
@@ -39,6 +44,7 @@ void APlayableCharacter::BeginPlay()
 	Super::BeginPlay();
 
 	InitZoomTimeLine();
+	InitEnhancedInput();
 }
 void APlayableCharacter::Tick(float DeltaTime)
 {
@@ -54,16 +60,34 @@ void APlayableCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputC
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
 
-	PlayerInputComponent->BindAxis("MoveForward", this, &APlayableCharacter::MoveForward);
-	PlayerInputComponent->BindAxis("MoveRight", this, &APlayableCharacter::MoveRight);
-	PlayerInputComponent->BindAxis("LookUp", this, &APlayableCharacter::LookUp);
-	PlayerInputComponent->BindAxis("Turn", this, &APlayableCharacter::Turn);
+	if (UEnhancedInputComponent* EnhancedInputComponent = Cast<UEnhancedInputComponent>(PlayerInputComponent))
+	{
+		if(!IsValid(MoveAction) || !IsValid(LookAction) || !IsValid(JumpAction) || !IsValid(RPAction)) return;
 
-	PlayerInputComponent->BindAction("Jump",IE_Pressed,this, &APlayableCharacter::Jump);
-	PlayerInputComponent->BindAction<FInputSwitchInventoryDelegate>("Push", IE_Pressed, this, &APlayableCharacter::TryLaunch,true);
-	PlayerInputComponent->BindAction<FInputSwitchInventoryDelegate>("Pull", IE_Pressed, this, &APlayableCharacter::TryLaunch,false);
-	PlayerInputComponent->BindAction("Push", IE_Released, this, &APlayableCharacter::EndLaunch);
-	PlayerInputComponent->BindAction("Pull", IE_Released, this, &APlayableCharacter::EndLaunch);
+		EnhancedInputComponent->BindAction(MoveAction, ETriggerEvent::Triggered, this, "Move");
+		EnhancedInputComponent->BindAction(LookAction, ETriggerEvent::Triggered, this, "Look");
+		EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Triggered, this, "Jump");
+
+		EnhancedInputComponent->BindAction(RPAction, ETriggerEvent::Started, this, "TryLaunch");
+		EnhancedInputComponent->BindAction(RPAction, ETriggerEvent::Completed, this, "EndLaunch");
+	}
+}
+void APlayableCharacter::InitEnhancedInput()
+{
+	if (APlayerController* PlayerController = Cast<APlayerController>(GetController()))
+	{
+		if (UEnhancedInputLocalPlayerSubsystem* SubSystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(PlayerController->GetLocalPlayer()))
+			SubSystem->AddMappingContext(DefaultContext, 0);
+	}
+}
+void APlayableCharacter::Move(const FVector2D& Value)
+{
+	MoveForward(Value.Y);
+	MoveRight(Value.X);
+}
+void APlayableCharacter::Look(const FVector2D& AxisValue) {
+	LookUp(AxisValue.Y);
+	Turn(AxisValue.X);
 }
 void APlayableCharacter::MoveForward(float NewAxisValue) {
 	const FRotator ControlRotation = GetControlRotation();
@@ -85,11 +109,11 @@ void APlayableCharacter::Turn(float NewAxisValue)
 {
 	AddControllerYawInput(NewAxisValue);
 }
-void APlayableCharacter::TryLaunch(bool IsPush)
+void APlayableCharacter::TryLaunch(const FVector2D& Value)
 {
 	if (AttackComp->TryLaunch()) {
 		// Set Attack Type if can Charnging
-		bIsPush = IsPush;
+		bIsPush = (Value.X > 0) ? false : true;
 	}
 }
 void APlayableCharacter::EndLaunch()

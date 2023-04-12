@@ -52,8 +52,8 @@ private:
 	TObjectPtr<UPrimitiveComponent> GrapUPrimitiveComponent;
 
 	/** Owner Character move to location */
-	void MoveToLocation(class AActor* TargetActor, FVector Location);
+	void GrapMoveToLocation(class AActor* TargetActor, FVector Location);
 
 	/** if PhysicsActor plz set OtherComponent */
-	void GrapActorToOwnwer(class AActor* TargetActor , class UPrimitiveComponent* OtherComponent = nullptr);
+	void GrapActorToOwner(class AActor* TargetActor , class UPrimitiveComponent* OtherComponent = nullptr);
 };
