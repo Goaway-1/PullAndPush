@@ -220,3 +220,6 @@ void APlayableCharacter::MoveToActor()
 		SetActorLocation(MoveTargetActor->GetActorLocation());
 	}
 }
+void APlayableCharacter::ItemPickupAction() {
+	UE_LOG(LogTemp,Warning,TEXT("[PlayerCharacter] Pickup Item Action : "));
+}

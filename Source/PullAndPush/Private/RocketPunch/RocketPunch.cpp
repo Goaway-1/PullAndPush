@@ -1,10 +1,10 @@
-#include "RocketPunch.h"
+#include "RocketPunch/RocketPunch.h"
+#include "RocketPunch/RPMovementComponent.h"
+#include "RocketPunch/RPCollisionComponent.h"
 #include "Components/SphereComponent.h"
 #include "Components/StaticMeshComponent.h"
 #include "Kismet/KismetMathLibrary.h"
 #include "Engine/SkeletalMeshSocket.h"
-#include "RPMovementComponent.h"
-#include "RPCollisionComponent.h"
 
 ARocketPunch::ARocketPunch()
 	: 

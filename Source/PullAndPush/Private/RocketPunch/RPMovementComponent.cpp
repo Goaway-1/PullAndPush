@@ -1,6 +1,6 @@
-#include "RPMovementComponent.h"
+#include "RocketPunch/RPMovementComponent.h"
 #include "Kismet/KismetMathLibrary.h"
-#include "RocketPunch.h"
+#include "RocketPunch/RocketPunch.h"
 
 #include "DrawDebugHelpers.h"
 

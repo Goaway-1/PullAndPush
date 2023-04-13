@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
 #include "CollisionActionHandler.h"
+#include "Item/PickupActionHandler.h"
 #include "Components/TimelineComponent.h"
 #include "PlayableCharacter.generated.h"
 
@@ -18,7 +19,7 @@ enum class EPlayerAttackCondition : uint8 {
 };
 
 UCLASS()
-class PULLANDPUSH_API APlayableCharacter : public ACharacter, public ICollisionActionHandler
+class PULLANDPUSH_API APlayableCharacter : public ACharacter, public ICollisionActionHandler, public IPickupActionHandler
 {
 	GENERATED_BODY()
 
@@ -111,20 +112,24 @@ private:
 	/** Enhanced Input */
 public:
 	UPROPERTY(EditAnywhere, Category = Input)
-	class UInputMappingContext* DefaultContext;
+	TObjectPtr<class UInputMappingContext> DefaultContext;
 
 	UPROPERTY(EditAnywhere, Category = Input)
-	class UInputAction* MoveAction;
+	TObjectPtr<class UInputAction> MoveAction;
 
 	UPROPERTY(EditAnywhere, Category = Input)
-	class UInputAction* LookAction;
+	TObjectPtr<class UInputAction> LookAction;
 
 	UPROPERTY(EditAnywhere, Category = Input)
-	class UInputAction* JumpAction;
+	TObjectPtr<class UInputAction> JumpAction;
 
 	UPROPERTY(EditAnywhere, Category = Input)
-	class UInputAction* RPAction;
+	TObjectPtr<class UInputAction> RPAction;
 
 private:
 	void InitEnhancedInput();
+
+	/** Item */
+public:
+	virtual void ItemPickupAction() override;
 };

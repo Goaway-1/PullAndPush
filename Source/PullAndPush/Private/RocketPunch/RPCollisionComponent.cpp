@@ -1,6 +1,6 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
-#include "RPCollisionComponent.h"
+#include "RocketPunch/RPCollisionComponent.h"
 #include "CollisionActionHandler.h"
 
 URPCollisionComponent::URPCollisionComponent()
@@ -25,21 +25,26 @@ void URPCollisionComponent::OnHit(UPrimitiveComponent* HitComponent, AActor* Oth
 
 	// Event of Push or Pull 
 	if (IsPush) {	
+		// KnockBack
 		float LerpForce = FMath::Lerp(MinKnockBackForce, MaxKnockBackForce, ForceAlpha);
-
 		if (OtherCompCollsionName == "BlockAll" || OtherCompCollsionName == "Pawn") {
-			// KnockBack Caster Actor & Return RocketPunch
-			if (OtherCompCollsionName == "BlockAll") KnockBackActor(HitComponent, CasterActor, -LerpForce);
-			else KnockBackActor(HitComponent, OtherActor, LerpForce);
-
-			OnForceReturn.Execute(true);
+			if (OtherCompCollsionName == "BlockAll")
+			{	
+				KnockBackActor(HitComponent, CasterActor, -LerpForce);
+			}
+			else 
+			{
+				KnockBackActor(HitComponent, OtherActor, LerpForce);
+			}
 		}
 		else if (OtherCompCollsionName == "PhysicsActor" || OtherCompCollsionName == "Item") {
-			// KnockBack All Object
 			KnockBackPrimitiveComponent(OtherComponent, Hit, LerpForce);
 		}
+
+		OnForceReturn.Execute(true);
 	}
 	else {
+		// Grap
 		if (OtherCompCollsionName == "BlockAll") {			
 			// CasterActor move to hit location
 			GrapMoveToLocation(CasterActor,Hit.Location);
@@ -48,7 +53,7 @@ void URPCollisionComponent::OnHit(UPrimitiveComponent* HitComponent, AActor* Oth
 			// Hit object follow the RP
 			// @TODO : 도중에 방해요소 존재 시 오브젝트 부착 해제
 
-			if (OtherCompCollsionName == "PhysicsActor") 
+			if (OtherCompCollsionName == "PhysicsActor" || OtherCompCollsionName == "Item")
 			{
 				GrapActorToOwner(OtherActor, OtherComponent);
 			}
@@ -75,7 +80,7 @@ void URPCollisionComponent::ResetOverlapActors()
 	}
 
 	// PhysicsActor of Pull
-	if (IsValid(GrapActor)) {
+	if (IsValid(GrapActor) && IsValid(GrapUPrimitiveComponent)) {
 		GrapUPrimitiveComponent->SetSimulatePhysics(true);
 		GrapUPrimitiveComponent->SetAllPhysicsLinearVelocity(FVector::ZeroVector);
 		FDetachmentTransformRules DetachmentRules(EDetachmentRule::KeepWorld, true);
