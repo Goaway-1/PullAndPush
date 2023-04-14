@@ -1,5 +1,6 @@
 #include "PlayableCharacter.h"
 #include "AttackComponent.h"
+#include "ItemUsageComponent.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "Camera/CameraComponent.h"
 #include "Components/CapsuleComponent.h"
@@ -23,6 +24,7 @@ APlayableCharacter::APlayableCharacter()
 	SpringArmComp = CreateDefaultSubobject<USpringArmComponent>(TEXT("SpringArmComp"));
 	CameraComp = CreateDefaultSubobject<UCameraComponent>(TEXT("CameraComp"));
 	AttackComp = CreateDefaultSubobject<UAttackComponent>(TEXT("AttackComp"));
+	ItemUsageComp = CreateDefaultSubobject<UItemUsageComponent>(TEXT("ItemUsageComp"));
 
 	// Camera Setting
 	InitSpringArm(SpringArmComp, 450.f, FVector(0.f, 0.f, 60.f));
@@ -220,6 +222,7 @@ void APlayableCharacter::MoveToActor()
 		SetActorLocation(MoveTargetActor->GetActorLocation());
 	}
 }
-void APlayableCharacter::ItemPickupAction() {
-	UE_LOG(LogTemp,Warning,TEXT("[PlayerCharacter] Pickup Item Action : "));
+void APlayableCharacter::SpeedUp(UItemDataAsset* ItemData) {
+	UE_LOG(LogTemp, Warning, TEXT("[PlayerCharacter] SpeedUp "));
+	ItemUsageComp->SpeedUp(ItemData);
 }

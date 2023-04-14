@@ -1,8 +1,11 @@
 #include "Item/ItemSpawner.h"
 #include "Components/StaticMeshComponent.h"
 #include "Kismet/KismetMathLibrary.h"
+#include "Item/ItemDataAsset.h"
 
 AItemSpawner::AItemSpawner()
+    :
+    MaxRespawnDelay(10.f), MinRespawnDelay(3.f)
 {
 	PrimaryActorTick.bCanEverTick = true;
 
@@ -46,8 +49,22 @@ void AItemSpawner::TryRespawnItem()
     GetWorld()->GetTimerManager().SetTimer(RespawnHandle, this, &AItemSpawner::RespawnItem, SpawnDelay, false);
 }
 void AItemSpawner::RespawnItem() {
-    check(ItemPickup)
+    ensure(ItemPickup);
 
-    UE_LOG(LogTemp, Warning, TEXT("Item Respawn"));
-    ItemPickup->SetItemSetting(true, SpawnLocation);
+    // Set Item Data
+    UItemDataAsset* CurItem = SetRandomItemDataAsset();
+    ensure(CurItem);
+    ItemPickup->SetItemSetting(true, CurItem, SpawnLocation);
+
+    UE_LOG(LogTemp, Log, TEXT("Item Respawn : %s, %s"), *CurItem->Name, *CurItem->Description);
+}
+UItemDataAsset* AItemSpawner::SetRandomItemDataAsset()
+{
+    if (ItemDataArray.Num() <= 0) {
+        UE_LOG(LogTemp,Warning,TEXT("ItemDataArray is nullptr"));
+        return nullptr;
+    }
+
+    const int8 ItemIndex = UKismetMathLibrary::RandomFloatInRange(0, ItemDataArray.Num());
+    return ItemDataArray[ItemIndex];
 }

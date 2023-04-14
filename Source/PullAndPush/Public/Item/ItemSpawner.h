@@ -5,7 +5,6 @@
 #include "Engine.h"
 #include "GameFramework/Actor.h"
 #include "Item/ItemPickup.h"
-#include "TimerManager.h"
 #include "ItemSpawner.generated.h"
 
 
@@ -23,30 +22,40 @@ protected:
 public:	
 	virtual void Tick(float DeltaTime) override;
 
+private:
+	void InitSetting();
+
 	UPROPERTY(EditDefaultsOnly)
 	TObjectPtr<class UStaticMeshComponent> StaticMeshComp;
 
 	UPROPERTY(EditDefaultsOnly)
 	TSubclassOf<class AItemPickup> ItemPickupClass;
 
-private:
-	void InitSetting();
-
 	UPROPERTY()
 	TObjectPtr<class AItemPickup> ItemPickup;
 
 	FVector SpawnLocation;
 
-	/* Respawn */
+	/** Respawn */
 	UFUNCTION()
 	void TryRespawnItem();
 
 	UFUNCTION()
 	void RespawnItem();
 
-	const float MaxRespawnDelay = 10.f;
-	const float MinRespawnDelay = 3.f;
+	UPROPERTY(EditAnywhere, Category = "Spawn Time")
+	float MaxRespawnDelay;
+
+	UPROPERTY(EditAnywhere, Category="Spawn Time")
+	float MinRespawnDelay;
 
 	UPROPERTY()
 	FTimerHandle RespawnHandle;
+
+	/** Item Data*/
+	UFUNCTION()
+	class UItemDataAsset* SetRandomItemDataAsset();
+
+	UPROPERTY(EditDefaultsOnly, Category="Item")
+	TArray<TObjectPtr<class UItemDataAsset>> ItemDataArray;
 };

@@ -43,6 +43,9 @@ protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
 	TObjectPtr<class UAttackComponent> AttackComp;
 
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
+	TObjectPtr<class UItemUsageComponent> ItemUsageComp;
+
 	UPROPERTY(EditDefaultsOnly, Category = "Camera")
 	TObjectPtr<UTimelineComponent> ZoomTimeline;
 
@@ -131,5 +134,5 @@ private:
 
 	/** Item */
 public:
-	virtual void ItemPickupAction() override;
+	virtual void SpeedUp(class UItemDataAsset* ItemData) override;
 };

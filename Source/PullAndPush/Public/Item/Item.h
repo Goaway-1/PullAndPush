@@ -13,5 +13,8 @@ UCLASS()
 class PULLANDPUSH_API UItem : public UObject
 {
 	GENERATED_BODY()
-	
+public:
+	UItem();
+
+private:
 };

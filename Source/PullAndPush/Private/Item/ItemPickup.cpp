@@ -1,12 +1,17 @@
 #include "Item/ItemPickup.h"
 #include "Components/SphereComponent.h"
 #include "Item/PickupActionHandler.h"
+#include "Item/ItemDataAsset.h"
 
 AItemPickup::AItemPickup()
 {
 	PrimaryActorTick.bCanEverTick = false;
 
 	CollisionComp = CreateDefaultSubobject<USphereComponent>(TEXT("CollisionComp"));
+	StaticMeshComp = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("StaticMeshComp"));
+
+	SetRootComponent(CollisionComp);
+	StaticMeshComp->SetupAttachment(RootComponent);
 }
 void AItemPickup::BeginPlay()
 {
@@ -23,10 +28,26 @@ void AItemPickup::OnHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, U
 		UE_LOG(LogTemp, Log, TEXT("Item overrlap with Pawn"));
 		
 		/** Character's Pickup Action */
+		// TODO : 아이템(태그)에 따른 다른 메서드를 실행하도록
 		TScriptInterface<class IPickupActionHandler> ActionHandler = OtherActor;
-		if (ActionHandler.GetInterface()) {
-			ActionHandler->ItemPickupAction();
+		if (ActionHandler.GetInterface() && CurItem) 
+		{
+			// Check is Active or Passive
+			if (CurItem->ItemType == EItemType::EIT_Active) 
+			{
+				// TODO : 매개변수...
+				if (CurItem->ItemActionType == EItemActionType::EIAT_P_SpeedUp) {
+					ActionHandler->SpeedUp(CurItem);
+				}
+			}
+			else 
+			{
+
+			}
 		}
+
+
+
 
 		SetItemSetting(false);
 
@@ -44,7 +65,7 @@ void AItemPickup::OnHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, U
 		}
 	}
 }
-void AItemPickup::SetItemSetting(bool IsSpawn, FVector InLocation)
+void AItemPickup::SetItemSetting(bool IsSpawn, UItemDataAsset* InItemDataAsset, FVector SpawnLocation)
 {
 	// Turn OnOff Actor Enable
 	SetActorEnableCollision(IsSpawn);
@@ -52,11 +73,14 @@ void AItemPickup::SetItemSetting(bool IsSpawn, FVector InLocation)
 	SetActorTickEnabled(IsSpawn);
 	CollisionComp->SetSimulatePhysics(IsSpawn);
 	CollisionComp->SetEnableGravity(false);
+	CurItem = InItemDataAsset;
 
-	// SetLocation if Spawn!
-	if(IsSpawn)
+	// SetLocation & Mesh if Spawn!
+	if(IsSpawn && CurItem)
 	{
-		SetActorLocationAndRotation(InLocation, FRotator::ZeroRotator);
+		SetActorLocationAndRotation(SpawnLocation, FRotator::ZeroRotator);
+		StaticMeshComp->SetStaticMesh(CurItem->StaticMesh);
+		StaticMeshComp->SetRelativeLocation(FVector::Zero());
 	}
 }
 
