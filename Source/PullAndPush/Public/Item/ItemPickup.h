@@ -24,7 +24,7 @@ public:
 
 	// Settings when an item is created or used
 	UFUNCTION()
-	void SetItemSetting(bool IsSpawn, class UItemDataAsset* InItemDataAsset = nullptr, FVector SpawnLocation = FVector(0.f));
+	void SetItemSetting(bool IsSpawn, class UItem* InItemDataAsset = nullptr, FVector SpawnLocation = FVector(0.f));
 private:
 	UPROPERTY(EditDefaultsOnly)
 	TObjectPtr<class USphereComponent> CollisionComp;
@@ -36,5 +36,5 @@ private:
 	void OnHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComponent, FVector NormalImpulse, const FHitResult& Hit);
 
 	UPROPERTY(VisibleAnywhere, Category="Item")
-	TObjectPtr<class UItemDataAsset> CurItem;
+	TObjectPtr<class UItem> CurItem;
 };

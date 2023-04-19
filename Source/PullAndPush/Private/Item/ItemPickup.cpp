@@ -1,7 +1,7 @@
 #include "Item/ItemPickup.h"
 #include "Components/SphereComponent.h"
-#include "Item/PickupActionHandler.h"
-#include "Item/ItemDataAsset.h"
+#include "Interface/PickupActionHandler.h"
+#include "Item/Item.h"
 
 AItemPickup::AItemPickup()
 {
@@ -33,17 +33,17 @@ void AItemPickup::OnHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, U
 		if (ActionHandler.GetInterface() && CurItem) 
 		{
 			// Check is Active or Passive
-			if (CurItem->ItemType == EItemType::EIT_Active) 
-			{
-				// TODO : 매개변수...
-				if (CurItem->ItemActionType == EItemActionType::EIAT_P_SpeedUp) {
-					ActionHandler->SpeedUp(CurItem);
-				}
-			}
-			else 
-			{
+			//if (CurItem->ItemType == EItemType::EIT_Active) 
+			//{
+			//	// TODO : 매개변수...
+			//	if (CurItem->ItemActionType == EItemActionType::EIAT_P_SpeedUp) {
+			//		ActionHandler->SpeedUp(CurItem);
+			//	}
+			//}
+			//else 
+			//{
 
-			}
+			//}
 		}
 
 
@@ -65,7 +65,7 @@ void AItemPickup::OnHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, U
 		}
 	}
 }
-void AItemPickup::SetItemSetting(bool IsSpawn, UItemDataAsset* InItemDataAsset, FVector SpawnLocation)
+void AItemPickup::SetItemSetting(bool IsSpawn, UItem* InItemDataAsset, FVector SpawnLocation)
 {
 	// Turn OnOff Actor Enable
 	SetActorEnableCollision(IsSpawn);

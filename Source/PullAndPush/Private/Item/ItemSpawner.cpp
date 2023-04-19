@@ -1,7 +1,7 @@
 #include "Item/ItemSpawner.h"
 #include "Components/StaticMeshComponent.h"
 #include "Kismet/KismetMathLibrary.h"
-#include "Item/ItemDataAsset.h"
+#include "Item/Item.h"
 
 AItemSpawner::AItemSpawner()
     :
@@ -52,13 +52,13 @@ void AItemSpawner::RespawnItem() {
     ensure(ItemPickup);
 
     // Set Item Data
-    UItemDataAsset* CurItem = SetRandomItemDataAsset();
+    UItem* CurItem = SetRandomItemDataAsset();
     ensure(CurItem);
     ItemPickup->SetItemSetting(true, CurItem, SpawnLocation);
 
     UE_LOG(LogTemp, Log, TEXT("Item Respawn : %s, %s"), *CurItem->Name, *CurItem->Description);
 }
-UItemDataAsset* AItemSpawner::SetRandomItemDataAsset()
+UItem* AItemSpawner::SetRandomItemDataAsset()
 {
     if (ItemDataArray.Num() <= 0) {
         UE_LOG(LogTemp,Warning,TEXT("ItemDataArray is nullptr"));

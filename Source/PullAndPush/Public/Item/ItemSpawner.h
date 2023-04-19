@@ -5,6 +5,7 @@
 #include "Engine.h"
 #include "GameFramework/Actor.h"
 #include "Item/ItemPickup.h"
+#include "Item/Item.h"
 #include "ItemSpawner.generated.h"
 
 
@@ -54,8 +55,9 @@ private:
 
 	/** Item Data*/
 	UFUNCTION()
-	class UItemDataAsset* SetRandomItemDataAsset();
+	class UItem* SetRandomItemDataAsset();
 
 	UPROPERTY(EditDefaultsOnly, Category="Item")
-	TArray<TObjectPtr<class UItemDataAsset>> ItemDataArray;
+	TArray<TObjectPtr<class UItem>> ItemDataArray;
+
 };

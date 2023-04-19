@@ -1,7 +1,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "AttackWeapon.h"
+#include "Interface/AttackWeapon.h"
 #include "GameFramework/Actor.h"
 #include "RocketPunch.generated.h"
 
