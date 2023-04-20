@@ -60,11 +60,12 @@ void AItemSpawner::RespawnItem() {
 }
 UItem* AItemSpawner::SetRandomItemDataAsset()
 {
-    if (ItemDataArray.Num() <= 0) {
+    const int8 ItemDataCount = ItemDataArray.Num();
+    if (ItemDataCount <= 0) {
         UE_LOG(LogTemp,Warning,TEXT("ItemDataArray is nullptr"));
         return nullptr;
     }
 
-    const int8 ItemIndex = UKismetMathLibrary::RandomFloatInRange(0, ItemDataArray.Num());
+    const int8 ItemIndex = UKismetMathLibrary::RandomFloatInRange(0, ItemDataCount);
     return ItemDataArray[ItemIndex];
 }

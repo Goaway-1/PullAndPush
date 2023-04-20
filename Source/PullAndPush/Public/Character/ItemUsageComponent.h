@@ -2,9 +2,10 @@
 
 #pragma once
 
-#include "CoreMinimal.h"
+#include "PullAndPush.h"
 #include "Components/ActorComponent.h"
 #include "Interface/PickupActionHandler.h"
+#include "Item/Item.h"
 #include "ItemUsageComponent.generated.h"
 
 
@@ -20,6 +21,16 @@ public:
 protected:
 	virtual void BeginPlay() override;
 
+/** Item */
 public:
-	virtual void SpeedUp(class UItem* ItemData) override;
+	void PickUpItem(class UItem* ItemData);
+
+	void StartActiveItem();
+	void StartPassiveItem();
+
+	void EndActiveItem(const EItemActionType ItemType);
+
+private:
+	UPROPERTY(VisibleAnywhere, Category = Item)
+	TObjectPtr<class UItem> CurItemData;
 };

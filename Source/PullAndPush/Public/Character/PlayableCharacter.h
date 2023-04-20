@@ -61,13 +61,14 @@ private:
 	void LookUp(float NewAxisValue);
 	void Turn(float NewAxisValue);
 
+/** Charging */
+private:
 	UFUNCTION()
 	void TryLaunch(const FVector2D& Value);
 
 	UFUNCTION()
 	void EndLaunch();
 
-	/** Charging */
 	UPROPERTY(VisibleAnywhere, Category = "Condition")
 	EPlayerAttackCondition PlayerAttackCondition;
 
@@ -75,7 +76,6 @@ private:
 	TObjectPtr<UCurveFloat> ZoomCurve;
 
 	FOnTimelineFloat ZoomInterpFunction;
-
 	uint8 bIsPush : 1;
 
 	UFUNCTION()
@@ -87,8 +87,8 @@ private:
 	void InitZoomTimeLine();
 	void ZoomInOut(const EPlayerAttackCondition NewCondition);
 
+/** Event of Collision Hit */
 public:
-	/** Event of Collision Hit */
 	virtual void KnockBackActor(const FVector& DirVec) override;
 	virtual void SetMoveToLocation(const FVector& HitVector) override;
 	void MoveToLocation(float DeltaTime);
@@ -112,7 +112,7 @@ private:
 	UPROPERTY(VisibleAnywhere)
 	TObjectPtr<AActor> MoveTargetActor;
 
-	/** Enhanced Input */
+/** Enhanced Input */
 public:
 	UPROPERTY(EditAnywhere, Category = Input)
 	TObjectPtr<class UInputMappingContext> DefaultContext;
@@ -132,7 +132,7 @@ public:
 private:
 	void InitEnhancedInput();
 
-	/** Item */
+/** Item */
 public:
-	virtual void SpeedUp(class UItem* ItemData) override;
+	virtual void PickUpItem(class UItem* ItemData) override;
 };

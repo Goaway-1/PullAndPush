@@ -12,7 +12,6 @@ class PULLANDPUSH_API UItemAssetManager : public UAssetManager
 {
 	GENERATED_BODY()
 
-
 public:
 	UItemAssetManager() {}
 

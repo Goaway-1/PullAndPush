@@ -18,5 +18,5 @@ class PULLANDPUSH_API IPickupActionHandler
 
 public:
 	UFUNCTION()
-	virtual void SpeedUp(class UItem* ItemData) = 0;
+	virtual void PickUpItem(class UItem* ItemData) = 0;
 };

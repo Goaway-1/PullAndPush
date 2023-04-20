@@ -3,4 +3,5 @@
 #include "PullAndPush.h"
 #include "Modules/ModuleManager.h"
 
+DEFINE_LOG_CATEGORY(PullAndPush);
 IMPLEMENT_PRIMARY_GAME_MODULE( FDefaultGameModuleImpl, PullAndPush, "PullAndPush" );

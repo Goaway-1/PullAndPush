@@ -57,7 +57,7 @@ private:
 	UFUNCTION()
 	class UItem* SetRandomItemDataAsset();
 
-	UPROPERTY(EditDefaultsOnly, Category="Item")
+	UPROPERTY(EditAnywhere, Category="Item")
 	TArray<TObjectPtr<class UItem>> ItemDataArray;
 
 };

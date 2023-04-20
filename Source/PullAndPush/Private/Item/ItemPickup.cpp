@@ -28,26 +28,11 @@ void AItemPickup::OnHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, U
 		UE_LOG(LogTemp, Log, TEXT("Item overrlap with Pawn"));
 		
 		/** Character's Pickup Action */
-		// TODO : 아이템(태그)에 따른 다른 메서드를 실행하도록
 		TScriptInterface<class IPickupActionHandler> ActionHandler = OtherActor;
 		if (ActionHandler.GetInterface() && CurItem) 
 		{
-			// Check is Active or Passive
-			//if (CurItem->ItemType == EItemType::EIT_Active) 
-			//{
-			//	// TODO : 매개변수...
-			//	if (CurItem->ItemActionType == EItemActionType::EIAT_P_SpeedUp) {
-			//		ActionHandler->SpeedUp(CurItem);
-			//	}
-			//}
-			//else 
-			//{
-
-			//}
+			ActionHandler->PickUpItem(CurItem);
 		}
-
-
-
 
 		SetItemSetting(false);
 
