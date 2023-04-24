@@ -1,10 +1,11 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
+// 야 참조가 너무 많은데..?
+
 #include "Character/ItemUsageComponent.h"
 #include "Item/Item.h"
-#include "Item/ActiveItem.h"
-#include "Item/PassiveItem.h"
-#include "Item/ItemTimerManager.h"
+#include "Interface/ItemActionHandler.h"
+#include "Character/PlayableCharacter.h"
 
 UItemUsageComponent::UItemUsageComponent()
 {
@@ -28,7 +29,8 @@ void UItemUsageComponent::PickUpItem(UItem* ItemData)
 	// Play "Active or Passive" Action
 	CurItemData = ItemData;
 	if (ItemData->CheckIsActiveItem()) {
-		StartActiveItem();
+		// @TODO : 키 입력 시 실행되도록
+		//StartActiveItem();
 	}
 	else {
 		StartPassiveItem();
@@ -37,58 +39,20 @@ void UItemUsageComponent::PickUpItem(UItem* ItemData)
 void UItemUsageComponent::StartActiveItem()
 {
 	// @TODO : 액터의 생성 및 투척
-	switch (CurItemData->ItemActionType)
-	{
-	case EItemActionType::EIAT_A_Bomb:
-		UE_LOG(LogTemp, Warning, TEXT("[UItemUsageComponent] Use Bomb "));
-		break;
-	case EItemActionType::EIAT_A_Trap:
-		UE_LOG(LogTemp, Warning, TEXT("[UItemUsageComponent] Use Trap "));
-		break;
-	default:
-		break;
+	check(CurItemData);
+
+	TScriptInterface<class IItemActionHandler> CurItemAction = CurItemData;
+	if (CurItemAction.GetInterface()) {
+		APlayableCharacter* OwnerCharacter = Cast<APlayableCharacter>(GetOwner());
+		CurItemAction->UseItem(OwnerCharacter);
 	}
 }
 void UItemUsageComponent::StartPassiveItem()
 {
-	// Set Active Item effect with Timer
-	UPassiveItem* CurPassiveItem = Cast<UPassiveItem>(CurItemData);
-	check(CurPassiveItem);
-	
-	// @TODO : 상황에 맞는 이벤트 발생하기
-	switch (CurPassiveItem->ItemActionType)
-	{
-	case EItemActionType::EIAT_P_PowerUp:
-		PPLOG(Log, TEXT("Power Up"));
-		break;
-	case EItemActionType::EIAT_P_SpeedUp:
-		PPLOG(Log, TEXT("Speed Up"));
-		break;
-	default:
-		break;
+	// @TODO : 전략패턴 : 상황에 맞는 이벤트 발생하기
+	TScriptInterface<class IItemActionHandler> CurItemAction = CurItemData;
+	if (CurItemAction.GetInterface()) {
+		APlayableCharacter* OwnerCharacter = Cast<APlayableCharacter>(GetOwner());
+		CurItemAction->UseItem(OwnerCharacter);
 	}
-
-	// Add Timer
-	const FString ItemOwner = GetOwner()->GetName();
-	const FString ItemName = CurPassiveItem->Name;
-	const EItemActionType ItemType = CurPassiveItem->ItemActionType;
-	const float ItemDurationTime = CurPassiveItem->DurationTime;
-
-	AItemTimerManager::GetInstance()->AddTimer(ItemOwner, ItemName, ItemType, ItemDurationTime, false, this);
-}
-void UItemUsageComponent::EndActiveItem(const EItemActionType ItemType)
-{
-	// @TODO : Roll Back States..
-	switch (ItemType)
-	{
-	case EItemActionType::EIAT_P_PowerUp:
-		PPLOG(Log, TEXT("Power Down"));
-		break;
-	case EItemActionType::EIAT_P_SpeedUp:
-		PPLOG(Log, TEXT("Speed Down"));
-		break;
-	default:
-		break;
-	}
-
 }

@@ -2,22 +2,14 @@
 
 #pragma once
 
-#include "CoreMinimal.h"
+#include "PullAndPush.h"
 #include "Engine/DataAsset.h"
 #include "Item/ItemAssetManager.h"
+#include "Interface/ItemActionHandler.h"
 #include "Item.generated.h"
 
-UENUM(BlueprintType)
-enum class EItemActionType : uint8 {
-	EIAT_Default = 0		UMETA(DisplayName = "Default"),
-	EIAT_P_SpeedUp 			UMETA(DisplayName = "P_SpeedUp"),			// P는 패시브
-	EIAT_P_PowerUp 			UMETA(DisplayName = "P_PowerUp"),			// P는 패시브
-	EIAT_A_Bomb				UMETA(DisplayName = "A_Bomb"),				// A는 액티브
-	EIAT_A_Trap				UMETA(DisplayName = "A_Trap")				// A는 액티브
-};
-
 UCLASS()
-class PULLANDPUSH_API UItem : public UDataAsset
+class PULLANDPUSH_API UItem : public UDataAsset, public IItemActionHandler
 {
 	GENERATED_BODY()
 
@@ -33,9 +25,6 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Item)
 	class UStaticMesh* StaticMesh;
-
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Item)
-	EItemActionType ItemActionType;		
 	
 	/** Returns the logical name, equivalent to the primary asset id */
 	UFUNCTION(BlueprintCallable, Category = Item)
@@ -46,4 +35,7 @@ public:
 
 	/** Overridden to use saved type */
 	virtual FPrimaryAssetId GetPrimaryAssetId() const override;
+
+/** Handler */
+	virtual void UseItem(class APlayableCharacter* TargetCharacter) override;
 };

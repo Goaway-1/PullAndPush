@@ -27,10 +27,8 @@ public:
 
 	void StartActiveItem();
 	void StartPassiveItem();
-
-	void EndActiveItem(const EItemActionType ItemType);
-
 private:
 	UPROPERTY(VisibleAnywhere, Category = Item)
 	TObjectPtr<class UItem> CurItemData;
+
 };

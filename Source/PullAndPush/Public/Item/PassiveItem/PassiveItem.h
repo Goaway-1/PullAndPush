@@ -5,6 +5,8 @@
 #include "CoreMinimal.h"
 #include "Engine/DataAsset.h"
 #include "Item/Item.h"
+#include "Item/ItemTimerManager.h"
+#include "Character/PlayableCharacter.h"
 #include "PassiveItem.generated.h"
 
 UCLASS()
@@ -24,4 +26,10 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Item)
 	float WeightValue;
+
+/** Handler */
+	virtual void UseItem(class APlayableCharacter* TargetCharacter) override;
+
+	UFUNCTION()
+	virtual void EndActiveItem();
 };

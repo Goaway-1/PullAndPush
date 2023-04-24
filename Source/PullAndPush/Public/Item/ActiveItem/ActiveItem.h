@@ -25,4 +25,7 @@ public:
 	// @TODO : 투사체 Item으로 변경
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Item)
 	TSubclassOf<class AActor> ProjectileItemClass;
+
+/** Handler */
+	virtual void UseItem(class APlayableCharacter* TargetCharacter) override;
 };
