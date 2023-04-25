@@ -23,7 +23,7 @@ public:
 		WeightValue = 400.f;
 	}
 
-	virtual void UseItem(class APlayableCharacter* TargetCharacter) override;
+	virtual void UseItem(class AActor* TargetActor) override;
 
 	virtual void EndActiveItem() override;
 };

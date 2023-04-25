@@ -1,6 +1,6 @@
 #include "Item/ActiveItem/ActiveItem.h"
 
-void UActiveItem::UseItem(APlayableCharacter* TargetCharacter)
+void UActiveItem::UseItem(AActor* TargetActor)
 {
-	Super::UseItem(TargetCharacter);
+	Super::UseItem(TargetActor);
 }

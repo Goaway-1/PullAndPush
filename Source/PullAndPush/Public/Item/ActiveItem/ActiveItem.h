@@ -27,5 +27,5 @@ public:
 	TSubclassOf<class AActor> ProjectileItemClass;
 
 /** Handler */
-	virtual void UseItem(class APlayableCharacter* TargetCharacter) override;
+	virtual void UseItem(class AActor* TargetActor) override;
 };

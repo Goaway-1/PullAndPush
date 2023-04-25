@@ -5,7 +5,6 @@
 #include "PullAndPush.h"
 #include "Components/ActorComponent.h"
 #include "Interface/PickupActionHandler.h"
-#include "Item/Item.h"
 #include "ItemUsageComponent.generated.h"
 
 

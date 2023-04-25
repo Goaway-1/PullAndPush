@@ -21,6 +21,9 @@ APlayableCharacter::APlayableCharacter()
 {
 	PrimaryActorTick.bCanEverTick = true;
 
+	// Property
+	SetMovementSpeed(false, DefaultMoveSpeed);
+
 	SpringArmComp = CreateDefaultSubobject<USpringArmComponent>(TEXT("SpringArmComp"));
 	CameraComp = CreateDefaultSubobject<UCameraComponent>(TEXT("CameraComp"));
 	AttackComp = CreateDefaultSubobject<UAttackComponent>(TEXT("AttackComp"));
@@ -37,9 +40,7 @@ APlayableCharacter::APlayableCharacter()
 
 	GetCharacterMovement()->bOrientRotationToMovement = true;
 	GetCharacterMovement()->RotationRate = FRotator(0.f,700.f,0.f);
-
-	// Change Some Values if AttackComp is Charging
-	AttackComp->OnCharging.BindUObject(this, &APlayableCharacter::SetMovementSpeed);
+	GetCharacterMovement()->MaxWalkSpeed = CurrentMoveSpeed.load();
 }
 void APlayableCharacter::BeginPlay()
 {
@@ -73,6 +74,12 @@ void APlayableCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputC
 		EnhancedInputComponent->BindAction(RPAction, ETriggerEvent::Started, this, "TryLaunch");
 		EnhancedInputComponent->BindAction(RPAction, ETriggerEvent::Completed, this, "EndLaunch");
 	}
+}
+void APlayableCharacter::SetPlayerAttackCondition(const EPlayerAttackCondition& NewPlayerAttackCondition)
+{
+	PlayerAttackCondition = NewPlayerAttackCondition;
+
+	ZoomInOut();
 }
 void APlayableCharacter::InitEnhancedInput()
 {
@@ -122,15 +129,31 @@ void APlayableCharacter::EndLaunch()
 {
 	AttackComp->EndLaunch(bIsPush);
 }
-void APlayableCharacter::SetMovementSpeed(const float& NewMoveSpeed, const float& NewJumpVelocity)
+void APlayableCharacter::SetMovementSpeed(const bool& IsCharging, const float& NewMoveSpeed)
 {
-	// Check is Zoom In or Out?
-	const EPlayerAttackCondition NewPlayerAttackCondition = (GetCharacterMovement()->MaxWalkSpeed > NewMoveSpeed) ?
-		EPlayerAttackCondition::EPAC_Charging : EPlayerAttackCondition::EPAC_Idle;
+	float Speed = CurrentMoveSpeed.load();
+	float Velocity = MaxJumpVelocity;
 
-	ZoomInOut(NewPlayerAttackCondition);
-	GetCharacterMovement()->MaxWalkSpeed = NewMoveSpeed;
-	GetCharacterMovement()->JumpZVelocity = NewJumpVelocity;
+	// Is Item Activated
+	if (NewMoveSpeed > 0.f || NewMoveSpeed < 0.f) {
+		Speed += NewMoveSpeed;
+		CurrentMoveSpeed.store(Speed);
+
+		if (GetPlayerAttackCondition() == EPlayerAttackCondition::EPAC_Charging) {
+			Speed /= 2;
+			Velocity /= 2;
+		}
+	}
+	// Is Charging or Not
+	else {
+		if(IsCharging) {
+			Speed /= 2;
+			Velocity /= 2;
+		}
+	}
+
+	GetCharacterMovement()->MaxWalkSpeed = Speed;
+	GetCharacterMovement()->JumpZVelocity = Velocity;
 }
 void APlayableCharacter::InitSpringArm(USpringArmComponent* SpringArm, const float& NewTargetArmLength, const FVector& NewSocketOffset)
 {
@@ -162,9 +185,9 @@ void APlayableCharacter::InitZoomTimeLine()
 	}
 	else UE_LOG(LogTemp, Warning, TEXT("[PlayerableCharacter] ZoomCurve is not exist"));
 }
-void APlayableCharacter::ZoomInOut(const EPlayerAttackCondition NewCondition)
+void APlayableCharacter::ZoomInOut()
 {
-	if (NewCondition == EPlayerAttackCondition::EPAC_Charging) {
+	if (GetPlayerAttackCondition() == EPlayerAttackCondition::EPAC_Charging) {
 		ZoomTimeline->Play();
 		ZoomTimeline->SetPlayRate(1.f);
 	}
@@ -172,7 +195,6 @@ void APlayableCharacter::ZoomInOut(const EPlayerAttackCondition NewCondition)
 		ZoomTimeline->Reverse();
 		ZoomTimeline->SetPlayRate(2.f);
 	}
-	SetPlayerAttackCondition(NewCondition);
 }
 void APlayableCharacter::UpdateSpringArmLength(const float NewArmLength)
 {

@@ -16,14 +16,16 @@ AItemTimerManager* AItemTimerManager::GetInstance()
 {
     return Instance;
 }
-void AItemTimerManager::AddTimer(const FString& ItemOwnerName, const FString& ItemName, float& Duration, bool bLooping, UPassiveItem* PassiveItem)
+bool AItemTimerManager::AddTimer(const FString& ItemOwnerName, const FString& ItemName, float& Duration, bool bLooping, UPassiveItem* PassiveItem)
 {   
     // Check handler already exists
+    bool IsAlreadyActivated = false;
     const FName TimerName = FName(ItemOwnerName + '/' + ItemName);
     if (TimerHandles.Contains(TimerName)) 
     {
         RemoveTimer(TimerName);
         PPLOG(Log, TEXT("%s's %s Item Time is already exists!"), *ItemOwnerName, *ItemName);
+        IsAlreadyActivated = true;
     }
     else {
         PPLOG(Log, TEXT("Add Item Timer, Owner : %s, Item Name : %s, Duration : %f, bLooping : %d"), *ItemOwnerName, *ItemName, Duration, bLooping);
@@ -40,6 +42,8 @@ void AItemTimerManager::AddTimer(const FString& ItemOwnerName, const FString& It
 
     // Add the timer handle to the array
     TimerHandles.Add(TimerName, Handle);
+
+    return IsAlreadyActivated;
 }
 void AItemTimerManager::RemoveTimer(FName TimerName)
 {

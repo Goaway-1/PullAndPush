@@ -6,23 +6,19 @@
 #include "GameFramework/Character.h"
 #include "Interface/CollisionActionHandler.h"
 #include "Interface/PickupActionHandler.h"
+#include "Interface/CharacterPropertyHandler.h"
 #include "Components/TimelineComponent.h"
 #include "PlayableCharacter.generated.h"
 
 class USpringArmComponent;
 class UCameraComponent;
 
-UENUM(BlueprintType)
-enum class EPlayerAttackCondition : uint8 {
-	EPAC_Idle = 0		UMETA(DisplayName = "Idle"),
-	EPAC_Charging		UMETA(DisplayName = "Charging")
-};
-
 UCLASS()
-class PULLANDPUSH_API APlayableCharacter : public ACharacter, public ICollisionActionHandler, public IPickupActionHandler
+class PULLANDPUSH_API APlayableCharacter : public ACharacter, public ICollisionActionHandler, public IPickupActionHandler, public ICharacterPropertyHandler
 {
 	GENERATED_BODY()
 
+/** Default */
 public:
 	APlayableCharacter();
 	virtual void Tick(float DeltaTime) override;
@@ -30,7 +26,12 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	FORCEINLINE EPlayerAttackCondition GetPlayerAttackCondition() {return PlayerAttackCondition;}
-	FORCEINLINE void SetPlayerAttackCondition(const EPlayerAttackCondition& NewPlayerAttackCondition) { PlayerAttackCondition = NewPlayerAttackCondition;}
+
+	UFUNCTION(BlueprintCallable)
+	virtual void SetPlayerAttackCondition(const EPlayerAttackCondition& NewPlayerAttackCondition) override;
+
+	virtual void SetMovementSpeed(const bool& IsCharging, const float& NewMoveSpeed = 0.f) override;
+
 protected:
 	virtual void BeginPlay() override;
 
@@ -61,7 +62,13 @@ private:
 	void LookUp(float NewAxisValue);
 	void Turn(float NewAxisValue);
 
+	// Move properties..
+	std::atomic<float> CurrentMoveSpeed;
+	const float DefaultMoveSpeed = 600.f;
+	const float MaxJumpVelocity = 420.f;
+
 /** Charging */
+#pragma region CHARGING
 private:
 	UFUNCTION()
 	void TryLaunch(const FVector2D& Value);
@@ -81,13 +88,15 @@ private:
 	UFUNCTION()
 	void UpdateSpringArmLength(const float NewArmLength);
 
-	void SetMovementSpeed(const float& NewMoveSpeed, const float& NewJumpVelocity);
 	void InitSpringArm(USpringArmComponent* SpringArm, const float& NewTargetArmLength, const FVector& NewSocketOffset);
 	void SetPlayerView();
 	void InitZoomTimeLine();
-	void ZoomInOut(const EPlayerAttackCondition NewCondition);
 
-/** Event of Collision Hit */
+	void ZoomInOut();
+#pragma endregion
+
+/** Collision Hit Event Of Another Actor */
+#pragma region COLLISION_HIT
 public:
 	virtual void KnockBackActor(const FVector& DirVec) override;
 	virtual void SetMoveToLocation(const FVector& HitVector) override;
@@ -111,8 +120,10 @@ private:
 
 	UPROPERTY(VisibleAnywhere)
 	TObjectPtr<AActor> MoveTargetActor;
+#pragma endregion
 
 /** Enhanced Input */
+#pragma region ENHANCED INPUT
 public:
 	UPROPERTY(EditAnywhere, Category = Input)
 	TObjectPtr<class UInputMappingContext> DefaultContext;
@@ -131,6 +142,7 @@ public:
 
 private:
 	void InitEnhancedInput();
+#pragma endregion
 
 /** Item */
 public:

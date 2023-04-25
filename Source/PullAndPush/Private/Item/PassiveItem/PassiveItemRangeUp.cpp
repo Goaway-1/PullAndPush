@@ -3,13 +3,11 @@
 
 #include "Item/PassiveItem/PassiveItemRangeUp.h"
 
-void UPassiveItemRangeUp::UseItem(APlayableCharacter* TargetCharacter)
+void UPassiveItemRangeUp::UseItem(AActor* TargetActor)
 {
-    Super::UseItem(TargetCharacter);
+    Super::UseItem(TargetActor);
 
     PPLOG(Log, TEXT("UPassiveItemRangeUp is Used!"));
-
-    // @TODO : 속도 증가
 }
 
 void UPassiveItemRangeUp::EndActiveItem()

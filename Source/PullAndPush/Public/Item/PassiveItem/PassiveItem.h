@@ -3,10 +3,8 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "Engine/DataAsset.h"
 #include "Item/Item.h"
-#include "Item/ItemTimerManager.h"
-#include "Character/PlayableCharacter.h"
+#include "Interface/CharacterPropertyHandler.h"
 #include "PassiveItem.generated.h"
 
 UCLASS()
@@ -28,8 +26,15 @@ public:
 	float WeightValue;
 
 /** Handler */
-	virtual void UseItem(class APlayableCharacter* TargetCharacter) override;
+	virtual void UseItem(class AActor* TargetActor) override;
 
 	UFUNCTION()
 	virtual void EndActiveItem();
+
+protected:
+	UPROPERTY()
+	TObjectPtr<class AActor> TargetActorPtr;
+
+	// Check Item Already Activeted
+	uint8 bIsItemActivated;
 };

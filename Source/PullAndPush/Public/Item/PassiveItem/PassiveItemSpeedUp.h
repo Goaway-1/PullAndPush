@@ -20,10 +20,10 @@ public:
 		Name = "SpeedUp";
 		Description = "Character Movement Speed Up for 5sec!";
 		DurationTime = 5.f;
-		WeightValue = 15.f;
+		WeightValue = 300.f;
 	}
 
-	virtual void UseItem(class APlayableCharacter* TargetCharacter) override;
+	virtual void UseItem(class AActor* TargetActor) override;
 
 	virtual void EndActiveItem() override;
 };

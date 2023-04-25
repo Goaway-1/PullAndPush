@@ -1,21 +1,31 @@
-// Fill out your copyright notice in the Description page of Project Settings.
-
-
 #include "Item/PassiveItem/PassiveItemSpeedUp.h"
 
-
-void UPassiveItemSpeedUp::UseItem(APlayableCharacter* TargetCharacter)
+void UPassiveItemSpeedUp::UseItem(AActor* TargetActor)
 {
-    Super::UseItem(TargetCharacter);
+    Super::UseItem(TargetActor);
 
-    PPLOG(Log, TEXT("UPassiveItemSpeedUp is Used!"));
-
-    // @TODO : 속도 증가
+    // Try Character Movement Speed Up
+    if (TargetActorPtr && !bIsItemActivated) {
+        TScriptInterface<class ICharacterPropertyHandler> CharacterPropertyHandler = TargetActorPtr;
+        if (CharacterPropertyHandler.GetInterface())
+        {
+            PPLOG(Log, TEXT("[Speed Up] Item is Activated"));
+            CharacterPropertyHandler->SetMovementSpeed(false, WeightValue);
+        }
+    }
 }
 
 void UPassiveItemSpeedUp::EndActiveItem()
 {
     Super::EndActiveItem();
 
-    // @TODO : 속도 감소
+    // Try Character Movement Speed Down
+    if (TargetActorPtr) {
+        TScriptInterface<class ICharacterPropertyHandler> CharacterPropertyHandler = TargetActorPtr;
+        if (CharacterPropertyHandler.GetInterface())
+        {
+            PPLOG(Log, TEXT("[Speed Up] Item is Deactivated!"));
+            CharacterPropertyHandler->SetMovementSpeed(false, -WeightValue);
+        }
+    }
 }

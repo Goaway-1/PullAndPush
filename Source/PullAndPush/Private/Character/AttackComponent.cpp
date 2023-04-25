@@ -5,6 +5,7 @@
 #include "Engine/SkeletalMeshSocket.h"
 #include "Math/Quat.h"
 #include "GameFramework/CharacterMovementComponent.h"
+#include "Interface/CharacterPropertyHandler.h"
 
 UAttackComponent::UAttackComponent() 
 	:
@@ -45,11 +46,11 @@ bool UAttackComponent::TryLaunch()
 void UAttackComponent::ChargingLaunch()
 {
 	if (bIsCharging && MaxChargingTime >= ChargingTime) {
-		ChargingTime += GetWorld()->GetDeltaSeconds();			//ÀÌ°Ô ÇÙ½É..!
+		ChargingTime += GetWorld()->GetDeltaSeconds();			
 
 		// Change Speed & View if Charging
 		if (!bIsChangeValue && ChargingTime > DecideChargingTime) {
-			ChangeMovementSpeed(MinMoveSpeed, MinJumpVelocity);
+			ChangeMovementSpeed(bIsCharging);
 			bIsCanLaunch = false;
 		}
 	}
@@ -60,7 +61,7 @@ void UAttackComponent::EndLaunch(bool bIsPush)
 
 	bIsCharging = false;
 	bIsChangeValue = false;
-	ChangeMovementSpeed(MaxMoveSpeed, MaxJumpVelocity);
+	ChangeMovementSpeed(bIsCharging);
 	
 	// Clamp ChargingTime and Check is can launch
 	ChargingTime = FMath::Clamp(ChargingTime, MinChargingTime, MaxChargingTime);
@@ -79,12 +80,19 @@ void UAttackComponent::EndLaunch(bool bIsPush)
 	}
 	else bIsCanLaunch = true;
 }
-void UAttackComponent::ChangeMovementSpeed(const float& NewMoveSpeed, const float& NewJumpVelocity)
+void UAttackComponent::ChangeMovementSpeed(const bool& IsCharging)
 {	
-	UE_LOG(LogTemp, Log, TEXT("[AttackComponent] ChangeCharging Delegate is called! Excute!!"));
-
 	bIsChangeValue = true;
-	OnCharging.Execute(NewMoveSpeed,NewJumpVelocity);
+	
+	// Set PlayerCharacter Properties...
+	TScriptInterface<class ICharacterPropertyHandler> CharacterPropertyHandler = GetOwner();
+	if (CharacterPropertyHandler.GetInterface())
+	{
+		if(IsCharging) CharacterPropertyHandler->SetPlayerAttackCondition(EPlayerAttackCondition::EPAC_Charging);
+		else CharacterPropertyHandler->SetPlayerAttackCondition(EPlayerAttackCondition::EPAC_Idle);
+
+		CharacterPropertyHandler->SetMovementSpeed(IsCharging);
+	}
 }
 void UAttackComponent::SetCanLaunch(const bool& Val)
 {

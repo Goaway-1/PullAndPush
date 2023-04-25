@@ -37,5 +37,5 @@ public:
 	virtual FPrimaryAssetId GetPrimaryAssetId() const override;
 
 /** Handler */
-	virtual void UseItem(class APlayableCharacter* TargetCharacter) override;
+	virtual void UseItem(class AActor* TargetActor) override;
 };

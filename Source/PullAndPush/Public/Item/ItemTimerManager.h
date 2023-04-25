@@ -19,7 +19,7 @@ public:
     static AItemTimerManager* GetInstance();    
 
     UFUNCTION(BlueprintCallable, Category = "Timer Manager")
-    void AddTimer(const FString& ItemOwnerName, const FString& ItemName, float& Duration, bool bLooping, class UPassiveItem* PassiveItem);
+    bool AddTimer(const FString& ItemOwnerName, const FString& ItemName, float& Duration, bool bLooping, class UPassiveItem* PassiveItem);
 
 private:
     AItemTimerManager(const FObjectInitializer& ObjectInitializer);

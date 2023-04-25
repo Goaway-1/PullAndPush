@@ -22,5 +22,5 @@ class PULLANDPUSH_API IItemActionHandler
 
 public:
 	UFUNCTION()
-	virtual void UseItem(class APlayableCharacter* TargetCharacter) = 0;
+	virtual void UseItem(class AActor* TargetActor) = 0;
 };

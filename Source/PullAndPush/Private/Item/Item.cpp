@@ -23,7 +23,7 @@ FPrimaryAssetId UItem::GetPrimaryAssetId() const
 	return FPrimaryAssetId(ItemType, GetFName());
 }
 
-void UItem::UseItem(APlayableCharacter* TargetCharacter)
+void UItem::UseItem(AActor* TargetActor)
 {
 	
 }
