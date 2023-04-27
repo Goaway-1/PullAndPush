@@ -36,5 +36,5 @@ public:
 	UFUNCTION()
 	virtual void SetMovementSpeed(const bool& IsCharging, const float& NewMoveSpeed = 0.f) = 0;
 
-	virtual void SetPlayerAttackCondition(const EPlayerAttackCondition& NewPlayerAttackCondition) = 0;
+	virtual void SetPlayerAttackCondition(const bool& IsCharging) = 0;
 };

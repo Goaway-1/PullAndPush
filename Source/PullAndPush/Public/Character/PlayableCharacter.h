@@ -21,6 +21,8 @@ class PULLANDPUSH_API APlayableCharacter : public ACharacter, public ICollisionA
 /** Default */
 public:
 	APlayableCharacter();
+	~APlayableCharacter();
+
 	virtual void Tick(float DeltaTime) override;
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
@@ -28,8 +30,9 @@ public:
 	FORCEINLINE EPlayerAttackCondition GetPlayerAttackCondition() {return PlayerAttackCondition;}
 
 	UFUNCTION(BlueprintCallable)
-	virtual void SetPlayerAttackCondition(const EPlayerAttackCondition& NewPlayerAttackCondition) override;
+	virtual void SetPlayerAttackCondition(const bool& IsCharging) override;
 
+	// Try to set Movement Speed
 	virtual void SetMovementSpeed(const bool& IsCharging, const float& NewMoveSpeed = 0.f) override;
 
 protected:
@@ -62,8 +65,13 @@ private:
 	void LookUp(float NewAxisValue);
 	void Turn(float NewAxisValue);
 
-	// Move properties..
-	std::atomic<float> CurrentMoveSpeed;
+	// Actually set Movement Speed
+	void ActiveMovementSpeed(const bool& IsCharging = false);
+
+	// Move properties
+	TObjectPtr<class FCharacterPropertyRunnable> PropertyRunnable;
+
+	float CurrentMoveSpeed;
 	const float DefaultMoveSpeed = 600.f;
 	const float MaxJumpVelocity = 420.f;
 

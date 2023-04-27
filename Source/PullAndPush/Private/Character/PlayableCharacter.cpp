@@ -13,16 +13,13 @@
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
 #include "InputMappingContext.h"
-
+#include "Runnable/CharacterPropertyRunnable.h"
 
 APlayableCharacter::APlayableCharacter()
 	:
 	bIsMoveToLocation(false), TargetLocation(FVector(0.f)), StartLocation(FVector(0.f)), MoveToLocationSpeed(5000.f), bIsMoveToActor(false), MoveTargetActor(nullptr)
 {
 	PrimaryActorTick.bCanEverTick = true;
-
-	// Property
-	SetMovementSpeed(false, DefaultMoveSpeed);
 
 	SpringArmComp = CreateDefaultSubobject<USpringArmComponent>(TEXT("SpringArmComp"));
 	CameraComp = CreateDefaultSubobject<UCameraComponent>(TEXT("CameraComp"));
@@ -40,14 +37,25 @@ APlayableCharacter::APlayableCharacter()
 
 	GetCharacterMovement()->bOrientRotationToMovement = true;
 	GetCharacterMovement()->RotationRate = FRotator(0.f,700.f,0.f);
-	GetCharacterMovement()->MaxWalkSpeed = CurrentMoveSpeed.load();
+	GetCharacterMovement()->MaxWalkSpeed = DefaultMoveSpeed;
+}
+APlayableCharacter::~APlayableCharacter()
+{
+	if (PropertyRunnable != nullptr)
+	{
+		PropertyRunnable->Stop();
+	}
 }
 void APlayableCharacter::BeginPlay()
 {
 	Super::BeginPlay();
 
 	InitZoomTimeLine();
-	InitEnhancedInput();
+
+	/** Thread for Character Properties... */
+	PropertyRunnable = new FCharacterPropertyRunnable();
+	PropertyRunnable->CompleteSignature.BindUObject(this, &APlayableCharacter::ActiveMovementSpeed);
+	SetMovementSpeed(false, DefaultMoveSpeed);
 }
 void APlayableCharacter::Tick(float DeltaTime)
 {
@@ -62,6 +70,7 @@ void APlayableCharacter::Tick(float DeltaTime)
 void APlayableCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
+	InitEnhancedInput();
 
 	if (UEnhancedInputComponent* EnhancedInputComponent = Cast<UEnhancedInputComponent>(PlayerInputComponent))
 	{
@@ -75,11 +84,13 @@ void APlayableCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputC
 		EnhancedInputComponent->BindAction(RPAction, ETriggerEvent::Completed, this, "EndLaunch");
 	}
 }
-void APlayableCharacter::SetPlayerAttackCondition(const EPlayerAttackCondition& NewPlayerAttackCondition)
+void APlayableCharacter::SetPlayerAttackCondition(const bool& IsCharging)
 {
-	PlayerAttackCondition = NewPlayerAttackCondition;
+	PlayerAttackCondition = (IsCharging) ? EPlayerAttackCondition::EPAC_Charging : EPlayerAttackCondition::EPAC_Idle;
 
 	ZoomInOut();
+	SetMovementSpeed(IsCharging);
+	ActiveMovementSpeed(IsCharging);	
 }
 void APlayableCharacter::InitEnhancedInput()
 {
@@ -131,27 +142,31 @@ void APlayableCharacter::EndLaunch()
 }
 void APlayableCharacter::SetMovementSpeed(const bool& IsCharging, const float& NewMoveSpeed)
 {
-	float Speed = CurrentMoveSpeed.load();
-	float Velocity = MaxJumpVelocity;
+	ensure(PropertyRunnable);
 
 	// Is Item Activated
 	if (NewMoveSpeed > 0.f || NewMoveSpeed < 0.f) {
-		Speed += NewMoveSpeed;
-		CurrentMoveSpeed.store(Speed);
+		float Speed = CurrentMoveSpeed + NewMoveSpeed;
 
-		if (GetPlayerAttackCondition() == EPlayerAttackCondition::EPAC_Charging) {
-			Speed /= 2;
-			Velocity /= 2;
-		}
+		// Thread for Character Properties
+		PropertyRunnable->SetMoveSpeed(Speed);
 	}
-	// Is Charging or Not
-	else {
-		if(IsCharging) {
-			Speed /= 2;
-			Velocity /= 2;
-		}
+}
+void APlayableCharacter::ActiveMovementSpeed(const bool& IsCharging)
+{
+	ensure(PropertyRunnable);
+
+	// Update CurrentMoveSpeed (in Local)
+	CurrentMoveSpeed = PropertyRunnable->GetMoveSpeed();
+	float Speed = CurrentMoveSpeed;
+	float Velocity = MaxJumpVelocity;
+
+	if (IsCharging || GetPlayerAttackCondition() == EPlayerAttackCondition::EPAC_Charging) {
+		Speed /= 2;
+		Velocity /= 2;
 	}
 
+	// Set Character Movmemt Properties...
 	GetCharacterMovement()->MaxWalkSpeed = Speed;
 	GetCharacterMovement()->JumpZVelocity = Velocity;
 }

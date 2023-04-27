@@ -18,12 +18,11 @@ UAttackComponent::UAttackComponent()
 void UAttackComponent::BeginPlay(){
 	Super::BeginPlay();
 
-	// @TODO : instigator :: GetWorld()->SpawnActorDeferred<ARocketPunch>()
+	// Spawn RocketPunch & Setting CharacterSocket
 	RocketPunch = GetWorld()->SpawnActor<ARocketPunch>(RocketPunchClass);
 	RocketPunch->SetActorLocation(GetOwner()->GetActorLocation());
 	RocketPunch->OutOfUse.BindUObject(this, &UAttackComponent::SetCanLaunch);	
 
-	// Get Socket
 	OwnerCharacter = Cast<ACharacter>(GetOwner());
 	RocketPunchSocket = OwnerCharacter->GetMesh()->GetSocketByName("RocketPunch");
 	check(RocketPunchSocket);
@@ -88,10 +87,8 @@ void UAttackComponent::ChangeMovementSpeed(const bool& IsCharging)
 	TScriptInterface<class ICharacterPropertyHandler> CharacterPropertyHandler = GetOwner();
 	if (CharacterPropertyHandler.GetInterface())
 	{
-		if(IsCharging) CharacterPropertyHandler->SetPlayerAttackCondition(EPlayerAttackCondition::EPAC_Charging);
-		else CharacterPropertyHandler->SetPlayerAttackCondition(EPlayerAttackCondition::EPAC_Idle);
-
-		CharacterPropertyHandler->SetMovementSpeed(IsCharging);
+		// Set Character AttackCondition & MovementSpeed
+		CharacterPropertyHandler->SetPlayerAttackCondition(IsCharging);
 	}
 }
 void UAttackComponent::SetCanLaunch(const bool& Val)
