@@ -2,7 +2,7 @@
 
 #pragma once
 
-#include "CoreMinimal.h"
+#include "PullAndPush.h"
 #include "Components/ActorComponent.h"
 #include "AttackComponent.generated.h"
 
@@ -51,4 +51,20 @@ protected:
 
 	UPROPERTY(VisibleAnywhere, Category = "Weapon")
 	TObjectPtr<class ARocketPunch> RocketPunch;
+
+/** Item Alpha Value */
+public:
+	FORCEINLINE void SetRPAlphaSpeed(const float& AlphaSpeed) { RPAlphaSpeed = AlphaSpeed; }
+	FORCEINLINE void SetRPAlphaRange(const float& AlphaRange) { RPAlphaRange = AlphaRange; }
+	FORCEINLINE void SetRPAlphaSize(const float& AlphaSize) { RPAlphaSize = AlphaSize; }
+
+private:
+	UPROPERTY(VisibleAnywhere, Category = "Alpha Value")
+	float RPAlphaSpeed;
+
+	UPROPERTY(VisibleAnywhere, Category = "Alpha Value")
+	float RPAlphaRange;
+
+	UPROPERTY(VisibleAnywhere, Category = "Alpha Value")
+	float RPAlphaSize;
 };

@@ -1,6 +1,5 @@
 #include "Character/AttackComponent.h"
 #include "RocketPunch/RocketPunch.h"
-#include "Interface/AttackWeapon.h"
 #include "GameFramework/Character.h"
 #include "Engine/SkeletalMeshSocket.h"
 #include "Math/Quat.h"
@@ -10,7 +9,8 @@
 UAttackComponent::UAttackComponent() 
 	:
 	ChargingTime(0.f), bIsCharging(false), bIsChangeValue(false),
-	bIsCanLaunch(true), RocketPunch(nullptr)
+	bIsCanLaunch(true), RocketPunch(nullptr),
+	RPAlphaSpeed(1.f), RPAlphaRange(1.f), RPAlphaSize(1.f)
 {
 	PrimaryComponentTick.bCanEverTick = true;
 
@@ -64,7 +64,7 @@ void UAttackComponent::EndLaunch(bool bIsPush)
 	
 	// Clamp ChargingTime and Check is can launch
 	ChargingTime = FMath::Clamp(ChargingTime, MinChargingTime, MaxChargingTime);
-	UE_LOG(LogTemp, Log, TEXT("EndLaunch ChargingTime : %f"), ChargingTime);
+	PPLOG(Log, TEXT("EndLaunch ChargingTime : %f"), ChargingTime);
 	if (RocketPunch && RocketPunchSocket && ChargingTime >= CanLaunchedTime) {
 		// Location & Rotator & Charging Percent
 		const FVector LaunchLocation = RocketPunchSocket->GetSocketLocation(OwnerCharacter->GetMesh());
@@ -72,10 +72,7 @@ void UAttackComponent::EndLaunch(bool bIsPush)
 		const float ChargingAlpha = (ChargingTime - CanLaunchedTime) / (MaxChargingTime - CanLaunchedTime);
 		
 		// Set ReadyToLaunch
-		TScriptInterface<class IAttackWeapon> CurAttackWeapon = RocketPunch;
-		if (CurAttackWeapon.GetInterface()) {
-			CurAttackWeapon->ReadyToLaunch(ChargingAlpha, GetOwner(), bIsPush, LaunchLocation, LaunchRotation);
-		}
+		RocketPunch->ReadyToLaunch(ChargingAlpha, GetOwner(), bIsPush, LaunchLocation, LaunchRotation, RPAlphaSpeed, RPAlphaRange, RPAlphaSize);
 	}
 	else bIsCanLaunch = true;
 }

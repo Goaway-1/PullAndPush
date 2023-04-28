@@ -16,6 +16,8 @@ public:
 	UPassiveItem()
 	{
 		ItemType = UItemAssetManager::PassiveItemType;
+		bIsItemActivated = false;
+		CharacterPropertyHandler = nullptr;
 	}
 
 	/** For Passive Item */
@@ -32,9 +34,9 @@ public:
 	virtual void EndActiveItem();
 
 protected:
-	UPROPERTY()
-	TObjectPtr<class AActor> TargetActorPtr;
-
 	// Check Item Already Activeted
 	uint8 bIsItemActivated;
+
+	UPROPERTY()
+	TScriptInterface<class ICharacterPropertyHandler> CharacterPropertyHandler;
 };

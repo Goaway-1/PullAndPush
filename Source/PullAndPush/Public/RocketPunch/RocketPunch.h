@@ -1,12 +1,15 @@
 #pragma once
 
-#include "CoreMinimal.h"
+#include "PullAndPush.h"
 #include "Interface/AttackWeapon.h"
 #include "GameFramework/Actor.h"
 #include "RocketPunch.generated.h"
 
+
+DECLARE_DELEGATE_OneParam(FRocketPunchOutOfUse, const bool&)
+
 UCLASS()
-class PULLANDPUSH_API ARocketPunch : public AActor, public IAttackWeapon
+class PULLANDPUSH_API ARocketPunch : public AActor
 {
 	GENERATED_BODY()
 	
@@ -31,12 +34,12 @@ public:
 	UPROPERTY(VisibleAnywhere)
 	TObjectPtr<class URPCollisionComponent> RPCollisionComponent;
 
-	virtual void ReadyToLaunch(const float& InForceAlpha, AActor* InCasterActor, const bool IsPush, const FVector& InVec, const FRotator& InRot) override;
-	virtual void IsOutOfUse(const bool& Val) override;
-	virtual AActor* GetCasterActor() override;
+	void ReadyToLaunch(const float& InForceAlpha, AActor* InCasterActor, const bool IsPush, const FVector& InVec, const FRotator& InRot, const float& AlphaSpeed, const float& AlphaRange, const float& AlphaSize);
+	void IsOutOfUse(const bool& Val);
+	AActor* GetCasterActor();
 
-	FORCEINLINE URPMovementComponent* GetRPMovementComponent() const {return RPMovementComponent;}
-	FORCEINLINE URPCollisionComponent* GetRPCollisionComponent() const {return RPCollisionComponent;}
+	FORCEINLINE class URPMovementComponent* GetRPMovementComponent() const {return RPMovementComponent;}
+	FORCEINLINE class URPCollisionComponent* GetRPCollisionComponent() const {return RPCollisionComponent;}
 
 	// For Log
 	// @TODO : 추후 색상이 아닌 메시로 변경해야 함.
@@ -48,6 +51,8 @@ public:
 
 	UFUNCTION()
 	void SetCollisionSimulatePhysics(bool Val);
+
+	FRocketPunchOutOfUse OutOfUse;
 
 private:
 	TObjectPtr<AActor> CasterActor;

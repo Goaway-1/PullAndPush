@@ -33,8 +33,24 @@ public:
 	* 아이템 습득 : 모두 지정
 	* 주무기 차징 : IsCharging만 지정
 	*/
+
+	virtual void SetPlayerAttackCondition(const bool& IsCharging) = 0;
+
+#pragma region ITEM
+/** Item : Character Movement Speed Up 
+* Not Only Items, Also Calls When Rocket Punch Charging...
+*/
 	UFUNCTION()
 	virtual void SetMovementSpeed(const bool& IsCharging, const float& NewMoveSpeed = 0.f) = 0;
 
-	virtual void SetPlayerAttackCondition(const bool& IsCharging) = 0;
+/** Item : For Rocket Punch */
+#pragma endregion
+	UFUNCTION()
+	virtual void RocketPunchAlphaSpeed(const float& AlphaSpeed) = 0;
+
+	UFUNCTION()
+	virtual void RocketPunchAlphaRange(const float& AlphaRange) = 0;
+
+	UFUNCTION()
+	virtual void RocketPunchAlphaSize(const float& AlphaSize) = 0;
 };

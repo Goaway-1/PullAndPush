@@ -5,15 +5,22 @@ void UPassiveItem::UseItem(AActor* TargetActor)
 {
 	Super::UseItem(TargetActor);
 
-	TargetActorPtr = TargetActor;
+	ensure(TargetActor);
 
 	// Add Timer
-	const FString ItemOwner = TargetActorPtr->GetName();
+	const FString ItemOwner = TargetActor->GetName();
+	CharacterPropertyHandler = TargetActor;
 	bIsItemActivated = AItemTimerManager::GetInstance()->AddTimer(ItemOwner, Name, DurationTime, false, this);
+
+	if (CharacterPropertyHandler.GetInterface() && !bIsItemActivated) {
+		PPLOG(Log, TEXT("[%s] Item Activated %f'sec"), *Name, DurationTime);
+	}
+	else {
+		return;
+	}
 }
 
 void UPassiveItem::EndActiveItem()
 {
-	PPLOG(Log, TEXT("%s End Active Item"), *Name);
-
+	PPLOG(Log, TEXT("[%s] Item Deactivated"), *Name);
 }

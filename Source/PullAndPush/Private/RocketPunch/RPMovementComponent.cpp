@@ -1,7 +1,6 @@
 #include "RocketPunch/RPMovementComponent.h"
 #include "Kismet/KismetMathLibrary.h"
 #include "RocketPunch/RocketPunch.h"
-
 #include "DrawDebugHelpers.h"
 
 URPMovementComponent::URPMovementComponent()
@@ -45,7 +44,7 @@ void URPMovementComponent::CheckMovement()
 		UpdateLocation();
 	}
 }
-void URPMovementComponent::Launch(const float& ForceAlpha, AActor* InCasterActor, const FVector& InVec, const FRotator& InRot)
+void URPMovementComponent::Launch(const float& ForceAlpha, AActor* InCasterActor, const FVector& InVec, const FRotator& InRot, const float& AlphaSpeed, const float& AlphaRange)
 {
 	if (CasterActor == nullptr) CasterActor = InCasterActor;
 
@@ -61,9 +60,9 @@ void URPMovementComponent::Launch(const float& ForceAlpha, AActor* InCasterActor
 	bIsReturn = false;
 	bIsForceReturn = false;
 
-	// Target Distance & Speed by Lerp
-	float LerpDistance = FMath::Lerp(MinDistance, MaxDistance, ForceAlpha);
-	float LerpMoveSpeed = FMath::Lerp(MinMoveSpeed, MaxMoveSpeed, ForceAlpha);
+	// Target Distance & Speed by Lerp + Plus Alpha Value...
+	const float LerpDistance = FMath::Lerp(MinDistance, MaxDistance, ForceAlpha) * AlphaRange;
+	const float LerpMoveSpeed = FMath::Lerp(MinMoveSpeed, MaxMoveSpeed, ForceAlpha) * AlphaSpeed;
 
 	SetPreDistance(false, LerpDistance);
 	SetCurMoveSpeed(LerpMoveSpeed);

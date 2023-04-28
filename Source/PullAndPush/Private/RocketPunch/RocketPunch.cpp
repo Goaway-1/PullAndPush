@@ -45,36 +45,27 @@ void ARocketPunch::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 
 }
-void ARocketPunch::ReadyToLaunch(const float& InForceAlpha, AActor* InCasterActor, const bool IsPush, const FVector& InVec, const FRotator& InRot)
+void ARocketPunch::ReadyToLaunch(const float& InForceAlpha, AActor* InCasterActor, const bool IsPush, const FVector& InVec, const FRotator& InRot, const float& AlphaSpeed, const float& AlphaRange, const float& AlphaSize)
 {
 	if(CasterActor == nullptr) CasterActor = InCasterActor;
 
+	// Set Scale of Visual & Collision
+	CollisionComp->SetWorldScale3D(FVector(AlphaSize));
+	StaticMeshComp->SetWorldScale3D(FVector(AlphaSize));
+
 	bIsPush = IsPush;
 	ForceAlpha = InForceAlpha;
-	RPMovementComponent->Launch(ForceAlpha, CasterActor, InVec, InRot);
+	RPMovementComponent->Launch(ForceAlpha, CasterActor, InVec, InRot, AlphaSpeed, AlphaSize);
+	PPLOG(Log, TEXT("AlphaSpeed : %f, AlphaRange : %f, AlphaSize : %f"), AlphaSpeed, AlphaRange, AlphaSize);
 	
-	// For Log
+	// Setting Color of RP
 	// @TODO : 추후 색의 차이가 아닌, 새로운 매시로 구분하고 함수로 제작
 	if(!PushMaterial || !PullMaterial) {
 		UE_LOG(LogTemp, Warning, TEXT("[RocketPunch] Materials ared not exsit"));
 		return;
 	}
 
-	FString AttackType = (bIsPush) ? TEXT("PUSH") : TEXT("PULL");
-	UMaterial* CurMaterial;
-
-	if (bIsPush)
-	{
-		AttackType = TEXT("PUSH");
-		CurMaterial = PushMaterial;
-	}
-	else
-	{
-		AttackType = TEXT("PULL");
-		CurMaterial = PullMaterial;
-	}
-
-	UE_LOG(LogTemp, Log, TEXT("[ARocketPunch] RocketPunch Type is : %s"), *AttackType);
+	UMaterial* CurMaterial = (bIsPush) ? PushMaterial : PullMaterial;
 	StaticMeshComp->SetMaterial(0, CurMaterial);
 }
 void ARocketPunch::IsOutOfUse(const bool& Val)

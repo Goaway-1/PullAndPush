@@ -264,3 +264,15 @@ void APlayableCharacter::PickUpItem(UItem* ItemData)
 	// @TODO : Controller에 UI의 정보[델리게이트]와 ItemUsageComponent에 Item정보[함수 호출]를 넘겨준다. (데이터를 넘겨주는 역할)
 	ItemUsageComp->PickUpItem(ItemData);
 }
+void APlayableCharacter::RocketPunchAlphaSpeed(const float& AlphaSpeed)
+{
+	AttackComp->SetRPAlphaSpeed(AlphaSpeed);
+}
+void APlayableCharacter::RocketPunchAlphaRange(const float& AlphaRange)
+{
+	AttackComp->SetRPAlphaRange(AlphaRange);
+}
+void APlayableCharacter::RocketPunchAlphaSize(const float& AlphaSize)
+{
+	AttackComp->SetRPAlphaSize(AlphaSize);
+}

@@ -33,6 +33,7 @@ public:
 	virtual void SetPlayerAttackCondition(const bool& IsCharging) override;
 
 	// Try to set Movement Speed
+	// Call Item or Charging
 	virtual void SetMovementSpeed(const bool& IsCharging, const float& NewMoveSpeed = 0.f) override;
 
 protected:
@@ -77,6 +78,7 @@ private:
 
 /** Charging */
 #pragma region CHARGING
+/** Charging */
 private:
 	UFUNCTION()
 	void TryLaunch(const FVector2D& Value);
@@ -84,6 +86,7 @@ private:
 	UFUNCTION()
 	void EndLaunch();
 
+/** Zoom */
 	UPROPERTY(VisibleAnywhere, Category = "Condition")
 	EPlayerAttackCondition PlayerAttackCondition;
 
@@ -155,4 +158,9 @@ private:
 /** Item */
 public:
 	virtual void PickUpItem(class UItem* ItemData) override;
+	
+	// Set Alpha Value Affected By Item
+	virtual void RocketPunchAlphaSpeed(const float& AlphaSpeed) override;
+	virtual void RocketPunchAlphaRange(const float& AlphaRange) override;
+	virtual void RocketPunchAlphaSize(const float& AlphaSize) override;
 };
