@@ -18,6 +18,10 @@ UAttackComponent::UAttackComponent()
 void UAttackComponent::BeginPlay(){
 	Super::BeginPlay();
 
+	RPAlphaSpeed = 1.f;
+	RPAlphaRange = 1.f;
+	RPAlphaSize = 1.f;
+
 	// Spawn RocketPunch & Setting CharacterSocket
 	RocketPunch = GetWorld()->SpawnActor<ARocketPunch>(RocketPunchClass);
 	RocketPunch->SetActorLocation(GetOwner()->GetActorLocation());

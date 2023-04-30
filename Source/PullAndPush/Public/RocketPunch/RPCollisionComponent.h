@@ -35,10 +35,10 @@ private:
 	TSet<TObjectPtr<AActor>> OverlapActors;
 
 	/** Push Event */
-	UPROPERTY(EditAnyWhere, Category = "Info", meta = (AllowPrivateAccess = "true"))
+	UPROPERTY(EditAnyWhere, Category = "Push Force", meta = (AllowPrivateAccess = "true"))
 	float MaxKnockBackForce;
 
-	UPROPERTY(EditAnyWhere, Category = "Info", meta = (AllowPrivateAccess = "true"))
+	UPROPERTY(EditAnyWhere, Category = "Push Force", meta = (AllowPrivateAccess = "true"))
 	float MinKnockBackForce;
 
 	void KnockBackActor(class UPrimitiveComponent* HitComponent, AActor* TargetActor, float ImpulseForce);

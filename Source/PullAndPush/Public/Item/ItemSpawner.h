@@ -59,5 +59,4 @@ private:
 
 	UPROPERTY(EditAnywhere, Category="Item")
 	TArray<TObjectPtr<class UItem>> ItemDataArray;
-
 };

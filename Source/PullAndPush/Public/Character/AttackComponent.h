@@ -26,7 +26,9 @@ public:
 
 private:
 	// Charging Value
+	UPROPERTY(Transient)
 	float ChargingTime;
+
 	uint8 bIsCharging:1;
 	uint8 bIsChangeValue:1;
 	const float DecideChargingTime = 0.2f;
@@ -59,12 +61,12 @@ public:
 	FORCEINLINE void SetRPAlphaSize(const float& AlphaSize) { RPAlphaSize = AlphaSize; }
 
 private:
-	UPROPERTY(VisibleAnywhere, Category = "Alpha Value")
+	UPROPERTY(Transient, VisibleAnywhere, Category = "Alpha Value")
 	float RPAlphaSpeed;
 
-	UPROPERTY(VisibleAnywhere, Category = "Alpha Value")
+	UPROPERTY(Transient, VisibleAnywhere, Category = "Alpha Value")
 	float RPAlphaRange;
 
-	UPROPERTY(VisibleAnywhere, Category = "Alpha Value")
+	UPROPERTY(Transient, VisibleAnywhere, Category = "Alpha Value")
 	float RPAlphaSize;
 };

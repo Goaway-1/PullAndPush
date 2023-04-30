@@ -72,7 +72,9 @@ private:
 	// Move properties
 	TObjectPtr<class FCharacterPropertyRunnable> PropertyRunnable;
 
+	UPROPERTY(Transient, VisibleAnywhere, Category = "Movement")
 	float CurrentMoveSpeed;
+
 	const float DefaultMoveSpeed = 600.f;
 	const float MaxJumpVelocity = 420.f;
 

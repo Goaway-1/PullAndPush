@@ -8,7 +8,7 @@
 
 ARocketPunch::ARocketPunch()
 	: 
-	bIsPush(false), ForceAlpha(0.f)
+	bIsPush(false)
 {
  	PrimaryActorTick.bCanEverTick = true;
 

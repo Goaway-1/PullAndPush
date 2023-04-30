@@ -55,9 +55,13 @@ public:
 	FRocketPunchOutOfUse OutOfUse;
 
 private:
+	UPROPERTY()
 	TObjectPtr<AActor> CasterActor;
-	uint8 bIsPush : 1;
+
+	UPROPERTY(Transient)
 	float ForceAlpha;
+
+	uint8 bIsPush : 1;
 	const FName CollisionName = TEXT("RocketPunch");
 
 	UFUNCTION()

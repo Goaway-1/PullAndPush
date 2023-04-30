@@ -37,27 +37,35 @@ private:
 	uint8 bIsForceReturn : 1;
 
 	// Decide to Return or End
+	UPROPERTY(Transient, VisibleAnywhere, Category = "Movement | Distance")
 	float PreDistance;
+
+	UPROPERTY(Transient, VisibleAnywhere, Category = "Movement | Distance")
 	float CurDistance;
+
+	UPROPERTY(Transient, VisibleAnywhere, Category = "Movement | Location")
 	FVector StartLoc;
+
+	UPROPERTY(Transient, VisibleAnywhere, Category = "Movement | Location")
 	FVector EndLoc;
 
 	// Max Min Speed & Distance
-	UPROPERTY(EditAnyWhere, Category = "Info", meta = (AllowPrivateAccess = "true"))
+	UPROPERTY(EditAnyWhere, Category = "Movement", meta = (AllowPrivateAccess = "true"))
 	float ReturnMoveSpeed;
 
-	UPROPERTY(EditAnyWhere, Category = "Info", meta = (AllowPrivateAccess = "true"))
+	UPROPERTY(EditAnyWhere, Category = "Movement", meta = (AllowPrivateAccess = "true"))
 	float MaxMoveSpeed;
 
-	UPROPERTY(EditAnyWhere, Category = "Info", meta = (AllowPrivateAccess = "true"))
+	UPROPERTY(EditAnyWhere, Category = "Movement", meta = (AllowPrivateAccess = "true"))
 	float MinMoveSpeed;
 
-	UPROPERTY(EditAnyWhere, Category = "Info", meta = (AllowPrivateAccess = "true"))
+	UPROPERTY(EditAnyWhere, Category = "Movement", meta = (AllowPrivateAccess = "true"))
 	float MaxDistance;
 
-	UPROPERTY(EditAnyWhere, Category = "Info", meta = (AllowPrivateAccess = "true"))
+	UPROPERTY(EditAnyWhere, Category = "Movement", meta = (AllowPrivateAccess = "true"))
 	float MinDistance;
 
+	UPROPERTY(Transient, VisibleAnywhere, Category = "Movement")
 	float CurMoveSpeed;
 
 	UPROPERTY()
@@ -82,5 +90,4 @@ private:
 	FORCEINLINE void SetIsLaunch(const bool Val) { bIsLaunch = Val; }
 	FORCEINLINE void SetCurMoveSpeed(const double Val) { CurMoveSpeed = Val; }
 	FORCEINLINE bool GetIsForceReturn() const { return bIsForceReturn; }
-
 };
