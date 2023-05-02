@@ -18,10 +18,6 @@ public:
 		ItemType = UItemAssetManager::ActiveItemType;
 	}
 
-	/** For Active Item */
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Item)
-	class UTexture2D* InterfaceUI;
-
 	// @TODO : 투사체 Item으로 변경
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Item)
 	TSubclassOf<class AActor> ProjectileItemClass;

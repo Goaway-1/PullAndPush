@@ -23,6 +23,9 @@ public:
 	APlayableCharacter();
 	~APlayableCharacter();
 
+	virtual void PossessedBy(AController* NewController) override;
+	virtual void UnPossessed() override;
+
 	virtual void Tick(float DeltaTime) override;
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
@@ -68,6 +71,10 @@ private:
 
 	// Actually set Movement Speed
 	void ActiveMovementSpeed(const bool& IsCharging = false);
+
+	// Controller
+	UPROPERTY()
+	TObjectPtr<class APlayableController> PlayableController;
 
 	// Move properties
 	TObjectPtr<class FCharacterPropertyRunnable> PropertyRunnable;

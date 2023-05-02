@@ -10,16 +10,20 @@ void UPassiveItem::UseItem(AActor* TargetActor)
 	// Add Timer
 	const FString ItemOwner = TargetActor->GetName();
 	CharacterPropertyHandler = TargetActor;
-	bIsItemActivated = AItemTimerManager::GetInstance()->AddTimer(ItemOwner, Name, DurationTime, false, this);
+	
+	// Get Timer Handler & Is Item Already Activated 
+	bool bItemAlreadyActivated;
+	FTimerHandle NewTimerHandler = AItemTimerManager::GetInstance()->AddTimer(ItemOwner, Name, DurationTime, false, this, bItemAlreadyActivated);
 
+	bIsItemActivated = bItemAlreadyActivated;
 	if (CharacterPropertyHandler.GetInterface() && !bIsItemActivated) {
 		PPLOG(Log, TEXT("[%s] Item Activated %f'sec"), *Name, DurationTime);
+		ItemTimerHandler = NewTimerHandler;
 	}
 	else {
 		return;
 	}
 }
-
 void UPassiveItem::EndActiveItem()
 {
 	PPLOG(Log, TEXT("[%s] Item Deactivated"), *Name);

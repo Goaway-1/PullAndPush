@@ -26,31 +26,35 @@ void UItemUsageComponent::PickUpItem(UItem* ItemData)
 
 	// Play "Active or Passive" Action
 	CurItemData = ItemData;
-	if (ItemData->CheckIsActiveItem()) {
-		// @TODO : 키 입력 시 실행되도록
-		//StartActiveItem();
-	}
-	else {
+	if (!ItemData->CheckIsActiveItem()) {
 		StartPassiveItem();
 	}
 }
 void UItemUsageComponent::StartActiveItem()
 {
 	// @TODO : 액터의 생성 및 투척
+	// UI : 현재 아이템에 활성화되도록 적용
 	check(CurItemData);
 
 	TScriptInterface<class IItemActionHandler> CurItemAction = CurItemData;
-	if (CurItemAction.GetInterface()) {
+	if (CurItemAction.GetInterface()) 
+	{
 		APlayableCharacter* OwnerCharacter = Cast<APlayableCharacter>(GetOwner());
 		CurItemAction->UseItem(OwnerCharacter);
+
+		// @TODO : 액티브 UI 활성화
+		//OnUpdatePassiveUI.Execute(CurItemData);
 	}
 }
 void UItemUsageComponent::StartPassiveItem()
 {
-	// @TODO : 전략패턴 : 상황에 맞는 이벤트 발생하기
 	TScriptInterface<class IItemActionHandler> CurItemAction = CurItemData;
-	if (CurItemAction.GetInterface()) {
+	if (CurItemAction.GetInterface()) 
+	{
 		APlayableCharacter* OwnerCharacter = Cast<APlayableCharacter>(GetOwner());
 		CurItemAction->UseItem(OwnerCharacter);
+
+		// @TODO : 패시브 UI 활성화
+		OnUpdatePassiveUI.Execute(CurItemData);
 	}
 }

@@ -27,16 +27,27 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Item)
 	float WeightValue;
 
-/** Handler */
+protected:
+	// Check Item Already Activeted
+	uint8 bIsItemActivated : 1;
+
+	UPROPERTY()
+	TScriptInterface<class ICharacterPropertyHandler> CharacterPropertyHandler;
+
+	// Use with ItemWidget
+	FTimerHandle ItemTimerHandler;
+
+public:
+	/** Handler */
 	virtual void UseItem(class AActor* TargetActor) override;
 
 	UFUNCTION()
 	virtual void EndActiveItem();
 
-protected:
-	// Check Item Already Activeted
-	uint8 bIsItemActivated;
-
-	UPROPERTY()
-	TScriptInterface<class ICharacterPropertyHandler> CharacterPropertyHandler;
+	virtual float GetDurationTime() override {
+		return DurationTime;
+	}
+	virtual FTimerHandle GetTimerHandler() override {
+		return ItemTimerHandler;
+	}
 };

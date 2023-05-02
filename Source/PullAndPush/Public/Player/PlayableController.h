@@ -13,5 +13,20 @@ UCLASS()
 class PULLANDPUSH_API APlayableController : public APlayerController
 {
 	GENERATED_BODY()
-	
+public:
+	APlayableController();
+
+protected:
+	virtual void BeginPlay() override;
+
+protected:
+	UPROPERTY(EditAnywhere, Category = "Widget")
+	TSubclassOf<class UMainWidget> MainWidgetClass;
+
+	UPROPERTY()
+	TObjectPtr<class UMainWidget> MainWidget;
+
+public:
+	UFUNCTION()
+	void UpdateItemUI(class UDataAsset* CurrentItem);
 };

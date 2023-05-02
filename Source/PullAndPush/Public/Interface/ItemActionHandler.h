@@ -23,4 +23,16 @@ class PULLANDPUSH_API IItemActionHandler
 public:
 	UFUNCTION()
 	virtual void UseItem(class AActor* TargetActor) = 0;
+
+	virtual FString GetIdentifierString() const = 0;
+	virtual bool CheckIsActiveItem() const = 0;
+
+	// For UI
+	virtual FString GetItemName() = 0;
+	virtual FString GetItemDescription() = 0;
+	virtual UMaterialInterface* GetItemMaterialInterface() = 0;
+
+	// For Passive
+	virtual float GetDurationTime() = 0;
+	virtual FTimerHandle GetTimerHandler() = 0;
 };

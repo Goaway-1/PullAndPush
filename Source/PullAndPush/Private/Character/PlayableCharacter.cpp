@@ -14,6 +14,7 @@
 #include "EnhancedInputSubsystems.h"
 #include "InputMappingContext.h"
 #include "Runnable/CharacterPropertyRunnable.h"
+#include "Player/PlayableController.h"
 
 APlayableCharacter::APlayableCharacter()
 	:
@@ -44,6 +45,25 @@ APlayableCharacter::~APlayableCharacter()
 	if (PropertyRunnable != nullptr)
 	{
 		PropertyRunnable->Stop();
+	}
+}
+void APlayableCharacter::PossessedBy(AController* NewController)
+{
+	Super::PossessedBy(NewController);
+
+	PlayableController = Cast<APlayableController>(NewController);
+
+	if (PlayableController && ItemUsageComp)
+	{
+		ItemUsageComp->GetUpdatePassiveUI().BindUObject(PlayableController, &APlayableController::UpdateItemUI);
+	}
+}
+void APlayableCharacter::UnPossessed()
+{
+	// Unmap from inventory source
+	if (PlayableController)
+	{
+		ItemUsageComp->GetUpdatePassiveUI().Unbind();
 	}
 }
 void APlayableCharacter::BeginPlay()
@@ -264,6 +284,9 @@ void APlayableCharacter::PickUpItem(UItem* ItemData)
 	// @TODO : Controller에 UI의 정보[델리게이트]와 ItemUsageComponent에 Item정보[함수 호출]를 넘겨준다. (데이터를 넘겨주는 역할)
 	ItemUsageComp->PickUpItem(ItemData);
 }
+// @TODO : 
+// UseItem()
+// 액티브 : 현재 아이템에 비활성화 되도록 적용
 void APlayableCharacter::RocketPunchAlphaSpeed(const float& AlphaSpeed)
 {
 	AttackComp->SetRPAlphaSpeed(AlphaSpeed);

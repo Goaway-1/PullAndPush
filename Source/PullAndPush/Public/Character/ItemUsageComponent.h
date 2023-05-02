@@ -7,6 +7,7 @@
 #include "Interface/PickupActionHandler.h"
 #include "ItemUsageComponent.generated.h"
 
+DECLARE_DELEGATE_OneParam(FOnPassiveUIUpdate, class UDataAsset*)
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class PULLANDPUSH_API UItemUsageComponent : public UActorComponent, public IPickupActionHandler
@@ -26,8 +27,12 @@ public:
 
 	void StartActiveItem();
 	void StartPassiveItem();
+
+	FOnPassiveUIUpdate& GetUpdatePassiveUI() {return OnUpdatePassiveUI;}
 private:
 	UPROPERTY(VisibleAnywhere, Category = Item)
 	TObjectPtr<class UItem> CurItemData;
 
+	// Update PassiveUI
+	FOnPassiveUIUpdate OnUpdatePassiveUI;
 };

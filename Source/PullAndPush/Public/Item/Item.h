@@ -13,6 +13,7 @@ class PULLANDPUSH_API UItem : public UDataAsset, public IItemActionHandler
 {
 	GENERATED_BODY()
 
+// @TODO : public -> protected로 바꾸고, Getter/Setter로 설정하자.
 public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Item)
 	FPrimaryAssetType ItemType;
@@ -26,16 +27,37 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Item)
 	class UStaticMesh* StaticMesh;
 	
-	/** Returns the logical name, equivalent to the primary asset id */
-	UFUNCTION(BlueprintCallable, Category = Item)
-	FString GetIdentifierString() const;
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Item)
+	class UMaterialInterface* MaterialUI;
 
-	UFUNCTION(BlueprintCallable, Category = Item)
-	bool CheckIsActiveItem() const;
-
+public:
 	/** Overridden to use saved type */
 	virtual FPrimaryAssetId GetPrimaryAssetId() const override;
 
 /** Handler */
-	virtual void UseItem(class AActor* TargetActor) override;
+	/** Returns the logical name, equivalent to the primary asset id */
+	UFUNCTION(BlueprintCallable)
+	virtual FString GetIdentifierString() const override;
+
+	UFUNCTION(BlueprintCallable)
+	virtual bool CheckIsActiveItem() const override;
+
+	virtual void UseItem(class AActor* TargetActor) override {
+		
+	}
+	virtual FString GetItemName() override {
+		return Name;
+	}
+	virtual FString GetItemDescription() override {
+		return Description;
+	}
+	virtual UMaterialInterface* GetItemMaterialInterface() override {
+		return MaterialUI;
+	}
+	virtual float GetDurationTime() override {
+		return 0.f;
+	}
+	virtual FTimerHandle GetTimerHandler() override {
+		return FTimerHandle();
+	}
 };
