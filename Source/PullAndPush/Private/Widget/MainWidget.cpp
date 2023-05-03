@@ -13,23 +13,20 @@ UMainWidget::UMainWidget(const FObjectInitializer& ObjectInitializer) : Super(Ob
     
 }
 void UMainWidget::UpdateItemUI(UDataAsset* CurrentItem) {
-	ensure(ItemWidgetClass);
+    ensure(ItemWidgetClass);
 
-    // Map으로 할 때, FPrimartAssetId로 하고, 타입이 이제 Item
     TScriptInterface<class IItemActionHandler> CurItemAction = CurrentItem;
-    if (CurItemAction.GetInterface()) 
+    if (CurItemAction.GetInterface())
     {
-        FName ItemName = FName(CurItemAction->GetIdentifierString());
-        if (ItemMap.Contains(ItemName)) 
-        {
-            // Remove Before Widget
-            UItemWidget* CItemWidget = ItemMap.FindRef(ItemName);
-            if (CItemWidget) {
-                UE_LOG(LogTemp, Warning, TEXT("Remove UI!"));
+        const FName ItemName = FName(CurItemAction->GetIdentifierString());
 
-                CItemWidget->RemoveFromParent();
-                ItemMap.Remove(ItemName);
-                CItemWidget = nullptr;
+        // Remove Before Widget
+        if (ItemWidgetMap.Contains(ItemName))
+        {
+            TWeakObjectPtr<UItemWidget> PreItemWidget = ItemWidgetMap.FindRef(ItemName);
+            if (PreItemWidget.IsValid()) {
+                PreItemWidget->RemoveFromParent();
+                ItemWidgetMap.Remove(ItemName);
             }
         }
 
@@ -37,13 +34,12 @@ void UMainWidget::UpdateItemUI(UDataAsset* CurrentItem) {
         UItemWidget* ItemWidget = CreateWidget<UItemWidget>(this, ItemWidgetClass);
         if (ItemWidget)
         {
-            // Set Widget
+            // Set Widet Init & Postion
             ItemWidget->SetInitItem(CurItemAction->GetTimerHandler(), CurItemAction->GetItemMaterialInterface(), CurItemAction->GetDurationTime());
             ItemHorizontalBox->AddChildToHorizontalBox(ItemWidget);
 
             // Save Array
-            ItemMap.Add(ItemName, ItemWidget);
-            UE_LOG(LogTemp, Warning, TEXT("Generagte UI"));
+            ItemWidgetMap.Add(ItemName, ItemWidget);
         }
     }
 }

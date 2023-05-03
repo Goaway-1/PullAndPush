@@ -7,29 +7,32 @@
 #include "Components/TextBlock.h"
 #include "Kismet/KismetSystemLibrary.h"
 
+
 void UItemWidget::NativeTick(const FGeometry& MyGeometry, float InDeltaTime)
 {
 	Super::NativeTick(MyGeometry, InDeltaTime);
 
 	// Set Widget Value..
-	float Value = UKismetSystemLibrary::K2_GetTimerRemainingTimeHandle(GetWorld(), ItemTimerHandler);
-	Timer->SetText(FText::AsNumber(Value));
+	const float RemainTime = UKismetSystemLibrary::K2_GetTimerRemainingTimeHandle(GetWorld(), ItemTimerHandler);
+	Timer->SetText(FText::AsNumber(RemainTime));
 
-	const float Parcent = Value / DefaultItemCost;
-	ItemMaterial->SetScalarParameterValue("Percentage", Parcent);
+	const float Parcent = RemainTime / ItemCost;
+	ItemMaterial->SetScalarParameterValue(PercentageParameterName, Parcent);
 	
-	if (Value < KINDA_SMALL_NUMBER)
+	if (RemainTime < KINDA_SMALL_NUMBER)
 	{
 		RemoveFromParent();
+		ConditionalBeginDestroy();
 	}
 }
 void UItemWidget::SetInitItem(FTimerHandle TimerHandler, UMaterialInterface* Material, float Cost) {
 	// Set Default Setting (Material, Handler, Cost..)
 	ItemMaterial = UMaterialInstanceDynamic::Create(Material, this);
-	DefaultItemCost = Cost;
+	ItemCost = Cost;
 	ItemTimerHandler = TimerHandler;
 
+	// Set Widget Value
 	Timer->SetText(FText::AsNumber(Cost));
-	ItemMaterial->SetScalarParameterValue("Percentage", 1.f);
-	ItemIcon->SetBrushFromMaterial(ItemMaterial);
+	ItemMaterial->SetScalarParameterValue(PercentageParameterName, 1.f);
+	Icon->SetBrushFromMaterial(ItemMaterial);
 }

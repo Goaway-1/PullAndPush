@@ -4,7 +4,6 @@
 void UPassiveItem::UseItem(AActor* TargetActor)
 {
 	Super::UseItem(TargetActor);
-
 	ensure(TargetActor);
 
 	// Add Timer
@@ -13,12 +12,11 @@ void UPassiveItem::UseItem(AActor* TargetActor)
 	
 	// Get Timer Handler & Is Item Already Activated 
 	bool bItemAlreadyActivated;
-	FTimerHandle NewTimerHandler = AItemTimerManager::GetInstance()->AddTimer(ItemOwner, Name, DurationTime, false, this, bItemAlreadyActivated);
+	ItemTimerHandler = AItemTimerManager::GetInstance()->AddTimer(ItemOwner, Name, DurationTime, false, this, bItemAlreadyActivated);
 
 	bIsItemActivated = bItemAlreadyActivated;
 	if (CharacterPropertyHandler.GetInterface() && !bIsItemActivated) {
 		PPLOG(Log, TEXT("[%s] Item Activated %f'sec"), *Name, DurationTime);
-		ItemTimerHandler = NewTimerHandler;
 	}
 	else {
 		return;

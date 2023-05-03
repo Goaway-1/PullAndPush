@@ -20,16 +20,16 @@ public:
 
 protected:
 	UPROPERTY(meta = (BindWidget))
-	TObjectPtr<class UImage> ItemIcon;
+	TObjectPtr<class UImage> Icon;
 
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<class UTextBlock> Timer;
-	
+
+private:
 	UPROPERTY()
 	TObjectPtr<class UMaterialInstanceDynamic> ItemMaterial;
 
-private:
-	float DefaultItemCost;
-
+	const FName PercentageParameterName = "Percentage";
+	float ItemCost;
 	FTimerHandle ItemTimerHandler;
 };

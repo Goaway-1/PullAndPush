@@ -54,7 +54,7 @@ void UItemUsageComponent::StartPassiveItem()
 		APlayableCharacter* OwnerCharacter = Cast<APlayableCharacter>(GetOwner());
 		CurItemAction->UseItem(OwnerCharacter);
 
-		// @TODO : 패시브 UI 활성화
+		// Show 'Active Widget'
 		OnUpdatePassiveUI.Execute(CurItemData);
 	}
 }

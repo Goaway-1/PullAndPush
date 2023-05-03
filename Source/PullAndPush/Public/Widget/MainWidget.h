@@ -25,9 +25,10 @@ protected:
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<class UHorizontalBox> ItemHorizontalBox;
 
+private:
 	UPROPERTY(EditAnywhere, Category = "Item")
 	TSubclassOf<class UItemWidget> ItemWidgetClass;
 
-private:
-	TMap<FName, TObjectPtr<class UItemWidget>> ItemMap;
+	// Key : FPrimartAssetId, Value : ItemWidget
+	TMap<FName, TWeakObjectPtr<class UItemWidget>> ItemWidgetMap;
 };
