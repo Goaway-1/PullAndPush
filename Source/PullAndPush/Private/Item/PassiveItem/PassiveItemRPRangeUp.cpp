@@ -8,7 +8,9 @@ void UPassiveItemRPRangeUp::UseItem(AActor* TargetActor)
     Super::UseItem(TargetActor);
 
     // Try Rocket Punch Range Up
-    CharacterPropertyHandler->RocketPunchAlphaRange(WeightValue);
+    if (!bIsItemActivated) {
+        CharacterPropertyHandler->RocketPunchAlphaRange(WeightValue);
+    }
 }
 
 void UPassiveItemRPRangeUp::EndActiveItem()

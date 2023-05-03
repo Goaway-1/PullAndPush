@@ -5,7 +5,9 @@ void UPassiveItemSpeedUp::UseItem(AActor* TargetActor)
     Super::UseItem(TargetActor);
 
     // Try Character Movement Speed Up
-    CharacterPropertyHandler->SetMovementSpeed(false, WeightValue);
+    if (!bIsItemActivated) {
+        CharacterPropertyHandler->SetMovementSpeed(false, WeightValue);
+    }
 }
 
 void UPassiveItemSpeedUp::EndActiveItem()

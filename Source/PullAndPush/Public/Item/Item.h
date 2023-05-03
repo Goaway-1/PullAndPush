@@ -13,8 +13,7 @@ class PULLANDPUSH_API UItem : public UDataAsset, public IItemActionHandler
 {
 	GENERATED_BODY()
 
-// @TODO : public -> protected로 바꾸고, Getter/Setter로 설정하자.
-public:
+protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Item)
 	FPrimaryAssetType ItemType;
 
@@ -34,6 +33,8 @@ public:
 	/** Overridden to use saved type */
 	virtual FPrimaryAssetId GetPrimaryAssetId() const override;
 
+	FORCEINLINE UStaticMesh* GetStaticMesh() const { return StaticMesh; }
+public:
 /** Handler */
 	/** Returns the logical name, equivalent to the primary asset id */
 	UFUNCTION(BlueprintCallable)

@@ -8,7 +8,6 @@
 #include "Item/Item.h"
 #include "ItemSpawner.generated.h"
 
-
 UCLASS()
 class PULLANDPUSH_API AItemSpawner : public AActor
 {

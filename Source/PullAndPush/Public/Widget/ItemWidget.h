@@ -29,7 +29,9 @@ private:
 	UPROPERTY()
 	TObjectPtr<class UMaterialInstanceDynamic> ItemMaterial;
 
-	const FName PercentageParameterName = "Percentage";
+	UPROPERTY(Transient)
 	float ItemCost;
+
+	const FName PercentageParameterName = "Percentage";
 	FTimerHandle ItemTimerHandler;
 };

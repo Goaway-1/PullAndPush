@@ -18,9 +18,6 @@ void UPassiveItem::UseItem(AActor* TargetActor)
 	if (CharacterPropertyHandler.GetInterface() && !bIsItemActivated) {
 		PPLOG(Log, TEXT("[%s] Item Activated %f'sec"), *Name, DurationTime);
 	}
-	else {
-		return;
-	}
 }
 void UPassiveItem::EndActiveItem()
 {

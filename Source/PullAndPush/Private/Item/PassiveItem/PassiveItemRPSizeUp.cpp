@@ -7,7 +7,9 @@ void UPassiveItemRPSizeUp::UseItem(AActor* TargetActor)
     Super::UseItem(TargetActor);
 
     // Try Rocket Punch Size Up
-    CharacterPropertyHandler->RocketPunchAlphaSize(WeightValue);
+    if (!bIsItemActivated) {
+        CharacterPropertyHandler->RocketPunchAlphaSize(WeightValue);
+    }
 }
 
 void UPassiveItemRPSizeUp::EndActiveItem()

@@ -8,7 +8,9 @@ void UPassiveItemRPSpeedUp::UseItem(AActor* TargetActor)
     Super::UseItem(TargetActor);
 
     // Try Rocket Punch Speed Up
-    CharacterPropertyHandler->RocketPunchAlphaSpeed(WeightValue);
+    if (!bIsItemActivated) {
+        CharacterPropertyHandler->RocketPunchAlphaSpeed(WeightValue);
+    }
 }
 
 void UPassiveItemRPSpeedUp::EndActiveItem()

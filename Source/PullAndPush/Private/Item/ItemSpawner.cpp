@@ -56,7 +56,7 @@ void AItemSpawner::RespawnItem() {
     ensure(CurItem);
     ItemPickup->SetItemSetting(true, CurItem, SpawnLocation);
 
-    UE_LOG(LogTemp, Log, TEXT("Item Respawn : %s, %s"), *CurItem->Name, *CurItem->Description);
+    UE_LOG(LogTemp, Log, TEXT("Item Respawn : %s, %s"), *CurItem->GetItemName(), *CurItem->GetItemDescription());
 }
 UItem* AItemSpawner::SetRandomItemDataAsset()
 {

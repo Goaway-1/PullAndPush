@@ -64,7 +64,7 @@ void AItemPickup::SetItemSetting(bool IsSpawn, UItem* InItemDataAsset, FVector S
 	if(IsSpawn && CurItem)
 	{
 		SetActorLocationAndRotation(SpawnLocation, FRotator::ZeroRotator);
-		StaticMeshComp->SetStaticMesh(CurItem->StaticMesh);
+		StaticMeshComp->SetStaticMesh(CurItem->GetStaticMesh());
 		StaticMeshComp->SetRelativeLocation(FVector::Zero());
 	}
 }
