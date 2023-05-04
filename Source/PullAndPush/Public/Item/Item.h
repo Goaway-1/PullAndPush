@@ -61,4 +61,7 @@ public:
 	virtual FTimerHandle GetTimerHandler() override {
 		return FTimerHandle();
 	}
+	virtual TSubclassOf<AActor> GetSpawnItemClass() const override {
+		return nullptr;
+	}
 };

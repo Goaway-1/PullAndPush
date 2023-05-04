@@ -20,25 +20,15 @@ public:
 		CharacterPropertyHandler = nullptr;
 	}
 
-	/** For Passive Item */
+protected:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Item)
 	float DurationTime;				
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Item)
 	float WeightValue;
 
-protected:
-	// Check Item Already Activeted
-	uint8 bIsItemActivated : 1;
-
-	UPROPERTY()
-	TScriptInterface<class ICharacterPropertyHandler> CharacterPropertyHandler;
-
-	// Use with ItemWidget
-	FTimerHandle ItemTimerHandler;
-
+/** Handler */
 public:
-	/** Handler */
 	virtual void UseItem(class AActor* TargetActor) override;
 
 	UFUNCTION()
@@ -50,4 +40,14 @@ public:
 	virtual FTimerHandle GetTimerHandler() override {
 		return ItemTimerHandler;
 	}
+
+protected:
+	// Check Item Already Activeted
+	uint8 bIsItemActivated : 1;
+
+	UPROPERTY()
+	TScriptInterface<class ICharacterPropertyHandler> CharacterPropertyHandler;
+
+	// Use with ItemWidget
+	FTimerHandle ItemTimerHandler;
 };

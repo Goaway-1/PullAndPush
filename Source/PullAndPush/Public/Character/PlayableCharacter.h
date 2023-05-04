@@ -2,7 +2,7 @@
 
 #pragma once
 
-#include "CoreMinimal.h"
+#include "PullAndPush.h"
 #include "GameFramework/Character.h"
 #include "Interface/CollisionActionHandler.h"
 #include "Interface/PickupActionHandler.h"
@@ -144,32 +144,42 @@ private:
 
 /** Enhanced Input */
 #pragma region ENHANCED INPUT
-public:
-	UPROPERTY(EditAnywhere, Category = Input)
+protected:
+	UPROPERTY(EditDefaultsOnly, Category = Input)
 	TObjectPtr<class UInputMappingContext> DefaultContext;
 
-	UPROPERTY(EditAnywhere, Category = Input)
+	UPROPERTY(EditDefaultsOnly, Category = Input)
 	TObjectPtr<class UInputAction> MoveAction;
 
-	UPROPERTY(EditAnywhere, Category = Input)
+	UPROPERTY(EditDefaultsOnly, Category = Input)
 	TObjectPtr<class UInputAction> LookAction;
 
-	UPROPERTY(EditAnywhere, Category = Input)
+	UPROPERTY(EditDefaultsOnly, Category = Input)
 	TObjectPtr<class UInputAction> JumpAction;
 
-	UPROPERTY(EditAnywhere, Category = Input)
+	UPROPERTY(EditDefaultsOnly, Category = Input)
 	TObjectPtr<class UInputAction> RPAction;
+
+	UPROPERTY(EditDefaultsOnly, Category = Input)
+	TObjectPtr<class UInputAction> ItemUseAction;
 
 private:
 	void InitEnhancedInput();
 #pragma endregion
 
 /** Item */
+#pragma region ITEM
 public:
 	virtual void PickUpItem(class UItem* ItemData) override;
-	
+
 	// Set Alpha Value Affected By Item
 	virtual void RocketPunchAlphaSpeed(const float& AlphaSpeed) override;
 	virtual void RocketPunchAlphaRange(const float& AlphaRange) override;
 	virtual void RocketPunchAlphaSize(const float& AlphaSize) override;
+
+private:
+	UFUNCTION()
+	void UseActiveItem();
+#pragma endregion
+
 };

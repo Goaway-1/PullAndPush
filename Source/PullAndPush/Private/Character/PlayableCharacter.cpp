@@ -93,7 +93,8 @@ void APlayableCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputC
 
 		EnhancedInputComponent->BindAction(MoveAction, ETriggerEvent::Triggered, this, "Move");
 		EnhancedInputComponent->BindAction(LookAction, ETriggerEvent::Triggered, this, "Look");
-		EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Triggered, this, "Jump");
+		EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Started, this, "Jump");
+		EnhancedInputComponent->BindAction(ItemUseAction, ETriggerEvent::Started, this, "UseActiveItem");
 
 		EnhancedInputComponent->BindAction(RPAction, ETriggerEvent::Started, this, "TryLaunch");
 		EnhancedInputComponent->BindAction(RPAction, ETriggerEvent::Completed, this, "EndLaunch");
@@ -146,6 +147,13 @@ void APlayableCharacter::Turn(float NewAxisValue)
 }
 void APlayableCharacter::TryLaunch(const FVector2D& Value)
 {
+	// If item exists, throw it
+	if (ItemUsageComp->GetIsReadyToThrow()) {
+		ItemUsageComp->ThrowDeployableItem();
+		return;
+	}
+
+	// Launch RocketPunch
 	if (AttackComp->TryLaunch()) {
 		// Set Attack Type if can Charnging
 		bIsPush = (Value.X > 0) ? false : true;
@@ -279,9 +287,9 @@ void APlayableCharacter::PickUpItem(UItem* ItemData)
 	// @TODO : Controller에 UI의 정보[델리게이트]와 ItemUsageComponent에 Item정보[함수 호출]를 넘겨준다. (데이터를 넘겨주는 역할)
 	ItemUsageComp->PickUpItem(ItemData);
 }
-// @TODO : 
-// UseItem()
-// 액티브 : 현재 아이템에 비활성화 되도록 적용
+void APlayableCharacter::UseActiveItem() {
+	ItemUsageComp->TryToUseActiveItem();
+}
 void APlayableCharacter::RocketPunchAlphaSpeed(const float& AlphaSpeed)
 {
 	AttackComp->SetRPAlphaSpeed(AlphaSpeed);

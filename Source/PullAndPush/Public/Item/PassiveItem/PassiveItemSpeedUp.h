@@ -14,7 +14,6 @@ class PULLANDPUSH_API UPassiveItemSpeedUp : public UPassiveItem
 {
 	GENERATED_BODY()
 
-/** Handler */
 public:
 	UPassiveItemSpeedUp() {
 		Name = "SpeedUp";
@@ -23,7 +22,8 @@ public:
 		WeightValue = 300.f;
 	}
 
+/** Handler */
+public:
 	virtual void UseItem(class AActor* TargetActor) override;
-
 	virtual void EndActiveItem() override;
 };

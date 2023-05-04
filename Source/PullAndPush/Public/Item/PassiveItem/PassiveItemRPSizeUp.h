@@ -14,7 +14,6 @@ class PULLANDPUSH_API UPassiveItemRPSizeUp : public UPassiveItem
 {
 	GENERATED_BODY()
 
-	/** Handler */
 public:
 	UPassiveItemRPSizeUp() {
 		Name = "RP_SizeUp";
@@ -23,7 +22,8 @@ public:
 		WeightValue = 2.f;	
 	}
 
+/** Handler */
+public:
 	virtual void UseItem(class AActor* TargetActor) override;
-
 	virtual void EndActiveItem() override;
 };

@@ -18,10 +18,13 @@ public:
 		ItemType = UItemAssetManager::ActiveItemType;
 	}
 
-	// @TODO : 투사체 Item으로 변경
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Item)
-	TSubclassOf<class AActor> ProjectileItemClass;
+protected:
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Item")
+	TSubclassOf<class AActor> DeployableItemClass;
 
 /** Handler */
-	virtual void UseItem(class AActor* TargetActor) override;
+public:
+	virtual TSubclassOf<AActor> GetSpawnItemClass() const override {
+		return DeployableItemClass;
+	}
 };

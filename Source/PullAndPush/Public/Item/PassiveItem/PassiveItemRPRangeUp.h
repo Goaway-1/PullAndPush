@@ -14,7 +14,6 @@ class PULLANDPUSH_API UPassiveItemRPRangeUp : public UPassiveItem
 {
 	GENERATED_BODY()
 
-/** Handler */
 public:
 	UPassiveItemRPRangeUp() {
 		Name = "RP_RangeUp";
@@ -23,7 +22,8 @@ public:
 		WeightValue = 2.0f;
 	}
 
+/** Handler */
+public:
 	virtual void UseItem(class AActor* TargetActor) override;
-
 	virtual void EndActiveItem() override;
 };

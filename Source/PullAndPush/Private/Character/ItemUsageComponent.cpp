@@ -3,21 +3,13 @@
 #include "Character/ItemUsageComponent.h"
 #include "Item/Item.h"
 #include "Interface/ItemActionHandler.h"
-#include "Character/PlayableCharacter.h"
+#include "Interface/DeployableItemHandler.h"
 
 UItemUsageComponent::UItemUsageComponent()
+	: 
+	bIsReadyToThrow(0)
 {
-	PrimaryComponentTick.bCanEverTick = true;
-
-}
-void UItemUsageComponent::BeginPlay()
-{
-	Super::BeginPlay();
-	
-}
-void UItemUsageComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
-{
-	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
+	PrimaryComponentTick.bCanEverTick = false;
 
 }
 void UItemUsageComponent::PickUpItem(UItem* ItemData)
@@ -25,36 +17,64 @@ void UItemUsageComponent::PickUpItem(UItem* ItemData)
 	check(ItemData);
 
 	// Play "Active or Passive" Action
-	CurItemData = ItemData;
 	if (!ItemData->CheckIsActiveItem()) {
-		StartPassiveItem();
+		TryToUsePassiveItem(ItemData);
+	}
+	else {
+		CurActiveItemData = ItemData;
 	}
 }
-void UItemUsageComponent::StartActiveItem()
+void UItemUsageComponent::ThrowDeployableItem()
 {
-	// @TODO : 액터의 생성 및 투척
-	// UI : 현재 아이템에 활성화되도록 적용
-	check(CurItemData);
+	if (!CurDeployableItem) return;
 
-	TScriptInterface<class IItemActionHandler> CurItemAction = CurItemData;
-	if (CurItemAction.GetInterface()) 
+	PPLOG(Log,TEXT("Throw Item"));
+	
+	// Detach
+	CurDeployableItem->DetachFromActor(FDetachmentTransformRules::KeepWorldTransform);
+
+	// Set Deployable Item Physics and Collision
+	TScriptInterface<class IDeployableItemHandler> CurItemHandler = CurDeployableItem;
+	if (CurItemHandler.GetInterface())
+	{	
+		CurItemHandler->SetActivePhysicsAndCollision();
+	}
+
+	// @TODO : 던지기
+
+	CurDeployableItem = nullptr;
+	bIsReadyToThrow = false;
+}
+void UItemUsageComponent::TryToUseActiveItem()
+{
+	if(!CurActiveItemData) return;
+
+	PPLOG(Log, TEXT("UseActionItem"));
+	TScriptInterface<class IItemActionHandler> CurItemAction = CurActiveItemData;
+	if (CurItemAction.GetInterface())
 	{
-		APlayableCharacter* OwnerCharacter = Cast<APlayableCharacter>(GetOwner());
-		CurItemAction->UseItem(OwnerCharacter);
+		// Spawn
+		TSubclassOf<class AActor> DeployableItemClass = CurItemAction->GetSpawnItemClass();
+		CurDeployableItem = GetWorld()->SpawnActor(DeployableItemClass);
+		CurDeployableItem->SetActorLocation(GetOwner()->GetActorLocation());
+
+		// Attach
+		CurDeployableItem->AttachToActor(GetOwner(),FAttachmentTransformRules::SnapToTargetNotIncludingScale, ItemSocketName);
+
+		bIsReadyToThrow = true;
+		CurActiveItemData = nullptr;
 
 		// @TODO : 액티브 UI 활성화
-		//OnUpdatePassiveUI.Execute(CurItemData);
 	}
 }
-void UItemUsageComponent::StartPassiveItem()
+void UItemUsageComponent::TryToUsePassiveItem(UItem* ItemData)
 {
-	TScriptInterface<class IItemActionHandler> CurItemAction = CurItemData;
+	TScriptInterface<class IItemActionHandler> CurItemAction = ItemData;
 	if (CurItemAction.GetInterface()) 
 	{
-		APlayableCharacter* OwnerCharacter = Cast<APlayableCharacter>(GetOwner());
-		CurItemAction->UseItem(OwnerCharacter);
+		CurItemAction->UseItem(GetOwner());
 
 		// Show 'Active Widget'
-		OnUpdatePassiveUI.Execute(CurItemData);
+		OnUpdatePassiveUI.Execute(ItemData);
 	}
 }

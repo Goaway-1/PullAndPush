@@ -4,21 +4,16 @@
 
 ABomb::ABomb()
 	:
-	bIsExploded(0), ExplosionTime(3), DestoryTime(4), ExplosionImpulse(400)
+	ExplosionImpulse(400), ExplosionTime(3), bIsExploded(0)
 {
-	PrimaryActorTick.bCanEverTick = true;
-
-	MeshComp = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("MeshComp"));
-	MeshComp->SetSimulatePhysics(true);
-	MeshComp->SetCollisionObjectType(ECC_PhysicsBody);
-	SetRootComponent(MeshComp);
-
 	RadialForceComp = CreateDefaultSubobject<URadialForceComponent>(TEXT("RadialForceComp"));
-	RadialForceComp->SetupAttachment(MeshComp);
+	RadialForceComp->SetupAttachment(GetRootComponent());
 	RadialForceComp->Radius = 250;
 	RadialForceComp->bImpulseVelChange = true;
 	RadialForceComp->bAutoActivate = false;
 	RadialForceComp->bIgnoreOwningActor = true;
+
+	DestoryTime = 4.f;
 }
 void ABomb::BeginPlay()
 {
@@ -29,7 +24,10 @@ void ABomb::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	CheckIsExploded(DeltaTime);
+	// Explosion Timer
+	if (!bIsExploded) {
+		CheckIsExploded(DeltaTime);
+	}
 }
 void ABomb::Explosion()
 {
@@ -48,21 +46,8 @@ void ABomb::Explosion()
 }
 void ABomb::CheckIsExploded(float DeltaTime)
 {
-	// Explosion Timer
-	if (!bIsExploded)
-	{
-		ExplosionTime -= DeltaTime;
-		if (ExplosionTime < KINDA_SMALL_NUMBER) {
-			Explosion();
-		}
-	}
-	// Destory Timer
-	else
-	{
-		DestoryTime -= DeltaTime;
-		if (DestoryTime < KINDA_SMALL_NUMBER)
-		{
-			Destroy();
-		}
+	ExplosionTime -= DeltaTime;
+	if (ExplosionTime < KINDA_SMALL_NUMBER) {
+		Explosion();
 	}
 }

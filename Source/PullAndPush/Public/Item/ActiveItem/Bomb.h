@@ -4,10 +4,11 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
+#include "Item/ActiveItem/DeployableItem.h"
 #include "Bomb.generated.h"
 
 UCLASS()
-class PULLANDPUSH_API ABomb : public AActor
+class PULLANDPUSH_API ABomb : public ADeployableItem
 {
 	GENERATED_BODY()
 	
@@ -20,15 +21,12 @@ protected:
 
 protected:
 	UPROPERTY(VisibleAnywhere, Category = "Component")
-	TObjectPtr<class UStaticMeshComponent> MeshComp;
-
-	UPROPERTY(VisibleAnywhere, Category = "Component")
 	TObjectPtr<class URadialForceComponent> RadialForceComp;
 
 private:
 	void Explosion();
 
-	// Call Tick
+	// Explosion Timer
 	void CheckIsExploded(float DeltaTime);
 
 private:
@@ -38,8 +36,11 @@ private:
 	UPROPERTY(EditDefaultsOnly, Category = "FX")
 	TObjectPtr<class UMaterialInterface> ExplodedMaterial;
 
-	uint8 bIsExploded;
+	UPROPERTY(EditDefaultsOnly, Category = "Item | Explosion")
 	float ExplosionImpulse;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Item | Explosion")
 	float ExplosionTime;
-	float DestoryTime;
+
+	uint8 bIsExploded;
 };

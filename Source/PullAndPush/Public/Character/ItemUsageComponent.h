@@ -16,23 +16,32 @@ class PULLANDPUSH_API UItemUsageComponent : public UActorComponent, public IPick
 
 public:	
 	UItemUsageComponent();
-	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
-
-protected:
-	virtual void BeginPlay() override;
 
 /** Item */
 public:
 	void PickUpItem(class UItem* ItemData);
+	void TryToUsePassiveItem(class UItem* ItemData);
+	void TryToUseActiveItem();
+	void ThrowDeployableItem();
 
-	void StartActiveItem();
-	void StartPassiveItem();
+	FORCEINLINE bool GetIsReadyToThrow() {return bIsReadyToThrow;}
 
-	FOnPassiveUIUpdate& GetUpdatePassiveUI() {return OnUpdatePassiveUI;}
 private:
 	UPROPERTY(VisibleAnywhere, Category = Item)
-	TObjectPtr<class UItem> CurItemData;
+	TObjectPtr<class UItem> CurActiveItemData;
 
+	UPROPERTY(VisibleAnywhere, Category = Item)
+	TObjectPtr<class AActor> CurDeployableItem;
+
+	const FName ItemSocketName = "ItemSocket";
+
+	uint8 bIsReadyToThrow:1;
+
+/** Widget */
+public:
+	FOnPassiveUIUpdate& GetUpdatePassiveUI() { return OnUpdatePassiveUI; }
+
+private:
 	// Update PassiveUI
 	FOnPassiveUIUpdate OnUpdatePassiveUI;
 };
