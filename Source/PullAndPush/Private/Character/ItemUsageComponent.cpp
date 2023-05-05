@@ -22,6 +22,9 @@ void UItemUsageComponent::PickUpItem(UItem* ItemData)
 	}
 	else {
 		CurActiveItemData = ItemData;
+
+		// Show 'Passive Widget'
+		OnItemWidgetUpdate.Execute(CurActiveItemData, false);
 	}
 }
 void UItemUsageComponent::ThrowDeployableItem()
@@ -64,7 +67,8 @@ void UItemUsageComponent::TryToUseActiveItem()
 		bIsReadyToThrow = true;
 		CurActiveItemData = nullptr;
 
-		// @TODO : 액티브 UI 활성화
+		// Hide 'Passive Widget'
+		OnItemWidgetUpdate.Execute(CurActiveItemData, false);
 	}
 }
 void UItemUsageComponent::TryToUsePassiveItem(UItem* ItemData)
@@ -75,6 +79,6 @@ void UItemUsageComponent::TryToUsePassiveItem(UItem* ItemData)
 		CurItemAction->UseItem(GetOwner());
 
 		// Show 'Active Widget'
-		OnUpdatePassiveUI.Execute(ItemData);
+		OnItemWidgetUpdate.Execute(ItemData, true);
 	}
 }

@@ -7,7 +7,12 @@
 #include "Interface/PickupActionHandler.h"
 #include "ItemUsageComponent.generated.h"
 
-DECLARE_DELEGATE_OneParam(FOnPassiveUIUpdate, class UDataAsset*)
+/**
+* Update Item Widget..
+* @param	DataAsset		Item Data Asset
+* @param	bool			Whether the update target is Passive or Active (Passive is True)
+*/
+DECLARE_DELEGATE_TwoParams(FOnItemWidgetUpdate, class UDataAsset*, const bool&)
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class PULLANDPUSH_API UItemUsageComponent : public UActorComponent, public IPickupActionHandler
@@ -39,9 +44,13 @@ private:
 
 /** Widget */
 public:
-	FOnPassiveUIUpdate& GetUpdatePassiveUI() { return OnUpdatePassiveUI; }
+	FOnItemWidgetUpdate& GetItemWidgetUpdateDelegate() { return OnItemWidgetUpdate; }
 
 private:
-	// Update PassiveUI
-	FOnPassiveUIUpdate OnUpdatePassiveUI;
+	/**
+	* Update Item Widget..
+	* @param	DataAsset		Item Data Asset
+	* @param	bool			Whether the update target is Passive or Active (Passive is True)
+	*/
+	FOnItemWidgetUpdate OnItemWidgetUpdate;
 };

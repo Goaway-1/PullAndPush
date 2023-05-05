@@ -20,7 +20,7 @@ protected:
 	virtual void BeginPlay() override;
 
 public:
-	void UpdateItemUI(class UDataAsset* CurrentItem);
+	void UpdateItemUI(class UDataAsset* CurrentItem, const bool& IsPassvieItem);
 
 private:
 	UPROPERTY(EditAnywhere, Category = "Widget")

@@ -1,14 +1,14 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "Widget/ItemWidget.h"
+#include "Widget/PassiveItemWidget.h"
 #include "Components/Image.h"
 #include "Materials/MaterialInstanceDynamic.h"
 #include "Components/TextBlock.h"
 #include "Kismet/KismetSystemLibrary.h"
 
 
-void UItemWidget::NativeTick(const FGeometry& MyGeometry, float InDeltaTime)
+void UPassiveItemWidget::NativeTick(const FGeometry& MyGeometry, float InDeltaTime)
 {
 	Super::NativeTick(MyGeometry, InDeltaTime);
 
@@ -25,7 +25,7 @@ void UItemWidget::NativeTick(const FGeometry& MyGeometry, float InDeltaTime)
 		ConditionalBeginDestroy();
 	}
 }
-void UItemWidget::SetInitItem(FTimerHandle TimerHandler, UMaterialInterface* Material, float Cost) {
+void UPassiveItemWidget::UpdateItemSetting(FTimerHandle TimerHandler, UMaterialInterface* Material, float Cost) {
 	// Set Default Setting (Material, Handler, Cost..)
 	ItemMaterial = UMaterialInstanceDynamic::Create(Material, this);
 	ItemCost = Cost;

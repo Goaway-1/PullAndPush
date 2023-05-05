@@ -4,19 +4,19 @@
 
 #include "CoreMinimal.h"
 #include "Blueprint/UserWidget.h"
-#include "ItemWidget.generated.h"
+#include "PassiveItemWidget.generated.h"
 
 /**
  * 
  */
 UCLASS(Abstract)
-class PULLANDPUSH_API UItemWidget : public UUserWidget
+class PULLANDPUSH_API UPassiveItemWidget : public UUserWidget
 {
 	GENERATED_BODY()
 public:
 	virtual void NativeTick(const FGeometry& MyGeometry, float InDeltaTime) override;
 
-	void SetInitItem(FTimerHandle TimerHandler, UMaterialInterface* Material, float Cost);
+	void UpdateItemSetting(FTimerHandle TimerHandler, UMaterialInterface* Material, float Cost);
 
 protected:
 	UPROPERTY(meta = (BindWidget))

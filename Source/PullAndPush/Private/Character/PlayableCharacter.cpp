@@ -46,11 +46,11 @@ void APlayableCharacter::PossessedBy(AController* NewController)
 {
 	Super::PossessedBy(NewController);
 
+	// Set Item Widget
 	PlayableController = Cast<APlayableController>(NewController);
-
 	if (PlayableController && ItemUsageComp)
 	{
-		ItemUsageComp->GetUpdatePassiveUI().BindUObject(PlayableController, &APlayableController::UpdateItemUI);
+		ItemUsageComp->GetItemWidgetUpdateDelegate().BindUObject(PlayableController, &APlayableController::UpdateItemUI);
 	}
 }
 void APlayableCharacter::UnPossessed()
@@ -58,7 +58,7 @@ void APlayableCharacter::UnPossessed()
 	// Unmap from inventory source
 	if (PlayableController)
 	{
-		ItemUsageComp->GetUpdatePassiveUI().Unbind();
+		ItemUsageComp->GetItemWidgetUpdateDelegate().Unbind();
 	}
 }
 void APlayableCharacter::BeginPlay()
