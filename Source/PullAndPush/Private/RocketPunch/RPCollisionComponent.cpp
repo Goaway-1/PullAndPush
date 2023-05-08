@@ -49,7 +49,7 @@ void URPCollisionComponent::OnHit(UPrimitiveComponent* HitComponent, AActor* Oth
 			// CasterActor move to hit location
 			GrapMoveToLocation(CasterActor,Hit.Location);
 		}
-		else if (!GrapActor && OtherCompCollsionName == "PhysicsActor" || OtherCompCollsionName == "Pawn" || OtherCompCollsionName == "Item") {
+		else if (!GrapActor.IsValid() && OtherCompCollsionName == "PhysicsActor" || OtherCompCollsionName == "Pawn" || OtherCompCollsionName == "Item") {
 			// Hit object follow the RP
 			// @TODO : 도중에 방해요소 존재 시 오브젝트 부착 해제
 
@@ -73,18 +73,18 @@ void URPCollisionComponent::ResetOverlapActors()
 {
 	/** Reset Grap Object */
 	// Item, Character of Pull
-	TScriptInterface<class ICollisionActionHandler> ActionHandler = GrapActor;
+	TScriptInterface<class ICollisionActionHandler> ActionHandler = GrapActor.Get();
 	if (ActionHandler.GetInterface()) {
 		ActionHandler->SetMoveToActor(nullptr);
 		GrapActor = nullptr;
 	}
 
 	// PhysicsActor of Pull
-	if (IsValid(GrapActor) && IsValid(GrapUPrimitiveComponent)) {
-		GrapUPrimitiveComponent->SetSimulatePhysics(true);
-		GrapUPrimitiveComponent->SetAllPhysicsLinearVelocity(FVector::ZeroVector);
+	if (GrapActor.IsValid() && GrapUPrimitiveComponent.IsValid()) {
+		GrapUPrimitiveComponent.Get()->SetSimulatePhysics(true);
+		GrapUPrimitiveComponent.Get()->SetAllPhysicsLinearVelocity(FVector::ZeroVector);
 		FDetachmentTransformRules DetachmentRules(EDetachmentRule::KeepWorld, true);
-		GrapActor->DetachFromActor(DetachmentRules);
+		GrapActor.Get()->DetachFromActor(DetachmentRules);
 		GrapActor = nullptr;
 	}
 
@@ -115,12 +115,12 @@ void URPCollisionComponent::GrapActorToOwner(AActor* TargetActor, UPrimitiveComp
 	GrapActor = TargetActor;
 	GrapUPrimitiveComponent = OtherComponent;
 
-	if (IsValid(GrapUPrimitiveComponent)) {
-		GrapUPrimitiveComponent->SetSimulatePhysics(false);
-		GrapActor->AttachToActor(GetOwner(), FAttachmentTransformRules::KeepWorldTransform);
+	if (GrapUPrimitiveComponent.IsValid()) {
+		GrapUPrimitiveComponent.Get()->SetSimulatePhysics(false);
+		GrapActor.Get()->AttachToActor(GetOwner(), FAttachmentTransformRules::KeepWorldTransform);
 	}
 	else{
-		TScriptInterface<class ICollisionActionHandler> ActionHandler = GrapActor;
+		TScriptInterface<class ICollisionActionHandler> ActionHandler = GrapActor.Get();
 		if (ActionHandler.GetInterface()) {
 			ActionHandler->SetMoveToActor(GetOwner());
 		}

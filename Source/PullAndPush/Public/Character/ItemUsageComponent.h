@@ -7,7 +7,12 @@
 #include "Interface/PickupActionHandler.h"
 #include "ItemUsageComponent.generated.h"
 
-DECLARE_DELEGATE_OneParam(FOnPassiveUIUpdate, class UDataAsset*)
+/**
+* Update Item Widget..
+* @param	DataAsset		Item Data Asset
+* @param	bool			Whether the update target is Passive or Active (Passive is True)
+*/
+DECLARE_DELEGATE_TwoParams(FOnItemWidgetUpdate, class UDataAsset*, const bool&)
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class PULLANDPUSH_API UItemUsageComponent : public UActorComponent, public IPickupActionHandler
@@ -16,23 +21,36 @@ class PULLANDPUSH_API UItemUsageComponent : public UActorComponent, public IPick
 
 public:	
 	UItemUsageComponent();
-	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
-
-protected:
-	virtual void BeginPlay() override;
 
 /** Item */
 public:
-	void PickUpItem(class UItem* ItemData);
+	void PickUpItem(class UItemData* ItemData);
+	void TryToUsePassiveItem(class UItemData* ItemData);
+	void TryToUseActiveItem();
+	void ThrowDeployableItem();
 
-	void StartActiveItem();
-	void StartPassiveItem();
+	FORCEINLINE bool GetIsReadyToThrow() {return bIsReadyToThrow;}
 
-	FOnPassiveUIUpdate& GetUpdatePassiveUI() {return OnUpdatePassiveUI;}
 private:
 	UPROPERTY(VisibleAnywhere, Category = Item)
-	TObjectPtr<class UItem> CurItemData;
+	TWeakObjectPtr<class UItemData> CurActiveItemData;
 
-	// Update PassiveUI
-	FOnPassiveUIUpdate OnUpdatePassiveUI;
+	UPROPERTY(VisibleAnywhere, Category = Item)
+	TWeakObjectPtr<class AActor> CurDeployableItem;
+
+	const FName ItemSocketName = "ItemSocket";
+
+	uint8 bIsReadyToThrow:1;
+
+/** Widget */
+public:
+	FOnItemWidgetUpdate& GetItemWidgetUpdateDelegate() { return OnItemWidgetUpdate; }
+
+private:
+	/**
+	* Update Item Widget..
+	* @param	DataAsset		Item Data Asset
+	* @param	bool			Whether the update target is Passive or Active (Passive is True)
+	*/
+	FOnItemWidgetUpdate OnItemWidgetUpdate;
 };

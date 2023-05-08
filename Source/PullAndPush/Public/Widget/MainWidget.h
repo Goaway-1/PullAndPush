@@ -13,10 +13,15 @@ UCLASS()
 class PULLANDPUSH_API UMainWidget : public UUserWidget
 {
 	GENERATED_BODY()
-public:
-	UMainWidget(const FObjectInitializer& ObjectInitializer);
 
-	void UpdateItemUI(class UDataAsset* CurrentItem);
+public:
+	void UpdateItemUI(class UDataAsset* CurrentItem, const bool& IsPassvieItem);
+
+protected:
+	virtual void NativeConstruct() override;
+
+	void UpdatePassiveItemUI(UDataAsset* CurrentItem);
+	void UpdateActiveItemUI(UDataAsset* CurrentItem);
 
 protected:
 	UPROPERTY(meta = (BindWidget))
@@ -26,9 +31,18 @@ protected:
 	TObjectPtr<class UHorizontalBox> ItemHorizontalBox;
 
 private:
+	/** Passive Item Widget */
 	UPROPERTY(EditAnywhere, Category = "Item")
-	TSubclassOf<class UItemWidget> ItemWidgetClass;
+	TSubclassOf<class UPassiveItemWidget> PassiveItemWidgetClass;
 
-	// Key : FPrimartAssetId, Value : ItemWidget
-	TMap<FName, TWeakObjectPtr<class UItemWidget>> ItemWidgetMap;
+	// Key : FPrimartAssetId, Value : PassiveItemWidget
+	UPROPERTY()
+	TMap<FName, TWeakObjectPtr<class UPassiveItemWidget>> PassiveItemWidgetMap;
+
+	/** Active Item Widget */
+	UPROPERTY(EditAnywhere, Category = "Item")
+	TSubclassOf<class UActiveItemWidget> ActiveItemWidgetClass;
+
+	UPROPERTY()
+	TObjectPtr<class UActiveItemWidget> ActiveItemWidget;
 };

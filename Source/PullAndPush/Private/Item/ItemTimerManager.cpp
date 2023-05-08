@@ -2,7 +2,7 @@
 
 
 #include "Item/ItemTimerManager.h"
-#include "Item/PassiveItem/PassiveItem.h"
+#include "Item/ItemData/PassiveItemData/PassiveItemData.h"
 
 AItemTimerManager* AItemTimerManager::Instance = nullptr;
 
@@ -16,7 +16,7 @@ AItemTimerManager* AItemTimerManager::GetInstance()
 {
     return Instance;
 }
-FTimerHandle AItemTimerManager::AddTimer(const FString& ItemOwnerName, const FString& ItemName, float& Duration, bool bLooping, class UPassiveItem* PassiveItem, bool& bIsItemActivated)
+FTimerHandle AItemTimerManager::AddTimer(const FString& ItemOwnerName, const FString& ItemName, float& Duration, bool bLooping, class UPassiveItemData* PassiveItem, bool& bIsItemActivated)
 {   
     // Check handler already exists
     const FName TimerName = FName(ItemOwnerName + '/' + ItemName);

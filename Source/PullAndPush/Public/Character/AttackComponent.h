@@ -29,6 +29,7 @@ private:
 	UPROPERTY(Transient)
 	float ChargingTime;
 
+	const FName RocketPunchSocketName = "RocketPunch";
 	uint8 bIsCharging:1;
 	uint8 bIsChangeValue:1;
 	const float DecideChargingTime = 0.2f;
@@ -44,7 +45,7 @@ private:
 	UFUNCTION()
 	void SetCanLaunch(const bool& Val);
 
-	TObjectPtr<class ACharacter> OwnerCharacter;
+	TWeakObjectPtr<class ACharacter> OwnerCharacter;
 	USkeletalMeshSocket const* RocketPunchSocket;
 
 protected:

@@ -35,4 +35,7 @@ public:
 	// For Passive
 	virtual float GetDurationTime() = 0;
 	virtual FTimerHandle GetTimerHandler() = 0;
+
+	// For Active
+	virtual TSubclassOf<AActor> GetSpawnItemClass() const = 0;
 };

@@ -17,12 +17,10 @@ void APlayableController::BeginPlay() {
 		MainWidget->SetVisibility(ESlateVisibility::Visible);
 	}
 }
-void APlayableController::UpdateItemUI(UDataAsset* CurrentItem)
+void APlayableController::UpdateItemUI(UDataAsset* CurrentItem, const bool& IsPassvieItem)
 {
-	UE_LOG(LogTemp,Warning,TEXT("[PlayerableController] UpdateItemUI"));
-	
-	ensure(CurrentItem);
 	ensure(MainWidget);
 
-	MainWidget->UpdateItemUI(CurrentItem);
+	// Set Item Widget
+	MainWidget->UpdateItemUI(CurrentItem, IsPassvieItem);
 }

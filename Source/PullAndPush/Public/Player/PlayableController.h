@@ -19,14 +19,13 @@ public:
 protected:
 	virtual void BeginPlay() override;
 
-protected:
+public:
+	void UpdateItemUI(class UDataAsset* CurrentItem, const bool& IsPassvieItem);
+
+private:
 	UPROPERTY(EditAnywhere, Category = "Widget")
 	TSubclassOf<class UMainWidget> MainWidgetClass;
 
 	UPROPERTY()
 	TObjectPtr<class UMainWidget> MainWidget;
-
-public:
-	UFUNCTION()
-	void UpdateItemUI(class UDataAsset* CurrentItem);
 };

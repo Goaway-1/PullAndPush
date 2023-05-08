@@ -28,8 +28,8 @@ void UAttackComponent::BeginPlay(){
 	RocketPunch->OutOfUse.BindUObject(this, &UAttackComponent::SetCanLaunch);	
 
 	OwnerCharacter = Cast<ACharacter>(GetOwner());
-	RocketPunchSocket = OwnerCharacter->GetMesh()->GetSocketByName("RocketPunch");
-	check(RocketPunchSocket);
+	RocketPunchSocket = OwnerCharacter.Get()->GetMesh()->GetSocketByName(RocketPunchSocketName);
+	ensure(RocketPunchSocket);
 }
 void UAttackComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
 {
@@ -71,8 +71,8 @@ void UAttackComponent::EndLaunch(bool bIsPush)
 	PPLOG(Log, TEXT("EndLaunch ChargingTime : %f"), ChargingTime);
 	if (RocketPunch && RocketPunchSocket && ChargingTime >= CanLaunchedTime) {
 		// Location & Rotator & Charging Percent
-		const FVector LaunchLocation = RocketPunchSocket->GetSocketLocation(OwnerCharacter->GetMesh());
-		const FRotator LaunchRotation = OwnerCharacter->GetControlRotation();
+		const FVector LaunchLocation = RocketPunchSocket->GetSocketLocation(OwnerCharacter.Get()->GetMesh());
+		const FRotator LaunchRotation = OwnerCharacter.Get()->GetControlRotation();
 		const float ChargingAlpha = (ChargingTime - CanLaunchedTime) / (MaxChargingTime - CanLaunchedTime);
 		
 		// Set ReadyToLaunch
