@@ -1,7 +1,7 @@
 #include "Item/ItemPickup.h"
 #include "Components/SphereComponent.h"
 #include "Interface/PickupActionHandler.h"
-#include "Item/Item.h"
+#include "Item/ItemData/ItemData.h"
 
 AItemPickup::AItemPickup()
 {
@@ -50,7 +50,7 @@ void AItemPickup::OnHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, U
 		}
 	}
 }
-void AItemPickup::SetItemSetting(bool IsSpawn, UItem* InItemDataAsset, FVector SpawnLocation)
+void AItemPickup::SetItemSetting(bool IsSpawn, UItemData* InItemDataAsset, FVector SpawnLocation)
 {
 	// Turn OnOff Actor Enable
 	SetActorEnableCollision(IsSpawn);

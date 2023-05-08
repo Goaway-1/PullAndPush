@@ -4,7 +4,7 @@
 
 #include "PullAndPush.h"
 #include "GameFramework/Actor.h"
-#include "Item/Item.h"
+#include "Item/ItemData/ItemData.h"
 #include "ItemTimerManager.generated.h"
 
 /**
@@ -19,7 +19,7 @@ public:
     static AItemTimerManager* GetInstance();    
 
     UFUNCTION(BlueprintCallable, Category = "Timer Manager")
-    FTimerHandle AddTimer(const FString& ItemOwnerName, const FString& ItemName, float& Duration, bool bLooping, class UPassiveItem* PassiveItem, bool& bIsItemActivated);
+    FTimerHandle AddTimer(const FString& ItemOwnerName, const FString& ItemName, float& Duration, bool bLooping, class UPassiveItemData* PassiveItem, bool& bIsItemActivated);
 
 private:
     AItemTimerManager(const FObjectInitializer& ObjectInitializer);

@@ -5,8 +5,16 @@
 #include "Engine.h"
 #include "GameFramework/Actor.h"
 #include "Item/ItemPickup.h"
-#include "Item/Item.h"
+#include "Item/ItemData/ItemData.h"
 #include "ItemSpawner.generated.h"
+
+UENUM(BlueprintType)
+enum class EItemSpawnType : uint8
+{
+	Normal = 0,
+	Passive,
+	Active
+};
 
 UCLASS()
 class PULLANDPUSH_API AItemSpawner : public AActor
@@ -34,6 +42,9 @@ private:
 	UPROPERTY()
 	TObjectPtr<class AItemPickup> ItemPickup;
 
+	UPROPERTY(EditAnywhere, Category = "Item | Spawn Type")
+	EItemSpawnType ItemSpawnType;
+
 	FVector SpawnLocation;
 
 	/** Respawn */
@@ -43,10 +54,10 @@ private:
 	UFUNCTION()
 	void RespawnItem();
 
-	UPROPERTY(EditAnywhere, Category = "Spawn Time")
+	UPROPERTY(EditAnywhere, Category = "Item | Spawn Time")
 	float MaxRespawnDelay;
 
-	UPROPERTY(EditAnywhere, Category="Spawn Time")
+	UPROPERTY(EditAnywhere, Category="Item | Spawn Time")
 	float MinRespawnDelay;
 
 	UPROPERTY()
@@ -54,8 +65,5 @@ private:
 
 	/** Item Data*/
 	UFUNCTION()
-	class UItem* SetRandomItemDataAsset();
-
-	UPROPERTY(EditAnywhere, Category="Item")
-	TArray<TObjectPtr<class UItem>> ItemDataArray;
+	class UItemData* SetRandomItemDataAsset();
 };

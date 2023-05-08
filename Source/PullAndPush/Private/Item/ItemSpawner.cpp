@@ -1,7 +1,7 @@
 #include "Item/ItemSpawner.h"
 #include "Components/StaticMeshComponent.h"
 #include "Kismet/KismetMathLibrary.h"
-#include "Item/Item.h"
+#include "Item/ItemData/ItemData.h"
 
 AItemSpawner::AItemSpawner()
     :
@@ -10,6 +10,7 @@ AItemSpawner::AItemSpawner()
 	PrimaryActorTick.bCanEverTick = true;
 
 	StaticMeshComp = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("StaticMeshComp"));
+    ItemSpawnType = EItemSpawnType::Normal;
 }
 void AItemSpawner::BeginPlay()
 {
@@ -52,20 +53,31 @@ void AItemSpawner::RespawnItem() {
     ensure(ItemPickup);
 
     // Set Item Data
-    UItem* CurItem = SetRandomItemDataAsset();
+    UItemData* CurItem = SetRandomItemDataAsset();
     ensure(CurItem);
     ItemPickup->SetItemSetting(true, CurItem, SpawnLocation);
 
     UE_LOG(LogTemp, Log, TEXT("Item Respawn : %s, %s"), *CurItem->GetItemName(), *CurItem->GetItemDescription());
 }
-UItem* AItemSpawner::SetRandomItemDataAsset()
+UItemData* AItemSpawner::SetRandomItemDataAsset()
 {
-    const int8 ItemDataCount = ItemDataArray.Num();
-    if (ItemDataCount <= 0) {
-        UE_LOG(LogTemp,Warning,TEXT("ItemDataArray is nullptr"));
-        return nullptr;
-    }
+    // Create an item according to ItemSpawnType
+    FPrimaryAssetType PrimaryAssetType = (ItemSpawnType == EItemSpawnType::Active) ? UItemAssetManager::ActiveItemType :
+        (ItemSpawnType == EItemSpawnType::Passive) ? UItemAssetManager::PassiveItemType :
+        FMath::RandBool() ? UItemAssetManager::ActiveItemType : UItemAssetManager::PassiveItemType;
 
-    const int8 ItemIndex = UKismetMathLibrary::RandomFloatInRange(0, ItemDataCount);
-    return ItemDataArray[ItemIndex];
+    // Find Asset using AssetManager
+    UAssetManager& Manager = UAssetManager::Get();
+    TArray<FPrimaryAssetId> Assets;
+    Manager.GetPrimaryAssetIdList(PrimaryAssetType, Assets);
+    ensure(0 < Assets.Num());
+
+    // Get Random Item
+    int32 RandomIndex = FMath::RandRange(0, Assets.Num() - 1);
+    FSoftObjectPtr AssetPtr(Manager.GetPrimaryAssetPath(Assets[RandomIndex]));
+    if (AssetPtr.IsPending())
+    {
+        AssetPtr.LoadSynchronous();
+    }
+    return Cast<UItemData>(AssetPtr.Get());
 }

@@ -24,8 +24,8 @@ public:
 
 /** Item */
 public:
-	void PickUpItem(class UItem* ItemData);
-	void TryToUsePassiveItem(class UItem* ItemData);
+	void PickUpItem(class UItemData* ItemData);
+	void TryToUsePassiveItem(class UItemData* ItemData);
 	void TryToUseActiveItem();
 	void ThrowDeployableItem();
 
@@ -33,7 +33,7 @@ public:
 
 private:
 	UPROPERTY(VisibleAnywhere, Category = Item)
-	TObjectPtr<class UItem> CurActiveItemData;
+	TObjectPtr<class UItemData> CurActiveItemData;
 
 	UPROPERTY(VisibleAnywhere, Category = Item)
 	TObjectPtr<class AActor> CurDeployableItem;

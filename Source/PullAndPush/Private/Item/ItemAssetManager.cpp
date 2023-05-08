@@ -2,10 +2,10 @@
 
 
 #include "Item/ItemAssetManager.h"
-#include "Item/Item.h"
+#include "Item/ItemData/ItemData.h"
 
-const FPrimaryAssetType	UItemAssetManager::PassiveItemType = TEXT("Passive");
-const FPrimaryAssetType	UItemAssetManager::ActiveItemType = TEXT("Active");
+const FPrimaryAssetType	UItemAssetManager::PassiveItemType = TEXT("PassiveItemData");
+const FPrimaryAssetType	UItemAssetManager::ActiveItemType = TEXT("ActiveItemData");
 
 UItemAssetManager& UItemAssetManager::Get()
 {
@@ -21,12 +21,12 @@ UItemAssetManager& UItemAssetManager::Get()
 		return *NewObject<UItemAssetManager>(); // never calls this
 	}
 }
-UItem* UItemAssetManager::ForceLoadItem(const FPrimaryAssetId& PrimaryAssetId, bool bLogWarning)
+UItemData* UItemAssetManager::ForceLoadItem(const FPrimaryAssetId& PrimaryAssetId, bool bLogWarning)
 {
 	FSoftObjectPath ItemPath = GetPrimaryAssetPath(PrimaryAssetId);
 
 	// This does a synchronous load and may hitch
-	UItem* LoadedItem = Cast<UItem>(ItemPath.TryLoad());
+	UItemData* LoadedItem = Cast<UItemData>(ItemPath.TryLoad());
 
 	if (bLogWarning && LoadedItem == nullptr)
 	{

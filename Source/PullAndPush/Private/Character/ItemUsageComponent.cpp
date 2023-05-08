@@ -1,7 +1,7 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 #include "Character/ItemUsageComponent.h"
-#include "Item/Item.h"
+#include "Item/ItemData/ItemData.h"
 #include "Interface/ItemActionHandler.h"
 #include "Interface/DeployableItemHandler.h"
 
@@ -12,7 +12,7 @@ UItemUsageComponent::UItemUsageComponent()
 	PrimaryComponentTick.bCanEverTick = false;
 
 }
-void UItemUsageComponent::PickUpItem(UItem* ItemData)
+void UItemUsageComponent::PickUpItem(UItemData* ItemData)
 {
 	check(ItemData);
 
@@ -71,7 +71,7 @@ void UItemUsageComponent::TryToUseActiveItem()
 		OnItemWidgetUpdate.Execute(CurActiveItemData, false);
 	}
 }
-void UItemUsageComponent::TryToUsePassiveItem(UItem* ItemData)
+void UItemUsageComponent::TryToUsePassiveItem(UItemData* ItemData)
 {
 	TScriptInterface<class IItemActionHandler> CurItemAction = ItemData;
 	if (CurItemAction.GetInterface()) 

@@ -21,5 +21,5 @@ public:
 
 	static UItemAssetManager& Get();
 
-	class UItem* ForceLoadItem(const FPrimaryAssetId& PrimaryAssetId, bool bLogWarning = true);
+	class UItemData* ForceLoadItem(const FPrimaryAssetId& PrimaryAssetId, bool bLogWarning = true);
 };

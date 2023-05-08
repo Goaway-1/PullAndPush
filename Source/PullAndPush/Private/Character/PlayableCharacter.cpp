@@ -282,7 +282,7 @@ void APlayableCharacter::MoveToActor()
 		SetActorLocation(MoveTargetActor->GetActorLocation());
 	}
 }
-void APlayableCharacter::PickUpItem(UItem* ItemData)
+void APlayableCharacter::PickUpItem(UItemData* ItemData)
 {
 	// @TODO : Controller에 UI의 정보[델리게이트]와 ItemUsageComponent에 Item정보[함수 호출]를 넘겨준다. (데이터를 넘겨주는 역할)
 	ItemUsageComp->PickUpItem(ItemData);

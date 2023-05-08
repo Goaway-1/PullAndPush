@@ -170,7 +170,7 @@ private:
 /** Item */
 #pragma region ITEM
 public:
-	virtual void PickUpItem(class UItem* ItemData) override;
+	virtual void PickUpItem(class UItemData* ItemData) override;
 
 	// Set Alpha Value Affected By Item
 	virtual void RocketPunchAlphaSpeed(const float& AlphaSpeed) override;
