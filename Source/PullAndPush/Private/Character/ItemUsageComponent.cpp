@@ -24,20 +24,20 @@ void UItemUsageComponent::PickUpItem(UItemData* ItemData)
 		CurActiveItemData = ItemData;
 
 		// Show 'Passive Widget'
-		OnItemWidgetUpdate.Execute(CurActiveItemData, false);
+		OnItemWidgetUpdate.Execute(CurActiveItemData.Get(), false);
 	}
 }
 void UItemUsageComponent::ThrowDeployableItem()
 {
-	if (!CurDeployableItem) return;
+	if (!CurDeployableItem.IsValid()) return;
 
 	PPLOG(Log,TEXT("Throw Item"));
 	
 	// Detach
-	CurDeployableItem->DetachFromActor(FDetachmentTransformRules::KeepWorldTransform);
+	CurDeployableItem.Get()->DetachFromActor(FDetachmentTransformRules::KeepWorldTransform);
 
 	// Set Deployable Item Physics and Collision
-	TScriptInterface<class IDeployableItemHandler> CurItemHandler = CurDeployableItem;
+	TScriptInterface<class IDeployableItemHandler> CurItemHandler = CurDeployableItem.Get();
 	if (CurItemHandler.GetInterface())
 	{	
 		CurItemHandler->SetActivePhysicsAndCollision();
@@ -50,25 +50,25 @@ void UItemUsageComponent::ThrowDeployableItem()
 }
 void UItemUsageComponent::TryToUseActiveItem()
 {
-	if(!CurActiveItemData) return;
+	if(!CurActiveItemData.IsValid()) return;
 
 	PPLOG(Log, TEXT("UseActionItem"));
-	TScriptInterface<class IItemActionHandler> CurItemAction = CurActiveItemData;
+	TScriptInterface<class IItemActionHandler> CurItemAction = CurActiveItemData.Get();
 	if (CurItemAction.GetInterface())
 	{
 		// Spawn
 		TSubclassOf<class AActor> DeployableItemClass = CurItemAction->GetSpawnItemClass();
 		CurDeployableItem = GetWorld()->SpawnActor(DeployableItemClass);
-		CurDeployableItem->SetActorLocation(GetOwner()->GetActorLocation());
+		CurDeployableItem.Get()->SetActorLocation(GetOwner()->GetActorLocation());
 
 		// Attach
-		CurDeployableItem->AttachToActor(GetOwner(),FAttachmentTransformRules::SnapToTargetNotIncludingScale, ItemSocketName);
+		CurDeployableItem.Get()->AttachToActor(GetOwner(), FAttachmentTransformRules::SnapToTargetNotIncludingScale, ItemSocketName);
 
 		bIsReadyToThrow = true;
 		CurActiveItemData = nullptr;
 
 		// Hide 'Passive Widget'
-		OnItemWidgetUpdate.Execute(CurActiveItemData, false);
+		OnItemWidgetUpdate.Execute(CurActiveItemData.Get(), false);
 	}
 }
 void UItemUsageComponent::TryToUsePassiveItem(UItemData* ItemData)

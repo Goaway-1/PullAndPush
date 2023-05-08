@@ -33,10 +33,10 @@ public:
 
 private:
 	UPROPERTY(VisibleAnywhere, Category = Item)
-	TObjectPtr<class UItemData> CurActiveItemData;
+	TWeakObjectPtr<class UItemData> CurActiveItemData;
 
 	UPROPERTY(VisibleAnywhere, Category = Item)
-	TObjectPtr<class AActor> CurDeployableItem;
+	TWeakObjectPtr<class AActor> CurDeployableItem;
 
 	const FName ItemSocketName = "ItemSocket";
 

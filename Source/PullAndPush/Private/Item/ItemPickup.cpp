@@ -8,6 +8,7 @@ AItemPickup::AItemPickup()
 	PrimaryActorTick.bCanEverTick = false;
 
 	CollisionComp = CreateDefaultSubobject<USphereComponent>(TEXT("CollisionComp"));
+	CollisionComp->SetCollisionProfileName(CollisionName);
 	StaticMeshComp = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("StaticMeshComp"));
 
 	SetRootComponent(CollisionComp);
@@ -29,16 +30,16 @@ void AItemPickup::OnHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, U
 		
 		/** Character's Pickup Action */
 		TScriptInterface<class IPickupActionHandler> ActionHandler = OtherActor;
-		if (ActionHandler.GetInterface() && CurItem) 
+		if (ActionHandler.GetInterface() && CurItem.IsValid()) 
 		{
-			ActionHandler->PickUpItem(CurItem);
+			ActionHandler->PickUpItem(CurItem.Get());
+
+			SetItemSetting(false);
+
+			// Inform ItemSpawner of Pickup Action.
+			// @TODO : 나중에 떨어지는 지형과 충돌한 경우 삭제되면 안됌
+			OnPickupAction.Execute();
 		}
-
-		SetItemSetting(false);
-
-		// Inform ItemSpawner of Pickup Action.
-		// @TODO : 나중에 떨어지는 지형과 충돌한 경우에도 알려야 함.
-		OnPickupAction.Execute();		
 	}
 	else if(OtherCompCollsionName == "RocketPunch") {
 		UE_LOG(LogTemp, Log, TEXT("Item overrlap with Punch"));
@@ -61,10 +62,10 @@ void AItemPickup::SetItemSetting(bool IsSpawn, UItemData* InItemDataAsset, FVect
 	CurItem = InItemDataAsset;
 
 	// SetLocation & Mesh if Spawn!
-	if(IsSpawn && CurItem)
+	if(IsSpawn && CurItem.IsValid())
 	{
 		SetActorLocationAndRotation(SpawnLocation, FRotator::ZeroRotator);
-		StaticMeshComp->SetStaticMesh(CurItem->GetStaticMesh());
+		StaticMeshComp->SetStaticMesh(CurItem.Get()->GetStaticMesh());
 		StaticMeshComp->SetRelativeLocation(FVector::Zero());
 	}
 }

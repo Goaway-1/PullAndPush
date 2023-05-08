@@ -73,7 +73,6 @@ private:
 	void ActiveMovementSpeed(const bool& IsCharging = false);
 
 	// Controller
-	UPROPERTY()
 	TObjectPtr<class APlayableController> PlayableController;
 
 	// Move properties
@@ -139,7 +138,7 @@ private:
 	uint8 bIsMoveToActor : 1;
 
 	UPROPERTY(VisibleAnywhere)
-	TObjectPtr<AActor> MoveTargetActor;
+	TWeakObjectPtr<AActor> MoveTargetActor;
 #pragma endregion
 
 /** Enhanced Input */

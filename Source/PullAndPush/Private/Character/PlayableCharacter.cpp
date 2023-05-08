@@ -278,8 +278,8 @@ void APlayableCharacter::SetMoveToActor(AActor* TargetActor)
 }
 void APlayableCharacter::MoveToActor()
 {
-	if (bIsMoveToActor && MoveTargetActor) {
-		SetActorLocation(MoveTargetActor->GetActorLocation());
+	if (bIsMoveToActor && MoveTargetActor.IsValid()) {
+		SetActorLocation(MoveTargetActor.Get()->GetActorLocation());
 	}
 }
 void APlayableCharacter::PickUpItem(UItemData* ItemData)

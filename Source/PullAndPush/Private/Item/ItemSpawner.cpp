@@ -7,21 +7,13 @@ AItemSpawner::AItemSpawner()
     :
     MaxRespawnDelay(10.f), MinRespawnDelay(3.f)
 {
-	PrimaryActorTick.bCanEverTick = true;
-
 	StaticMeshComp = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("StaticMeshComp"));
     ItemSpawnType = EItemSpawnType::Normal;
 }
 void AItemSpawner::BeginPlay()
 {
 	Super::BeginPlay();
-
     InitSetting();
-}
-void AItemSpawner::Tick(float DeltaTime)
-{
-	Super::Tick(DeltaTime);
-
 }
 void AItemSpawner::InitSetting()
 {

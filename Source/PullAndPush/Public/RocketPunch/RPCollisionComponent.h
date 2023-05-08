@@ -32,7 +32,7 @@ public:
 
 private:
 	UPROPERTY(VisibleAnywhere, Category = "OverlapActors")
-	TSet<TObjectPtr<AActor>> OverlapActors;
+	TSet<TWeakObjectPtr<AActor>> OverlapActors;
 
 	/** Push Event */
 	UPROPERTY(EditAnyWhere, Category = "Push Force", meta = (AllowPrivateAccess = "true"))
@@ -46,10 +46,10 @@ private:
 	
 	/** Pull Event */
 	UPROPERTY(VisibleAnywhere)
-	TObjectPtr<AActor> GrapActor;
+	TWeakObjectPtr<AActor> GrapActor;
 
 	UPROPERTY(VisibleAnywhere)
-	TObjectPtr<UPrimitiveComponent> GrapUPrimitiveComponent;
+	TWeakObjectPtr<UPrimitiveComponent> GrapUPrimitiveComponent;
 
 	/** Owner Character move to location */
 	void GrapMoveToLocation(class AActor* TargetActor, FVector Location);

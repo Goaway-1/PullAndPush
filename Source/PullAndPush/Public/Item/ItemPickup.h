@@ -36,5 +36,7 @@ private:
 	void OnHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComponent, FVector NormalImpulse, const FHitResult& Hit);
 
 	UPROPERTY(VisibleAnywhere, Category="Item")
-	TObjectPtr<class UItemData> CurItem;
+	TWeakObjectPtr<class UItemData> CurItem;
+
+	const FName CollisionName = TEXT("Item");
 };
