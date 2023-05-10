@@ -22,14 +22,13 @@ class PULLANDPUSH_API UItemUsageComponent : public UActorComponent, public IPick
 public:	
 	UItemUsageComponent();
 
+	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
+
 /** Item */
 public:
 	void PickUpItem(class UItem* ItemData);
 	void TryToUsePassiveItem(class UItem* ItemData);
 	void TryToUseActiveItem();
-	void ThrowDeployableItem();
-
-	FORCEINLINE bool GetIsReadyToThrow() {return bIsReadyToThrow;}
 
 private:
 	UPROPERTY(VisibleAnywhere, Category = Item)
@@ -39,8 +38,35 @@ private:
 	TObjectPtr<class AActor> CurDeployableItem;
 
 	const FName ItemSocketName = "ItemSocket";
-
 	uint8 bIsReadyToThrow:1;
+
+/** Throw Deployable Item */
+public:
+	void ThrowDeployableItem();
+
+	FORCEINLINE bool GetIsReadyToThrow() { return bIsReadyToThrow; }
+
+protected:
+	// Create Projectile Item Path
+	void CreatePredictedProjectilePath();
+	void InitializeSplineMeshComponent(class USplineMeshComponent* InSplineMeshComponent, int32 SplineCount);
+	void ClearSplineMeshComponents();
+
+	UPROPERTY(VisibleAnywhere, Category = Spline)
+	TObjectPtr<class USplineComponent> SplineComp;
+
+	UPROPERTY(VisibleAnywhere, Category = Spline)
+	TSet<TWeakObjectPtr<class USplineMeshComponent>> SplineMeshComps;
+
+	UPROPERTY(EditAnywhere, Category = Spline)
+	TObjectPtr<UStaticMesh> SplineStaticMesh;
+
+	FVector LaunchVelocity;
+	const int8 SplineMaxPathCnt = 10;
+	const float AlphaLaunchPos = 50.f;		// Value added to current actor position for launch point
+	const float DefaultLaunchForce = 800.f;
+	const FVector DefaultLaunchForwardVector = FVector(0.f,0.f,0.5f);
+
 
 /** Widget */
 public:
