@@ -6,6 +6,9 @@
 #include "Blueprint/UserWidget.h"
 #include "MainWidget.generated.h"
 
+
+DECLARE_DELEGATE_OneParam(FOnChangeVisibleItemWidget, bool)
+
 /**
  * 
  */
@@ -45,4 +48,8 @@ private:
 
 	UPROPERTY()
 	TObjectPtr<class UActiveItemWidget> ActiveItemWidget;
+
+public:
+	// Change Active Item Visible
+	FOnChangeVisibleItemWidget OnChangeVisibleItemWidget;
 };

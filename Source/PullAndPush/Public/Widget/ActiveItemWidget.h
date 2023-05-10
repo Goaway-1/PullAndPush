@@ -18,16 +18,41 @@ protected:
 	virtual void NativeConstruct() override;
 
 public:
-	/**
-	* Update Active item Material
-	* @param Material		Set Default Material if Material is nullptr
-	*/
-	void UpdateItemMaterial(UMaterialInterface* Material = nullptr);
+	/** Update Active item 	*/
+	void UpdateItem(class UDataAsset* ItemData= nullptr);
+
+
+	/** Set Visibility Active item info	*/
+	UFUNCTION()
+	void ChangeVisibleItemInfo(bool bVisibility);
 
 protected:
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<class UImage> Icon;
 
-	UPROPERTY(EditDefaultsOnly, Category="Material")
+	UPROPERTY(meta = (BindWidget))
+	TObjectPtr<class UCanvasPanel> IconCanvasPanel;
+
+	UPROPERTY(meta = (BindWidget))
+	TObjectPtr<class UCanvasPanel> TextCanvasPanel;
+
+	UPROPERTY(meta = (BindWidget))
+	TObjectPtr<class UVerticalBox> NameVerticalBox;
+
+	UPROPERTY(meta = (BindWidget))
+	TObjectPtr<class UVerticalBox> DescriptionVerticalBox;
+
+	UPROPERTY(meta = (BindWidget))
+	TObjectPtr<class UTextBlock> NameText;
+
+	UPROPERTY(meta = (BindWidget))
+	TObjectPtr<class UTextBlock> DescriptionText;
+
+// Data
+protected:
+	UPROPERTY(EditDefaultsOnly, Category="Item | Material")
 	TObjectPtr<class UMaterialInterface> DefaultMaterial;
+
+	UPROPERTY(VisibleAnywhere, Category = "Item")
+	TWeakObjectPtr<class UDataAsset> CurrentItemData;
 };

@@ -19,6 +19,7 @@ class PULLANDPUSH_API APlayableCharacter : public ACharacter, public ICollisionA
 	GENERATED_BODY()
 
 /** Default */
+#pragma region DEFAULT
 public:
 	APlayableCharacter();
 	~APlayableCharacter();
@@ -83,6 +84,7 @@ private:
 
 	const float DefaultMoveSpeed = 600.f;
 	const float MaxJumpVelocity = 420.f;
+#pragma endregion
 
 /** Charging */
 #pragma region CHARGING
@@ -162,6 +164,9 @@ protected:
 	UPROPERTY(EditDefaultsOnly, Category = Input)
 	TObjectPtr<class UInputAction> ItemUseAction;
 
+	UPROPERTY(EditDefaultsOnly, Category = Input)
+	TObjectPtr<class UInputAction> ShowItemInfoAction;
+
 private:
 	void InitEnhancedInput();
 #pragma endregion
@@ -179,6 +184,9 @@ public:
 private:
 	UFUNCTION()
 	void UseActiveItem();
+
+	UFUNCTION()
+	void ChangeVisibleItemInfo(const FInputActionValue& Value);
 #pragma endregion
 
 };

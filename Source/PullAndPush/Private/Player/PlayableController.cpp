@@ -24,3 +24,7 @@ void APlayableController::UpdateItemUI(UDataAsset* CurrentItem, const bool& IsPa
 	// Set Item Widget
 	MainWidget->UpdateItemUI(CurrentItem, IsPassvieItem);
 }
+void APlayableController::ChangeVisibleItemInfo(bool bVisibility)
+{
+	MainWidget->OnChangeVisibleItemWidget.Execute(bVisibility);
+}
