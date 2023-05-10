@@ -19,8 +19,11 @@ void UMainWidget::NativeConstruct()
     if (ActiveItemWidget)
     {
         // Set Widet Init & Postion
-        ActiveItemWidget->UpdateItemMaterial();
+        ActiveItemWidget->UpdateItem();
         ItemHorizontalBox->AddChildToHorizontalBox(ActiveItemWidget);
+
+        // Bind Delegate : Visible Active Item
+        OnChangeVisibleItemWidget.BindUObject(ActiveItemWidget, &UActiveItemWidget::ChangeVisibleItemInfo);
     }
 }
 void UMainWidget::UpdateItemUI(UDataAsset* CurrentItem, const bool& IsPassvieItem) 
@@ -69,13 +72,6 @@ void UMainWidget::UpdatePassiveItemUI(UDataAsset* CurrentItem)
 }
 void UMainWidget::UpdateActiveItemUI(UDataAsset* CurrentItem)
 {
-    TScriptInterface<class IItemActionHandler> CurItemAction = CurrentItem;
-    if (CurItemAction.GetInterface())
-    {
-        ActiveItemWidget->UpdateItemMaterial(CurItemAction->GetItemMaterialInterface());
-    }
-    else
-    {
-        ActiveItemWidget->UpdateItemMaterial();
-    }
+    ActiveItemWidget->UpdateItem(CurrentItem);
 }
+ 

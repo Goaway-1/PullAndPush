@@ -149,7 +149,7 @@ void UItemUsageComponent::TryToUseActiveItem()
 		CurDeployableItem->AttachToActor(GetOwner(), FAttachmentTransformRules::SnapToTargetNotIncludingScale, ItemSocketName);
 
 		// Hide 'Passive Widget'
-		OnItemWidgetUpdate.Execute(CurActiveItemData.Get(), false);
+		OnItemWidgetUpdate.Execute(nullptr, false);
 
 		bIsReadyToThrow = true;
 		CurActiveItemData = nullptr;

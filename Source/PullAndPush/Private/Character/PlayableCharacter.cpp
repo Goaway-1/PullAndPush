@@ -98,6 +98,9 @@ void APlayableCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputC
 
 		EnhancedInputComponent->BindAction(RPAction, ETriggerEvent::Started, this, "TryLaunch");
 		EnhancedInputComponent->BindAction(RPAction, ETriggerEvent::Completed, this, "EndLaunch");
+
+		EnhancedInputComponent->BindAction(ShowItemInfoAction, ETriggerEvent::Started, this, "ChangeVisibleItemInfo");
+		EnhancedInputComponent->BindAction(ShowItemInfoAction, ETriggerEvent::Completed, this, "ChangeVisibleItemInfo");
 	}
 }
 void APlayableCharacter::SetPlayerAttackCondition(const bool& IsCharging)
@@ -289,6 +292,11 @@ void APlayableCharacter::PickUpItem(UItemData* ItemData)
 }
 void APlayableCharacter::UseActiveItem() {
 	ItemUsageComp->TryToUseActiveItem();
+}
+void APlayableCharacter::ChangeVisibleItemInfo(const FInputActionValue& Value)
+{
+	bool bActiveItemVisible = Value.Get<bool>();
+	PlayableController->ChangeVisibleItemInfo(bActiveItemVisible);
 }
 void APlayableCharacter::RocketPunchAlphaSpeed(const float& AlphaSpeed)
 {

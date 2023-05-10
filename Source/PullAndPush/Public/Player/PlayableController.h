@@ -22,6 +22,7 @@ protected:
 public:
 	void UpdateItemUI(class UDataAsset* CurrentItem, const bool& IsPassvieItem);
 
+	void ChangeVisibleItemInfo(bool bVisibility);
 private:
 	UPROPERTY(EditAnywhere, Category = "Widget")
 	TSubclassOf<class UMainWidget> MainWidgetClass;
