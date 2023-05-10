@@ -30,10 +30,10 @@ private:
 	void CheckIsExploded(float DeltaTime);
 
 private:
-	UPROPERTY(EditDefaultsOnly, Category = "FX")
+	UPROPERTY(EditDefaultsOnly, Category = "Item | FX")
 	TObjectPtr<class UParticleSystem> ExplosionEffect;
 
-	UPROPERTY(EditDefaultsOnly, Category = "FX")
+	UPROPERTY(EditDefaultsOnly, Category = "Item | FX")
 	TObjectPtr<class UMaterialInterface> ExplodedMaterial;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Item | Explosion")
