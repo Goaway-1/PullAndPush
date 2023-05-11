@@ -33,8 +33,7 @@ public:
 	* 아이템 습득 : 모두 지정
 	* 주무기 차징 : IsCharging만 지정
 	*/
-
-	virtual void SetPlayerAttackCondition(const bool& IsCharging) = 0;
+	virtual void SetPlayerAttackCondition(const bool IsCharging) = 0;
 
 #pragma region ITEM
 /** Item : Character Movement Speed Up 

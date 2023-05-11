@@ -7,7 +7,6 @@
 #include "Interface/CollisionActionHandler.h"
 #include "Interface/PickupActionHandler.h"
 #include "Interface/CharacterPropertyHandler.h"
-#include "Components/TimelineComponent.h"
 #include "PlayableCharacter.generated.h"
 
 class USpringArmComponent;
@@ -34,7 +33,7 @@ public:
 	FORCEINLINE EPlayerAttackCondition GetPlayerAttackCondition() {return PlayerAttackCondition;}
 
 	UFUNCTION(BlueprintCallable)
-	virtual void SetPlayerAttackCondition(const bool& IsCharging) override;
+	virtual void SetPlayerAttackCondition(const bool IsCharging) override;
 
 	// Try to set Movement Speed
 	// Call Item or Charging
@@ -54,9 +53,6 @@ protected:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
 	TObjectPtr<class UItemUsageComponent> ItemUsageComp;
-
-	UPROPERTY(EditDefaultsOnly, Category = "Camera")
-	TObjectPtr<UTimelineComponent> ZoomTimeline;
 
 private:
 	UFUNCTION()
@@ -87,7 +83,7 @@ private:
 #pragma endregion
 
 /** Charging */
-#pragma region CHARGING
+#pragma region CHARGING&ZOOM
 /** Charging */
 private:
 	UFUNCTION()
@@ -96,24 +92,22 @@ private:
 	UFUNCTION()
 	void EndLaunch();
 
-/** Zoom */
-	UPROPERTY(VisibleAnywhere, Category = "Condition")
-	EPlayerAttackCondition PlayerAttackCondition;
-
-	UPROPERTY(EditDefaultsOnly, Category = "Camera", Meta = (AllowPrivateAccess = true))
-	TObjectPtr<UCurveFloat> ZoomCurve;
-
-	FOnTimelineFloat ZoomInterpFunction;
-	uint8 bIsPush : 1;
-
 	UFUNCTION()
 	void UpdateSpringArmLength(const float NewArmLength);
 
 	void InitSpringArm(USpringArmComponent* SpringArm, const float& NewTargetArmLength, const FVector& NewSocketOffset);
 	void SetPlayerView();
-	void InitZoomTimeLine();
 
-	void ZoomInOut();
+	UPROPERTY(VisibleAnywhere, Category = "Condition")
+	EPlayerAttackCondition PlayerAttackCondition;
+
+	uint8 bIsPush : 1;
+
+/** Zoom */
+protected:
+	UPROPERTY(EditDefaultsOnly, Category = "Camera")
+	TObjectPtr<class UAimingComponent> AimingComp;
+
 #pragma endregion
 
 /** Collision Hit Event Of Another Actor */

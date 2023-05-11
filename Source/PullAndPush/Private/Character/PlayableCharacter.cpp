@@ -1,11 +1,11 @@
 #include "Character/PlayableCharacter.h"
 #include "Character/AttackComponent.h"
 #include "Character/ItemUsageComponent.h"
+#include "Character/AimingComponent.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "Camera/CameraComponent.h"
 #include "Components/CapsuleComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
-#include "Curves/CurveFloat.h"
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
 #include "Runnable/CharacterPropertyRunnable.h"
@@ -21,15 +21,12 @@ APlayableCharacter::APlayableCharacter()
 	CameraComp = CreateDefaultSubobject<UCameraComponent>(TEXT("CameraComp"));
 	AttackComp = CreateDefaultSubobject<UAttackComponent>(TEXT("AttackComp"));
 	ItemUsageComp = CreateDefaultSubobject<UItemUsageComponent>(TEXT("ItemUsageComp"));
+	AimingComp = CreateDefaultSubobject<UAimingComponent>(TEXT("AimingComp"));
 
 	// Camera Setting
 	InitSpringArm(SpringArmComp, 450.f, FVector(0.f, 0.f, 60.f));
 	CameraComp->SetupAttachment(SpringArmComp);
 	bUseControllerRotationYaw = false;
-
-	// ZoomIn & Out
-	ZoomTimeline = CreateDefaultSubobject<UTimelineComponent>(TEXT("ZoomTimeline"));
-	ZoomInterpFunction.BindUFunction(this, FName("UpdateSpringArmLength"));
 
 	GetCharacterMovement()->bOrientRotationToMovement = true;
 	GetCharacterMovement()->RotationRate = FRotator(0.f,700.f,0.f);
@@ -64,8 +61,6 @@ void APlayableCharacter::UnPossessed()
 void APlayableCharacter::BeginPlay()
 {
 	Super::BeginPlay();
-
-	InitZoomTimeLine();
 
 	/** Thread for Character Properties... */
 	PropertyRunnable = new FCharacterPropertyRunnable();
@@ -103,11 +98,11 @@ void APlayableCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputC
 		EnhancedInputComponent->BindAction(ShowItemInfoAction, ETriggerEvent::Completed, this, "ChangeVisibleItemInfo");
 	}
 }
-void APlayableCharacter::SetPlayerAttackCondition(const bool& IsCharging)
+void APlayableCharacter::SetPlayerAttackCondition(const bool IsCharging)
 {
 	PlayerAttackCondition = (IsCharging) ? EPlayerAttackCondition::EPAC_Charging : EPlayerAttackCondition::EPAC_Idle;
 
-	ZoomInOut();
+	AimingComp->ZoomInOut(IsCharging);
 	SetMovementSpeed(IsCharging);
 	ActiveMovementSpeed(IsCharging);	
 }
@@ -215,26 +210,6 @@ void APlayableCharacter::SetPlayerView()
 		NewRot.Roll = 0;
 		NewRot.Pitch = 0;
 		SetActorRotation(NewRot);
-	}
-}
-void APlayableCharacter::InitZoomTimeLine()
-{
-	if (ZoomTimeline && ZoomCurve)
-	{
-		ZoomTimeline->AddInterpFloat(ZoomCurve, ZoomInterpFunction);
-		ZoomTimeline->SetLooping(false);
-	}
-	else UE_LOG(LogTemp, Warning, TEXT("[PlayerableCharacter] ZoomCurve is not exist"));
-}
-void APlayableCharacter::ZoomInOut()
-{
-	if (GetPlayerAttackCondition() == EPlayerAttackCondition::EPAC_Charging) {
-		ZoomTimeline->Play();
-		ZoomTimeline->SetPlayRate(1.f);
-	}
-	else {
-		ZoomTimeline->Reverse();
-		ZoomTimeline->SetPlayRate(2.f);
 	}
 }
 void APlayableCharacter::UpdateSpringArmLength(const float NewArmLength)
