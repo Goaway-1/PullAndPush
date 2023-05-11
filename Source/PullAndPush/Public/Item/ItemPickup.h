@@ -2,7 +2,7 @@
 
 #pragma once
 
-#include "CoreMinimal.h"
+#include "PullAndPush.h"
 #include "GameFramework/Actor.h"
 #include "ItemPickup.generated.h"
 
@@ -15,6 +15,8 @@ class PULLANDPUSH_API AItemPickup : public AActor
 	
 public:	
 	AItemPickup();
+
+	virtual void FellOutOfWorld(const class UDamageType& dmgType) override;
 
 protected:
 	virtual void BeginPlay() override;

@@ -21,7 +21,6 @@ public:
 	/** Update Active item 	*/
 	void UpdateItem(class UDataAsset* ItemData= nullptr);
 
-
 	/** Set Visibility Active item info	*/
 	UFUNCTION()
 	void ChangeVisibleItemInfo(bool bVisibility);
@@ -31,16 +30,7 @@ protected:
 	TObjectPtr<class UImage> Icon;
 
 	UPROPERTY(meta = (BindWidget))
-	TObjectPtr<class UCanvasPanel> IconCanvasPanel;
-
-	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<class UCanvasPanel> TextCanvasPanel;
-
-	UPROPERTY(meta = (BindWidget))
-	TObjectPtr<class UVerticalBox> NameVerticalBox;
-
-	UPROPERTY(meta = (BindWidget))
-	TObjectPtr<class UVerticalBox> DescriptionVerticalBox;
 
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<class UTextBlock> NameText;
