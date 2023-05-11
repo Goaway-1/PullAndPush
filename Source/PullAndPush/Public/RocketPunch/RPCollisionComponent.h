@@ -34,7 +34,11 @@ private:
 	UPROPERTY(VisibleAnywhere, Category = "OverlapActors")
 	TSet<TWeakObjectPtr<AActor>> OverlapActors;
 
-	/** Push Event */
+	// RP has already overlapped with something
+	uint8 bIsAlreadyOverlapped : 1;
+
+/** Push Event */
+private:
 	UPROPERTY(EditAnyWhere, Category = "Push Force", meta = (AllowPrivateAccess = "true"))
 	float MaxKnockBackForce;
 
@@ -44,7 +48,8 @@ private:
 	void KnockBackActor(class UPrimitiveComponent* HitComponent, AActor* TargetActor, float ImpulseForce);
 	void KnockBackPrimitiveComponent(class UPrimitiveComponent* OtherComponent, const FHitResult& Hit, float ImpulseForce);
 	
-	/** Pull Event */
+/** Pull Event */
+private:
 	UPROPERTY(VisibleAnywhere)
 	TWeakObjectPtr<AActor> GrapActor;
 
