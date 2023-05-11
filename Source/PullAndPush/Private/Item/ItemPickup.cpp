@@ -14,6 +14,11 @@ AItemPickup::AItemPickup()
 	SetRootComponent(CollisionComp);
 	StaticMeshComp->SetupAttachment(RootComponent);
 }
+void AItemPickup::FellOutOfWorld(const UDamageType& dmgType)
+{
+	PPLOG(Log, TEXT("Item FellOutOfWorld"));
+	SetItemSetting(false);
+}
 void AItemPickup::BeginPlay()
 {
 	Super::BeginPlay();
@@ -25,26 +30,17 @@ void AItemPickup::OnHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, U
 	const FName OtherCompCollsionName = OtherComponent->GetCollisionProfileName();
 
 	// Hit Event of Push & Pull or Character
-	if (OtherCompCollsionName == "Pawn") {
-		UE_LOG(LogTemp, Log, TEXT("Item overrlap with Pawn"));
-		
+	if (OtherCompCollsionName == "Pawn") {		
 		/** Character's Pickup Action */
 		TScriptInterface<class IPickupActionHandler> ActionHandler = OtherActor;
 		if (ActionHandler.GetInterface() && CurItem.IsValid()) 
 		{
 			ActionHandler->PickUpItem(CurItem.Get());
-
 			SetItemSetting(false);
-
-			// Inform ItemSpawner of Pickup Action.
-			// @TODO : 나중에 떨어지는 지형과 충돌한 경우 삭제되면 안됌
-			OnPickupAction.Execute();
 		}
 	}
-	else if(OtherCompCollsionName == "RocketPunch") {
-		UE_LOG(LogTemp, Log, TEXT("Item overrlap with Punch"));
-		
-		// Enable Gravity
+	else {
+		/** Enable Gravity */
 		if(!CollisionComp->IsGravityEnabled())
 		{
 			CollisionComp->SetEnableGravity(true);	
@@ -68,5 +64,9 @@ void AItemPickup::SetItemSetting(bool IsSpawn, UItemData* InItemDataAsset, FVect
 		StaticMeshComp->SetStaticMesh(CurItem.Get()->GetStaticMesh());
 		StaticMeshComp->SetRelativeLocation(FVector::Zero());
 	}
+	else
+	{
+		// Inform ItemSpawner of Pickup Action.
+		OnPickupAction.Execute();
+	}
 }
-
