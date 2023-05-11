@@ -5,7 +5,7 @@
 
 URPCollisionComponent::URPCollisionComponent()
 	:
-	MaxKnockBackForce(100000.f), MinKnockBackForce(50000.f)
+	bIsAlreadyOverlapped(0), MaxKnockBackForce(100000.f), MinKnockBackForce(50000.f)
 {
 	PrimaryComponentTick.bCanEverTick = false;
 
@@ -19,11 +19,10 @@ void URPCollisionComponent::BeginPlay()
 void URPCollisionComponent::OnHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComponent, FVector NormalImpulse, const FHitResult& Hit, AActor* CasterActor, const bool IsPush,const float& ForceAlpha)
 {
 	// Check if the object is already processed
-	if (OverlapActors.Find(OtherActor)) return;
-
-	const FName OtherCompCollsionName = OtherComponent->GetCollisionProfileName();
+	if (OverlapActors.Find(OtherActor) || bIsAlreadyOverlapped) return;
 
 	// Event of Push or Pull 
+	const FName OtherCompCollsionName = OtherComponent->GetCollisionProfileName();
 	if (IsPush) {	
 		// KnockBack
 		float LerpForce = FMath::Lerp(MinKnockBackForce, MaxKnockBackForce, ForceAlpha);
@@ -66,6 +65,8 @@ void URPCollisionComponent::OnHit(UPrimitiveComponent* HitComponent, AActor* Oth
 		OnForceReturn.Execute(true);
 	}
 
+	// Set Value
+	bIsAlreadyOverlapped = true;
 	OverlapActors.Add(OtherActor);
 	UE_LOG(LogTemp, Warning, TEXT("[URPCollisionComponent] Overrlap Type is '%s', Name is '%s'"), *OtherComponent->GetCollisionProfileName().ToString(), *OtherActor->GetName());
 }
@@ -88,6 +89,7 @@ void URPCollisionComponent::ResetOverlapActors()
 		GrapActor = nullptr;
 	}
 
+	bIsAlreadyOverlapped = false;
 	OverlapActors.Reset();
 }
 void URPCollisionComponent::KnockBackActor(UPrimitiveComponent* HitComponent, AActor* TargetActor, float ImpulseForce)
