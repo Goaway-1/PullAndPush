@@ -15,19 +15,18 @@ ADeployableItem::ADeployableItem()
 void ADeployableItem::BeginPlay()
 {
 	Super::BeginPlay();
-	
-	SetActivePhysicsAndCollision(false);
-}
-void ADeployableItem::Tick(float DeltaTime)
-{
-	Super::Tick(DeltaTime);
 
 	// Destory Timer
-	DestoryTime -= DeltaTime;
-	if (DestoryTime < KINDA_SMALL_NUMBER)
-	{
-		Destroy();
-	}
+	SetActivePhysicsAndCollision(false);
+}
+void ADeployableItem::ActiveDeployableItem()
+{
+	PPLOG(Log, TEXT("Set Active DeployableItem"));
+}
+void ADeployableItem::DestoryDeployableItem()
+{
+	PPLOG(Log, TEXT("Destroy DeployableItem"));
+	Destroy();
 }
 void ADeployableItem::SetActivePhysicsAndCollision(bool InActive)
 {
@@ -39,6 +38,8 @@ void ADeployableItem::SetActivePhysicsAndCollision(bool InActive)
 	if (InActive)
 	{
 		MeshComp->SetCollisionEnabled(ECollisionEnabled::PhysicsOnly);
+		GetWorld()->GetTimerManager().SetTimer(ActiveHandler, this, &ADeployableItem::ActiveDeployableItem, ActiveTime, false);
+		GetWorld()->GetTimerManager().SetTimer(DestoryHandler, this, &ADeployableItem::DestoryDeployableItem, DestoryTime, false);
 	}
 	else 
 	{

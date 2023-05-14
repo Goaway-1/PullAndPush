@@ -2,7 +2,7 @@
 
 #pragma once
 
-#include "CoreMinimal.h"
+#include "PullAndPush.h"
 #include "GameFramework/Actor.h"
 #include "Interface/DeployableItemHandler.h"
 #include "DeployableItem.generated.h"
@@ -19,20 +19,31 @@ public:
 protected:
 	virtual void BeginPlay() override;
 
-public:	
-	virtual void Tick(float DeltaTime) override;
-
 #pragma endregion
 
 protected:
-	UPROPERTY(VisibleAnywhere, Category = "Component")
+	UPROPERTY(VisibleAnywhere, Category = "Item | Component")
 	TObjectPtr<class UStaticMeshComponent> MeshComp;
+
+/** Timer */
+protected:
+	UFUNCTION()
+	virtual void ActiveDeployableItem();
+
+	UFUNCTION()
+	void DestoryDeployableItem();
+
+protected:
+	UPROPERTY(EditDefaultsOnly, Category = "Item | Time")
+	float ActiveTime;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Item | Time")
 	float DestoryTime;
 
+	FTimerHandle ActiveHandler;
+	FTimerHandle DestoryHandler;
 
-/** Handler */
+/** Handler Interface */
 public:
 	virtual void SetActivePhysicsAndCollision(bool InActive = true) override;
 };

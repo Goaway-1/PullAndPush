@@ -17,7 +17,7 @@ AItemPickup::AItemPickup()
 void AItemPickup::FellOutOfWorld(const UDamageType& dmgType)
 {
 	PPLOG(Log, TEXT("Item FellOutOfWorld"));
-	SetItemSetting(false);
+	SetActiveItemPickup(false);
 }
 void AItemPickup::BeginPlay()
 {
@@ -36,7 +36,7 @@ void AItemPickup::OnHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, U
 		if (ActionHandler.GetInterface() && CurItem.IsValid()) 
 		{
 			ActionHandler->PickUpItem(CurItem.Get());
-			SetItemSetting(false);
+			SetActiveItemPickup(false);
 		}
 	}
 	else {
@@ -47,7 +47,7 @@ void AItemPickup::OnHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, U
 		}
 	}
 }
-void AItemPickup::SetItemSetting(bool IsSpawn, UItemData* InItemDataAsset, FVector SpawnLocation)
+void AItemPickup::SetActiveItemPickup(bool IsSpawn, UItemData* InItemDataAsset, FVector SpawnLocation)
 {
 	// Turn OnOff Actor Enable
 	SetActorEnableCollision(IsSpawn);

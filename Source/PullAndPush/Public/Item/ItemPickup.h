@@ -4,12 +4,13 @@
 
 #include "PullAndPush.h"
 #include "GameFramework/Actor.h"
+#include "Interface/ItemPickupPropertyHandler.h"
 #include "ItemPickup.generated.h"
 
 DECLARE_DELEGATE(FItemPickupOnAction)
 
 UCLASS()
-class PULLANDPUSH_API AItemPickup : public AActor
+class PULLANDPUSH_API AItemPickup : public AActor , public IItemPickupPropertyHandler
 {
 	GENERATED_BODY()
 	
@@ -25,8 +26,7 @@ public:
 	FItemPickupOnAction OnPickupAction;
 
 	// Settings when an item is created or used
-	UFUNCTION()
-	void SetItemSetting(bool IsSpawn, class UItemData* InItemDataAsset = nullptr, FVector SpawnLocation = FVector(0.f));
+	virtual void SetActiveItemPickup(bool IsSpawn, class UItemData* InItemDataAsset = nullptr, FVector SpawnLocation = FVector(0.f)) override;
 private:
 	UPROPERTY(EditDefaultsOnly)
 	TObjectPtr<class USphereComponent> CollisionComp;

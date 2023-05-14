@@ -143,9 +143,9 @@ void UItemUsageComponent::TryToUseActiveItem()
 		// Spawn
 		TSubclassOf<class AActor> DeployableItemClass = CurItemAction->GetSpawnItemClass();
 		CurDeployableItem = GetWorld()->SpawnActor(DeployableItemClass);
-		CurDeployableItem->SetActorLocation(GetOwner()->GetActorLocation());
 
-		// Attach
+		ensure(CurDeployableItem != nullptr);
+		CurDeployableItem->SetActorLocation(GetOwner()->GetActorLocation());
 		CurDeployableItem->AttachToActor(GetOwner(), FAttachmentTransformRules::SnapToTargetNotIncludingScale, ItemSocketName);
 
 		// Hide 'Passive Widget'

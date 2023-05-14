@@ -14,10 +14,6 @@ class PULLANDPUSH_API ABomb : public ADeployableItem
 	
 public:	
 	ABomb();
-	virtual void Tick(float DeltaTime) override;
-
-protected:
-	virtual void BeginPlay() override;
 
 protected:
 	UPROPERTY(VisibleAnywhere, Category = "Component")
@@ -26,8 +22,8 @@ protected:
 private:
 	void Explosion();
 
-	// Explosion Timer
-	void CheckIsExploded(float DeltaTime);
+protected:
+	virtual void ActiveDeployableItem() override;
 
 private:
 	UPROPERTY(EditDefaultsOnly, Category = "Item | FX")
@@ -38,9 +34,4 @@ private:
 
 	UPROPERTY(EditDefaultsOnly, Category = "Item | Explosion")
 	float ExplosionImpulse;
-
-	UPROPERTY(EditDefaultsOnly, Category = "Item | Explosion")
-	float ExplosionTime;
-
-	uint8 bIsExploded;
 };

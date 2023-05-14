@@ -4,7 +4,7 @@
 
 ABomb::ABomb()
 	:
-	ExplosionImpulse(400), ExplosionTime(3), bIsExploded(0)
+	ExplosionImpulse(400)
 {
 	RadialForceComp = CreateDefaultSubobject<URadialForceComponent>(TEXT("RadialForceComp"));
 	RadialForceComp->SetupAttachment(GetRootComponent());
@@ -15,39 +15,23 @@ ABomb::ABomb()
 
 	DestoryTime = 4.f;
 }
-void ABomb::BeginPlay()
-{
-	Super::BeginPlay();
-	
-}
-void ABomb::Tick(float DeltaTime)
-{
-	Super::Tick(DeltaTime);
-
-	// Explosion Timer
-	if (!bIsExploded) {
-		CheckIsExploded(DeltaTime);
-	}
-}
 void ABomb::Explosion()
 {
 	ensure(ExplosionEffect);
 	ensure(ExplodedMaterial);
 
-	bIsExploded = true;
-
 	// Excute Explosion
 	const FVector BoostIntensity = FVector::UpVector * ExplosionImpulse;
 	MeshComp->AddImpulse(BoostIntensity, NAME_None, true);
+
 	UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), ExplosionEffect, GetActorLocation());
 	MeshComp->SetMaterial(0, ExplodedMaterial);
 
 	RadialForceComp->FireImpulse();
 }
-void ABomb::CheckIsExploded(float DeltaTime)
+void ABomb::ActiveDeployableItem()
 {
-	ExplosionTime -= DeltaTime;
-	if (ExplosionTime < KINDA_SMALL_NUMBER) {
-		Explosion();
-	}
+	Super::ActiveDeployableItem();
+
+	Explosion();
 }

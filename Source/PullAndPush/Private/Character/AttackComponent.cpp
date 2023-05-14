@@ -24,6 +24,7 @@ void UAttackComponent::BeginPlay(){
 
 	// Spawn RocketPunch & Setting CharacterSocket
 	RocketPunch = GetWorld()->SpawnActor<ARocketPunch>(RocketPunchClass);
+	ensure(RocketPunch != nullptr);
 	RocketPunch->SetActorLocation(GetOwner()->GetActorLocation());
 	RocketPunch->OutOfUse.BindUObject(this, &UAttackComponent::SetCanLaunch);	
 

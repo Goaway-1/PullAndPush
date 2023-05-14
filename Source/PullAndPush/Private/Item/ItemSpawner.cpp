@@ -27,6 +27,7 @@ void AItemSpawner::InitSetting()
 
         SpawnLocation = GetActorLocation() + FVector(0.f, 0.f, 50.f);
         ItemPickup = World->SpawnActor<AItemPickup>(ItemPickupClass, SpawnLocation, GetActorRotation(), SpawnParams);
+        ensure(ItemPickup != nullptr);
         RespawnItem();
 
         // Respawn after invoking item hit event
@@ -47,7 +48,7 @@ void AItemSpawner::RespawnItem() {
     // Set Item Data
     UItemData* CurItem = SetRandomItemDataAsset();
     ensure(CurItem);
-    ItemPickup->SetItemSetting(true, CurItem, SpawnLocation);
+    ItemPickup->SetActiveItemPickup(true, CurItem, SpawnLocation);
 
     UE_LOG(LogTemp, Log, TEXT("Item Respawn : %s, %s"), *CurItem->GetItemName(), *CurItem->GetItemDescription());
 }
