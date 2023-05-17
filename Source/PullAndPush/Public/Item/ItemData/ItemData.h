@@ -44,7 +44,7 @@ public:
 	virtual bool CheckIsActiveItem() const override;
 
 	virtual void UseItem(class AActor* TargetActor) override {
-		
+		return;
 	}
 	virtual FString GetItemName() override {
 		return Name;

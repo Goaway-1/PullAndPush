@@ -10,6 +10,7 @@
 #include "EnhancedInputSubsystems.h"
 #include "Runnable/CharacterPropertyRunnable.h"
 #include "Player/PlayableController.h"
+#include "Net/UnrealNetwork.h"
 
 APlayableCharacter::APlayableCharacter()
 	:
@@ -31,6 +32,7 @@ APlayableCharacter::APlayableCharacter()
 	GetCharacterMovement()->bOrientRotationToMovement = true;
 	GetCharacterMovement()->RotationRate = FRotator(0.f,700.f,0.f);
 	GetCharacterMovement()->MaxWalkSpeed = DefaultMoveSpeed;
+	GetCharacterMovement()->SetIsReplicated(true);
 }
 APlayableCharacter::~APlayableCharacter()
 {
@@ -101,10 +103,15 @@ void APlayableCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputC
 void APlayableCharacter::SetPlayerAttackCondition(const bool IsCharging)
 {
 	PlayerAttackCondition = (IsCharging) ? EPlayerAttackCondition::EPAC_Charging : EPlayerAttackCondition::EPAC_Idle;
+	ServerSetPlayerAttackCondition(IsCharging);
 
 	AimingComp->ZoomInOut(IsCharging);
 	SetMovementSpeed(IsCharging);
 	ActiveMovementSpeed(IsCharging);	
+}
+void APlayableCharacter::ServerSetPlayerAttackCondition_Implementation(const bool IsCharging)
+{
+	PlayerAttackCondition = (IsCharging) ? EPlayerAttackCondition::EPAC_Charging : EPlayerAttackCondition::EPAC_Idle;	
 }
 void APlayableCharacter::InitEnhancedInput()
 {
@@ -284,4 +291,10 @@ void APlayableCharacter::RocketPunchAlphaRange(const float& AlphaRange)
 void APlayableCharacter::RocketPunchAlphaSize(const float& AlphaSize)
 {
 	AttackComp->SetRPAlphaSize(AlphaSize);
+}
+void APlayableCharacter::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+	DOREPLIFETIME_CONDITION(APlayableCharacter, PlayerAttackCondition, COND_SkipOwner);
 }

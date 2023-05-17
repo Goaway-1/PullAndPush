@@ -29,12 +29,6 @@ public:
 	virtual void Tick(float DeltaTime) override;
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
-	UFUNCTION(BlueprintCallable)
-	FORCEINLINE EPlayerAttackCondition GetPlayerAttackCondition() {return PlayerAttackCondition;}
-
-	UFUNCTION(BlueprintCallable)
-	virtual void SetPlayerAttackCondition(const bool IsCharging) override;
-
 	// Try to set Movement Speed
 	// Call Item or Charging
 	virtual void SetMovementSpeed(const bool& IsCharging, const float& NewMoveSpeed = 0.f) override;
@@ -98,7 +92,16 @@ private:
 	void InitSpringArm(USpringArmComponent* SpringArm, const float& NewTargetArmLength, const FVector& NewSocketOffset);
 	void SetPlayerView();
 
-	UPROPERTY(VisibleAnywhere, Category = "Condition")
+	UFUNCTION(BlueprintCallable)
+	FORCEINLINE EPlayerAttackCondition GetPlayerAttackCondition() { return PlayerAttackCondition; }
+
+	UFUNCTION(BlueprintCallable)
+	virtual void SetPlayerAttackCondition(const bool IsCharging) override;
+
+	UFUNCTION(Server, Reliable)
+	void ServerSetPlayerAttackCondition(const bool IsCharging);
+
+	UPROPERTY(Replicated, VisibleAnywhere, Category = "Condition")
 	EPlayerAttackCondition PlayerAttackCondition;
 
 	uint8 bIsPush : 1;
