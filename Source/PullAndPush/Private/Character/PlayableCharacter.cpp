@@ -12,6 +12,8 @@
 #include "Player/PlayableController.h"
 #include "Net/UnrealNetwork.h"
 
+#include "Kismet/KismetMathLibrary.h"
+
 APlayableCharacter::APlayableCharacter()
 	:
 	bIsMoveToLocation(false), TargetLocation(FVector(0.f)), StartLocation(FVector(0.f)), MoveToLocationSpeed(5000.f), bIsMoveToActor(false), MoveTargetActor(nullptr)
@@ -73,11 +75,15 @@ void APlayableCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	SetPlayerView();
-
 	// If Hit Event is Called.
 	MoveToLocation(DeltaTime);
 	MoveToActor();
+
+	//test
+	if (GetPlayerAttackCondition() == EPlayerAttackCondition::EPAC_Charging)
+	{
+		SetAimPitch();
+	}
 }
 void APlayableCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
@@ -105,13 +111,15 @@ void APlayableCharacter::SetPlayerAttackCondition(const bool IsCharging)
 	PlayerAttackCondition = (IsCharging) ? EPlayerAttackCondition::EPAC_Charging : EPlayerAttackCondition::EPAC_Idle;
 	ServerSetPlayerAttackCondition(IsCharging);
 
+	SetPlayerView();
 	AimingComp->ZoomInOut(IsCharging);
 	SetMovementSpeed(IsCharging);
 	ActiveMovementSpeed(IsCharging);	
 }
 void APlayableCharacter::ServerSetPlayerAttackCondition_Implementation(const bool IsCharging)
 {
-	PlayerAttackCondition = (IsCharging) ? EPlayerAttackCondition::EPAC_Charging : EPlayerAttackCondition::EPAC_Idle;	
+	PlayerAttackCondition = (IsCharging) ? EPlayerAttackCondition::EPAC_Charging : EPlayerAttackCondition::EPAC_Idle;
+	SetPlayerView();
 }
 void APlayableCharacter::InitEnhancedInput()
 {
@@ -149,6 +157,15 @@ void APlayableCharacter::LookUp(float NewAxisValue)
 void APlayableCharacter::Turn(float NewAxisValue)
 {
 	AddControllerYawInput(NewAxisValue);
+}
+void APlayableCharacter::SetAimPitch()
+{
+	ServerSetAimPitch();
+}
+void APlayableCharacter::ServerSetAimPitch_Implementation()
+{
+	FRotator TargetRot = UKismetMathLibrary::NormalizedDeltaRotator(GetControlRotation(), GetActorRotation());
+	AimPitch = TargetRot.Pitch;
 }
 void APlayableCharacter::TryLaunch(const FVector2D& Value)
 {
@@ -212,12 +229,8 @@ void APlayableCharacter::InitSpringArm(USpringArmComponent* SpringArm, const flo
 }
 void APlayableCharacter::SetPlayerView()
 {
-	if (GetPlayerAttackCondition() == EPlayerAttackCondition::EPAC_Charging) {
-		FRotator NewRot = GetControlRotation();
-		NewRot.Roll = 0;
-		NewRot.Pitch = 0;
-		SetActorRotation(NewRot);
-	}
+	bUseControllerRotationYaw = (GetPlayerAttackCondition() == EPlayerAttackCondition::EPAC_Charging) ? true : false;
+	GetCharacterMovement()->bOrientRotationToMovement = (GetPlayerAttackCondition() == EPlayerAttackCondition::EPAC_Charging) ? false : true;
 }
 void APlayableCharacter::UpdateSpringArmLength(const float NewArmLength)
 {
@@ -297,4 +310,5 @@ void APlayableCharacter::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >&
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
 	DOREPLIFETIME_CONDITION(APlayableCharacter, PlayerAttackCondition, COND_SkipOwner);
+	DOREPLIFETIME(APlayableCharacter, AimPitch);
 }

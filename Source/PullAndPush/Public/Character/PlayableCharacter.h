@@ -74,6 +74,19 @@ private:
 
 	const float DefaultMoveSpeed = 600.f;
 	const float MaxJumpVelocity = 420.f;
+
+
+	//test
+	UFUNCTION()
+	void SetAimPitch();
+
+	UFUNCTION(Server, Reliable)
+	void ServerSetAimPitch();
+
+protected:
+	UPROPERTY(Replicated, VisibleAnywhere, BlueprintReadOnly, Category = "Camera")
+	float AimPitch;
+
 #pragma endregion
 
 /** Charging */
@@ -100,8 +113,8 @@ private:
 
 	UFUNCTION(Server, Reliable)
 	void ServerSetPlayerAttackCondition(const bool IsCharging);
-
-	UPROPERTY(Replicated, VisibleAnywhere, Category = "Condition")
+public:
+	UPROPERTY(Replicated, VisibleAnywhere, BlueprintReadOnly,Category = "Condition")
 	EPlayerAttackCondition PlayerAttackCondition;
 
 	uint8 bIsPush : 1;
