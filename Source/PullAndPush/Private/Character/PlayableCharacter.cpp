@@ -8,10 +8,8 @@
 #include "GameFramework/CharacterMovementComponent.h"
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
-#include "Runnable/CharacterPropertyRunnable.h"
 #include "Player/PlayableController.h"
 #include "Net/UnrealNetwork.h"
-
 #include "Kismet/KismetMathLibrary.h"
 
 APlayableCharacter::APlayableCharacter()
@@ -38,10 +36,7 @@ APlayableCharacter::APlayableCharacter()
 }
 APlayableCharacter::~APlayableCharacter()
 {
-	if (PropertyRunnable != nullptr)
-	{
-		PropertyRunnable->Stop();
-	}
+
 }
 void APlayableCharacter::PossessedBy(AController* NewController)
 {
@@ -67,9 +62,7 @@ void APlayableCharacter::BeginPlay()
 	Super::BeginPlay();
 
 	/** Thread for Character Properties... */
-	PropertyRunnable = new FCharacterPropertyRunnable();
-	PropertyRunnable->CompleteSignature.BindUObject(this, &APlayableCharacter::ActiveMovementSpeed);
-	SetMovementSpeed(false, DefaultMoveSpeed);
+	SetMovementSpeed(DefaultMoveSpeed);
 }
 void APlayableCharacter::Tick(float DeltaTime)
 {
@@ -79,11 +72,8 @@ void APlayableCharacter::Tick(float DeltaTime)
 	MoveToLocation(DeltaTime);
 	MoveToActor();
 
-	//test
-	if (GetPlayerAttackCondition() == EPlayerAttackCondition::EPAC_Charging)
-	{
-		SetAimPitch();
-	}
+	SetAimPitch();
+	UpdateCurrnentMovementSpeed();
 }
 void APlayableCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
@@ -111,10 +101,9 @@ void APlayableCharacter::SetPlayerAttackCondition(const bool IsCharging)
 	PlayerAttackCondition = (IsCharging) ? EPlayerAttackCondition::EPAC_Charging : EPlayerAttackCondition::EPAC_Idle;
 	ServerSetPlayerAttackCondition(IsCharging);
 
-	SetPlayerView();
 	AimingComp->ZoomInOut(IsCharging);
-	SetMovementSpeed(IsCharging);
-	ActiveMovementSpeed(IsCharging);	
+	SetPlayerView();
+	SetMovementSpeed();
 }
 void APlayableCharacter::ServerSetPlayerAttackCondition_Implementation(const bool IsCharging)
 {
@@ -160,7 +149,10 @@ void APlayableCharacter::Turn(float NewAxisValue)
 }
 void APlayableCharacter::SetAimPitch()
 {
-	ServerSetAimPitch();
+	if (GetPlayerAttackCondition() == EPlayerAttackCondition::EPAC_Charging)
+	{
+		ServerSetAimPitch();
+	}
 }
 void APlayableCharacter::ServerSetAimPitch_Implementation()
 {
@@ -185,35 +177,52 @@ void APlayableCharacter::EndLaunch()
 {
 	AttackComp->EndLaunch(bIsPush);
 }
-void APlayableCharacter::SetMovementSpeed(const bool& IsCharging, const float& NewMoveSpeed)
+void APlayableCharacter::SetMovementSpeed(const float NewMoveSpeed)
 {
-	ensure(PropertyRunnable);
-
 	// Is Item Activated
 	if (NewMoveSpeed > 0.f || NewMoveSpeed < 0.f) {
 		float Speed = CurrentMoveSpeed + NewMoveSpeed;
-
-		// Thread for Character Properties
-		PropertyRunnable->SetMoveSpeed(Speed);
+		PendingMoveSpeed.exchange(Speed);
+	}
+	else
+	{
+		ActiveMovementSpeed();
 	}
 }
-void APlayableCharacter::ActiveMovementSpeed(const bool& IsCharging)
+void APlayableCharacter::ActiveMovementSpeed()
 {
-	ensure(PropertyRunnable);
-
 	// Update CurrentMoveSpeed (in Local)
-	CurrentMoveSpeed = PropertyRunnable->GetMoveSpeed();
 	float Speed = CurrentMoveSpeed;
 	float Velocity = MaxJumpVelocity;
 
-	if (IsCharging || GetPlayerAttackCondition() == EPlayerAttackCondition::EPAC_Charging) {
+	if (GetPlayerAttackCondition() == EPlayerAttackCondition::EPAC_Charging) 
+	{
 		Speed /= 2;
 		Velocity /= 2;
 	}
 
 	// Set Character Movmemt Properties...
-	GetCharacterMovement()->MaxWalkSpeed = Speed;
-	GetCharacterMovement()->JumpZVelocity = Velocity;
+	if (GetLocalRole() == ROLE_Authority)
+	{
+		GetCharacterMovement()->MaxWalkSpeed = Speed;
+		GetCharacterMovement()->JumpZVelocity = Velocity;
+	}
+	else
+	{
+		ServerActiveMovementSpeed(Speed, Velocity);
+	}
+}
+void APlayableCharacter::ServerActiveMovementSpeed_Implementation(const float InSpeed, const float InJump)
+{
+	GetCharacterMovement()->MaxWalkSpeed = InSpeed;
+	GetCharacterMovement()->JumpZVelocity = InJump;
+}
+void APlayableCharacter::UpdateCurrnentMovementSpeed()
+{
+	if (PendingMoveSpeed != CurrentMoveSpeed) {
+		CurrentMoveSpeed = PendingMoveSpeed;
+		ActiveMovementSpeed();
+	}
 }
 void APlayableCharacter::InitSpringArm(USpringArmComponent* SpringArm, const float& NewTargetArmLength, const FVector& NewSocketOffset)
 {

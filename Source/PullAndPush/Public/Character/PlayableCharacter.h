@@ -29,10 +29,6 @@ public:
 	virtual void Tick(float DeltaTime) override;
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
-	// Try to set Movement Speed
-	// Call Item or Charging
-	virtual void SetMovementSpeed(const bool& IsCharging, const float& NewMoveSpeed = 0.f) override;
-
 protected:
 	virtual void BeginPlay() override;
 
@@ -60,23 +56,29 @@ private:
 	void LookUp(float NewAxisValue);
 	void Turn(float NewAxisValue);
 
+	// Try to set Movement Speed
+	// Call Item or Charging
+	virtual void SetMovementSpeed(const float NewMoveSpeed = 0.f) override;
+
 	// Actually set Movement Speed
-	void ActiveMovementSpeed(const bool& IsCharging = false);
+	void ActiveMovementSpeed();
+
+	UFUNCTION(Server, Reliable)
+	void ServerActiveMovementSpeed(const float InSpeed, const float InJump);
+	void UpdateCurrnentMovementSpeed();
 
 	// Controller
 	TObjectPtr<class APlayableController> PlayableController;
 
-	// Move properties
-	TObjectPtr<class FCharacterPropertyRunnable> PropertyRunnable;
-
 	UPROPERTY(Transient, VisibleAnywhere, Category = "Movement")
 	float CurrentMoveSpeed;
+
+	std::atomic<float> PendingMoveSpeed;
 
 	const float DefaultMoveSpeed = 600.f;
 	const float MaxJumpVelocity = 420.f;
 
-
-	//test
+private:
 	UFUNCTION()
 	void SetAimPitch();
 
