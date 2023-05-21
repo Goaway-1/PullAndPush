@@ -35,6 +35,12 @@ public:
 	TObjectPtr<class URPCollisionComponent> RPCollisionComponent;
 
 	void ReadyToLaunch(const float& InForceAlpha, AActor* InCasterActor, const bool IsPush, const FVector& InVec, const FRotator& InRot, const float& AlphaSpeed, const float& AlphaRange, const float& AlphaSize);
+
+private:
+	UFUNCTION(Server, Reliable)
+	void ServerReadyToLaunch(const float& InForceAlpha, AActor* InCasterActor, const bool IsPush, const FVector& InVec, const FRotator& InRot, const float& AlphaSpeed, const float& AlphaRange, const float& AlphaSize);
+
+public:
 	void IsOutOfUse(const bool& Val);
 	AActor* GetCasterActor();
 
@@ -53,6 +59,15 @@ public:
 	void SetCollisionSimulatePhysics(bool Val);
 
 	FRocketPunchOutOfUse OutOfUse;
+
+	// @TESTSETESTESTEST
+	UPROPERTY(Replicated, ReplicatedUsing = OnRep_ChangeMeshVisibility)
+	bool bStaticMeshCompVisibility;
+
+	void SetMeshVisibility(bool InVisibility);
+
+	UFUNCTION()
+	void OnRep_ChangeMeshVisibility();
 
 private:
 	UPROPERTY()

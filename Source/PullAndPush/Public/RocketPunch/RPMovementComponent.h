@@ -90,4 +90,17 @@ private:
 	FORCEINLINE void SetIsLaunch(const bool Val) { bIsLaunch = Val; }
 	FORCEINLINE void SetCurMoveSpeed(const double Val) { CurMoveSpeed = Val; }
 	FORCEINLINE bool GetIsForceReturn() const { return bIsForceReturn; }
+
+private:
+	UFUNCTION()
+	void OnRep_ChangeLocation();
+
+	UFUNCTION()
+	void OnRep_ChangeRotation();
+
+	UPROPERTY(Replicated, ReplicatedUsing = OnRep_ChangeLocation)
+	FVector CurLocation;
+
+	UPROPERTY(Replicated, ReplicatedUsing = OnRep_ChangeRotation)
+	FRotator CurRotation;
 };

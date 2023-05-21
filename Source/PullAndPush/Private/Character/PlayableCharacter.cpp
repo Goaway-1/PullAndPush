@@ -149,7 +149,7 @@ void APlayableCharacter::Turn(float NewAxisValue)
 }
 void APlayableCharacter::SetAimPitch()
 {
-	if (GetPlayerAttackCondition() == EPlayerAttackCondition::EPAC_Charging)
+	if (HasAuthority() && GetPlayerAttackCondition() == EPlayerAttackCondition::EPAC_Charging)
 	{
 		ServerSetAimPitch();
 	}

@@ -65,6 +65,7 @@ private:
 
 	UFUNCTION(Server, Reliable)
 	void ServerActiveMovementSpeed(const float InSpeed, const float InJump);
+
 	void UpdateCurrnentMovementSpeed();
 
 	// Controller
