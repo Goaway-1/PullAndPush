@@ -33,8 +33,8 @@ private:
 
 	void ChangeMovementSpeed(const bool& IsCharging);
 
-	UFUNCTION()
-	void SetCanLaunch(const bool& Val);
+	UFUNCTION(Client, Reliable)
+	void ClientSetCanLaunch(const bool Val);
 private:
 	// Charging Value
 	UPROPERTY(Transient)
@@ -69,12 +69,13 @@ public:
 	FORCEINLINE void SetRPAlphaSize(const float& AlphaSize) { RPAlphaSize = AlphaSize; }
 
 private:
-	UPROPERTY(Transient, VisibleAnywhere, Category = "RocketPunch | Alpha Value")
+	// @TODO : VisibleAnywhere·Î ¼öÁ¤
+	UPROPERTY(Transient, EditAnywhere, Category = "RocketPunch | Alpha Value")
 	float RPAlphaSpeed;
 
-	UPROPERTY(Transient, VisibleAnywhere, Category = "RocketPunch | Alpha Value")
+	UPROPERTY(Transient, EditAnywhere, Category = "RocketPunch | Alpha Value")
 	float RPAlphaRange;
 
-	UPROPERTY(Transient, VisibleAnywhere, Category = "RocketPunch | Alpha Value")
+	UPROPERTY(Transient, EditAnywhere, Category = "RocketPunch | Alpha Value")
 	float RPAlphaSize;
 };

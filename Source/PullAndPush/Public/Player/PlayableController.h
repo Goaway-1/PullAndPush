@@ -20,8 +20,10 @@ protected:
 	virtual void BeginPlay() override;
 
 public:
-	void UpdateItemUI(class UDataAsset* CurrentItem, const bool& IsPassvieItem);
+	UFUNCTION(Client, Reliable)
+	void UpdateItemUI(class UDataAsset* CurrentItem, const bool IsPassvieItem);
 
+	UFUNCTION(Client, Reliable)
 	void ChangeVisibleItemInfo(bool bVisibility);
 private:
 	UPROPERTY(EditAnywhere, Category = "Widget")

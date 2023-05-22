@@ -7,6 +7,8 @@ AItemSpawner::AItemSpawner()
     :
     MaxRespawnDelay(10.f), MinRespawnDelay(3.f)
 {
+    bReplicates = true;
+    SetReplicateMovement(true);
 	StaticMeshComp = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("StaticMeshComp"));
     ItemSpawnType = EItemSpawnType::Normal;
 }
@@ -18,7 +20,7 @@ void AItemSpawner::BeginPlay()
 void AItemSpawner::InitSetting()
 {
     UWorld* const World = GetWorld();
-    if (World && ItemPickupClass)
+    if (HasAuthority() && World && ItemPickupClass)
     {
         FActorSpawnParameters SpawnParams;
         SpawnParams.Owner = this;
@@ -26,7 +28,7 @@ void AItemSpawner::InitSetting()
         SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
 
         SpawnLocation = GetActorLocation() + FVector(0.f, 0.f, 50.f);
-        ItemPickup = World->SpawnActor<AItemPickup>(ItemPickupClass, SpawnLocation, GetActorRotation(), SpawnParams);
+        ItemPickup = World->SpawnActor<AItemPickup>(ItemPickupClass, SpawnLocation, GetActorRotation(), SpawnParams);   // ÀÌ³נ
         ensure(ItemPickup != nullptr);
         RespawnItem();
 

@@ -28,17 +28,24 @@ public:
 	// Settings when an item is created or used
 	virtual void SetActiveItemPickup(bool IsSpawn, class UItemData* InItemDataAsset = nullptr, FVector SpawnLocation = FVector(0.f)) override;
 private:
+	UFUNCTION()
+	void OnHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComponent, FVector NormalImpulse, const FHitResult& Hit);
+
+	UFUNCTION()
+	void OnRep_ChangeCurItemData();
+
 	UPROPERTY(EditDefaultsOnly)
 	TObjectPtr<class USphereComponent> CollisionComp;
 
 	UPROPERTY(EditDefaultsOnly)
 	TObjectPtr<class UStaticMeshComponent> StaticMeshComp;
 
-	UFUNCTION()
-	void OnHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComponent, FVector NormalImpulse, const FHitResult& Hit);
+	UPROPERTY(Replicated, ReplicatedUsing = OnRep_ChangeCurItemData, VisibleAnywhere, Category="Item")
+	TWeakObjectPtr<class UItemData> CurItemData;
 
-	UPROPERTY(VisibleAnywhere, Category="Item")
-	TWeakObjectPtr<class UItemData> CurItem;
+	// Is Item Spawn or Despawn
+	UPROPERTY(Replicated)
+	uint8 bIsSpawn:1;
 
 	const FName CollisionName = TEXT("Item");
 };

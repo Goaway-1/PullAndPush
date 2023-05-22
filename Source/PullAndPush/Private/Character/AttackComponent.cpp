@@ -100,7 +100,7 @@ void UAttackComponent::SpawnRocketPunch()
 		RocketPunch = GetWorld()->SpawnActor<ARocketPunch>(RocketPunchClass, SpawnParams);
 		ensure(RocketPunch != nullptr);
 		RocketPunch->SetActorLocation(GetOwner()->GetActorLocation());
-		RocketPunch->OutOfUse.BindUObject(this, &UAttackComponent::SetCanLaunch);
+		RocketPunch->OutOfUse.BindUObject(this, &UAttackComponent::ClientSetCanLaunch);
 	}
 }
 void UAttackComponent::ServerSpawnRocketPunch_Implementation()
@@ -119,7 +119,7 @@ void UAttackComponent::ChangeMovementSpeed(const bool& IsCharging)
 		CharacterPropertyHandler->SetPlayerAttackCondition(IsCharging);
 	}
 }
-void UAttackComponent::SetCanLaunch(const bool& Val)
+void UAttackComponent::ClientSetCanLaunch_Implementation(const bool Val)
 {
 	UE_LOG(LogTemp, Log, TEXT("[UAttackComponent] Make it possible to attack again"));
 	bIsCanLaunch = Val;

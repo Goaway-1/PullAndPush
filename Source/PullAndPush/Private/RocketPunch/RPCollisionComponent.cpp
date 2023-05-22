@@ -8,6 +8,7 @@ URPCollisionComponent::URPCollisionComponent()
 	bIsAlreadyOverlapped(0), MaxKnockBackForce(100000.f), MinKnockBackForce(50000.f)
 {
 	PrimaryComponentTick.bCanEverTick = false;
+	SetIsReplicatedByDefault(true);
 
 	OnArrayReset.BindUObject(this, &URPCollisionComponent::ResetOverlapActors);
 }

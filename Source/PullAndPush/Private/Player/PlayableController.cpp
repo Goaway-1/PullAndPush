@@ -11,20 +11,23 @@ APlayableController::APlayableController() {
 void APlayableController::BeginPlay() {
 	ensure(MainWidgetClass);
 
-	MainWidget = CreateWidget<UMainWidget>(this, MainWidgetClass);
-	if (MainWidget) {
-		MainWidget->AddToViewport();
-		MainWidget->SetVisibility(ESlateVisibility::Visible);
+	if (IsLocalPlayerController())
+	{
+		MainWidget = CreateWidget<UMainWidget>(this, MainWidgetClass);
+		if (MainWidget) {
+			MainWidget->AddToViewport();
+			MainWidget->SetVisibility(ESlateVisibility::Visible);
+		}
 	}
 }
-void APlayableController::UpdateItemUI(UDataAsset* CurrentItem, const bool& IsPassvieItem)
+void APlayableController::UpdateItemUI_Implementation(UDataAsset* CurrentItem, const bool IsPassvieItem)
 {
 	ensure(MainWidget);
 
 	// Set Item Widget
 	MainWidget->UpdateItemUI(CurrentItem, IsPassvieItem);
 }
-void APlayableController::ChangeVisibleItemInfo(bool bVisibility)
+void APlayableController::ChangeVisibleItemInfo_Implementation(bool bVisibility)
 {
 	MainWidget->OnChangeVisibleItemWidget.Execute(bVisibility);
 }

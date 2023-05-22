@@ -4,7 +4,6 @@
 #include "Item/ItemData/ItemData.h"
 #include "Interface/ItemActionHandler.h"
 #include "Interface/DeployableItemHandler.h"
-
 #include "Kismet/GameplayStatics.h"
 #include "GameFramework/PlayerController.h"
 #include "Components/SplineComponent.h"
@@ -15,6 +14,7 @@ UItemUsageComponent::UItemUsageComponent()
 	bIsReadyToThrow(0)
 {
 	PrimaryComponentTick.bCanEverTick = true;
+	SetIsReplicatedByDefault(true);
 
 	SplineComp = CreateDefaultSubobject<USplineComponent>(TEXT("SplineComp"));
 }
@@ -107,7 +107,7 @@ void UItemUsageComponent::PickUpItem(UItemData* ItemData)
 		CurActiveItemData = ItemData;
 
 		// Show 'Passive Widget'
-		OnItemWidgetUpdate.Execute(CurActiveItemData, false);
+		OnItemWidgetUpdate.ExecuteIfBound(CurActiveItemData, false);	
 	}
 }
 void UItemUsageComponent::ThrowDeployableItem()
@@ -149,7 +149,7 @@ void UItemUsageComponent::TryToUseActiveItem()
 		CurDeployableItem->AttachToActor(GetOwner(), FAttachmentTransformRules::SnapToTargetNotIncludingScale, ItemSocketName);
 
 		// Hide 'Passive Widget'
-		OnItemWidgetUpdate.Execute(nullptr, false);
+		OnItemWidgetUpdate.ExecuteIfBound(nullptr, false);
 
 		bIsReadyToThrow = true;
 		CurActiveItemData = nullptr;
@@ -163,6 +163,6 @@ void UItemUsageComponent::TryToUsePassiveItem(UItemData* ItemData)
 		CurItemAction->UseItem(GetOwner());
 
 		// Show 'Active Widget'
-		OnItemWidgetUpdate.Execute(ItemData, true);
+		OnItemWidgetUpdate.ExecuteIfBound(ItemData, true);
 	}
 }

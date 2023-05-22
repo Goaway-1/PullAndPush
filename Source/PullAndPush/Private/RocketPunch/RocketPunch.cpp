@@ -47,7 +47,6 @@ void ARocketPunch::BeginPlay()
 void ARocketPunch::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-
 }
 void ARocketPunch::ReadyToLaunch(const float& InForceAlpha, AActor* InCasterActor, const bool IsPush, const FVector& InVec, const FRotator& InRot, const float& AlphaSpeed, const float& AlphaRange, const float& AlphaSize)
 {
@@ -57,7 +56,7 @@ void ARocketPunch::ReadyToLaunch(const float& InForceAlpha, AActor* InCasterActo
 	}
 	else 
 	{
-		if (CasterActor == nullptr) CasterActor = InCasterActor;
+		if (!CasterActor.IsValid()) CasterActor = InCasterActor;
 
 		// Set Scale of Visual & Collision
 		CollisionComp->SetWorldScale3D(FVector(AlphaSize));
@@ -65,7 +64,7 @@ void ARocketPunch::ReadyToLaunch(const float& InForceAlpha, AActor* InCasterActo
 
 		bIsPush = IsPush;
 		ForceAlpha = InForceAlpha;
-		RPMovementComponent->Launch(ForceAlpha, CasterActor, InVec, InRot, AlphaSpeed, AlphaSize);
+		RPMovementComponent->Launch(ForceAlpha, CasterActor.Get(), InVec, InRot, AlphaSpeed, AlphaSize);
 		PPLOG(Log, TEXT("AlphaSpeed : %f, AlphaRange : %f, AlphaSize : %f"), AlphaSpeed, AlphaRange, AlphaSize);
 
 		// Setting Color of RP
@@ -75,8 +74,8 @@ void ARocketPunch::ReadyToLaunch(const float& InForceAlpha, AActor* InCasterActo
 			return;
 		}
 
-		UMaterial* CurMaterial = (bIsPush) ? PushMaterial : PullMaterial;
-		StaticMeshComp->SetMaterial(0, CurMaterial);
+		CurrentMaterial = (bIsPush) ? PushMaterial : PullMaterial;
+		StaticMeshComp->SetMaterial(0, CurrentMaterial.Get());
 	}
 }
 void ARocketPunch::ServerReadyToLaunch_Implementation(const float& InForceAlpha, AActor* InCasterActor, const bool IsPush, const FVector& InVec, const FRotator& InRot, const float& AlphaSpeed, const float& AlphaRange, const float& AlphaSize)
@@ -90,23 +89,22 @@ void ARocketPunch::IsOutOfUse(const bool& Val)
 	// Reset OverlapActors Array
 	RPCollisionComponent->OnArrayReset.Execute();
 }
-AActor* ARocketPunch::GetCasterActor()
-{
-	if(CasterActor) return CasterActor;
-	return nullptr;
-}
 void ARocketPunch::SetCollisionSimulatePhysics(bool Val)
 {
 	if(CollisionComp) CollisionComp->SetSimulatePhysics(Val);
 }
 void ARocketPunch::SetMeshVisibility(bool InVisibility)
 {
-	bStaticMeshCompVisibility = InVisibility;
+	bStaticMeshVisibility = InVisibility;
 	StaticMeshComp->SetVisibility(InVisibility);
 }
 void ARocketPunch::OnRep_ChangeMeshVisibility()
 {
-	StaticMeshComp->SetVisibility(bStaticMeshCompVisibility);
+	StaticMeshComp->SetVisibility(bStaticMeshVisibility);
+}
+void ARocketPunch::OnRep_ChangeMaterial()
+{
+	StaticMeshComp->SetMaterial(0, CurrentMaterial.Get());	
 }
 void ARocketPunch::OnHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComponent, FVector NormalImpulse, const FHitResult& Hit)
 {
@@ -118,5 +116,6 @@ void ARocketPunch::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLife
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
-	DOREPLIFETIME(ARocketPunch, bStaticMeshCompVisibility);
+	DOREPLIFETIME(ARocketPunch, bStaticMeshVisibility);
+	DOREPLIFETIME(ARocketPunch, CurrentMaterial);
 }

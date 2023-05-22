@@ -2,10 +2,13 @@
 #include "Components/SphereComponent.h"
 #include "Interface/PickupActionHandler.h"
 #include "Item/ItemData/ItemData.h"
+#include "Net/UnrealNetwork.h"
 
 AItemPickup::AItemPickup()
 {
 	PrimaryActorTick.bCanEverTick = false;
+	bReplicates = true;
+	SetReplicateMovement(true);
 
 	CollisionComp = CreateDefaultSubobject<USphereComponent>(TEXT("CollisionComp"));
 	CollisionComp->SetCollisionProfileName(CollisionName);
@@ -33,9 +36,9 @@ void AItemPickup::OnHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, U
 	if (OtherCompCollsionName == "Pawn") {		
 		/** Character's Pickup Action */
 		TScriptInterface<class IPickupActionHandler> ActionHandler = OtherActor;
-		if (ActionHandler.GetInterface() && CurItem.IsValid()) 
+		if (ActionHandler.GetInterface() && CurItemData.IsValid())
 		{
-			ActionHandler->PickUpItem(CurItem.Get());
+			ActionHandler->PickUpItem(CurItemData.Get());
 			SetActiveItemPickup(false);
 		}
 	}
@@ -49,24 +52,44 @@ void AItemPickup::OnHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, U
 }
 void AItemPickup::SetActiveItemPickup(bool IsSpawn, UItemData* InItemDataAsset, FVector SpawnLocation)
 {
-	// Turn OnOff Actor Enable
-	SetActorEnableCollision(IsSpawn);
-	SetActorHiddenInGame(!IsSpawn);
-	SetActorTickEnabled(IsSpawn);
-	CollisionComp->SetSimulatePhysics(IsSpawn);
-	CollisionComp->SetEnableGravity(false);
-	CurItem = InItemDataAsset;
+	// Turn OnOff Item Enable
+	bIsSpawn = IsSpawn;
+	CurItemData = InItemDataAsset;
+
+	SetActorEnableCollision(bIsSpawn);
+	SetActorHiddenInGame(!bIsSpawn);
+	SetActorTickEnabled(bIsSpawn);
+	CollisionComp->SetSimulatePhysics(bIsSpawn);
+	CollisionComp->SetEnableGravity(!bIsSpawn);
 
 	// SetLocation & Mesh if Spawn!
-	if(IsSpawn && CurItem.IsValid())
+	if(IsSpawn && CurItemData.IsValid())
 	{
 		SetActorLocationAndRotation(SpawnLocation, FRotator::ZeroRotator);
-		StaticMeshComp->SetStaticMesh(CurItem.Get()->GetStaticMesh());
+		StaticMeshComp->SetStaticMesh(CurItemData.Get()->GetStaticMesh());
 		StaticMeshComp->SetRelativeLocation(FVector::Zero());
 	}
 	else
 	{
 		// Inform ItemSpawner of Pickup Action.
-		OnPickupAction.Execute();
+		OnPickupAction.ExecuteIfBound();
 	}
+}
+void AItemPickup::OnRep_ChangeCurItemData()
+{
+	CollisionComp->SetSimulatePhysics(bIsSpawn);
+	CollisionComp->SetEnableGravity(!bIsSpawn);
+
+	if (CurItemData.IsValid())
+	{
+		StaticMeshComp->SetStaticMesh(CurItemData.Get()->GetStaticMesh());
+		StaticMeshComp->SetRelativeLocation(FVector::Zero());
+	}
+}
+void AItemPickup::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+	DOREPLIFETIME(AItemPickup, CurItemData);
+	DOREPLIFETIME(AItemPickup, bIsSpawn);
 }
