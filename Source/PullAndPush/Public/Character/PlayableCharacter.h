@@ -189,6 +189,9 @@ private:
 public:
 	virtual void PickUpItem(class UItemData* ItemData) override;
 
+	UFUNCTION(Client, Reliable)
+	void ClientPickUpItem(class UItemData* ItemData);
+
 	// Set Alpha Value Affected By Item
 	virtual void RocketPunchAlphaSpeed(const float& AlphaSpeed) override;
 	virtual void RocketPunchAlphaRange(const float& AlphaRange) override;

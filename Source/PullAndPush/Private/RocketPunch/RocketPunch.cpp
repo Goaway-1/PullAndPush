@@ -58,13 +58,15 @@ void ARocketPunch::ReadyToLaunch(const float& InForceAlpha, AActor* InCasterActo
 	{
 		if (!CasterActor.IsValid()) CasterActor = InCasterActor;
 
+		// @TODO : 스케일 조정 OnRep 써서 하면ㄷ ㅙ
 		// Set Scale of Visual & Collision
+		CurrentScale = FVector(AlphaSize);
 		CollisionComp->SetWorldScale3D(FVector(AlphaSize));
 		StaticMeshComp->SetWorldScale3D(FVector(AlphaSize));
 
 		bIsPush = IsPush;
 		ForceAlpha = InForceAlpha;
-		RPMovementComponent->Launch(ForceAlpha, CasterActor.Get(), InVec, InRot, AlphaSpeed, AlphaSize);
+		RPMovementComponent->Launch(ForceAlpha, CasterActor.Get(), InVec, InRot, AlphaSpeed, AlphaRange);
 		PPLOG(Log, TEXT("AlphaSpeed : %f, AlphaRange : %f, AlphaSize : %f"), AlphaSpeed, AlphaRange, AlphaSize);
 
 		// Setting Color of RP
@@ -106,6 +108,11 @@ void ARocketPunch::OnRep_ChangeMaterial()
 {
 	StaticMeshComp->SetMaterial(0, CurrentMaterial.Get());	
 }
+void ARocketPunch::OnRep_ChangeScale()
+{
+	CollisionComp->SetWorldScale3D(CurrentScale);
+	StaticMeshComp->SetWorldScale3D(CurrentScale);
+}
 void ARocketPunch::OnHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComponent, FVector NormalImpulse, const FHitResult& Hit)
 {
 	if (OtherActor != CasterActor) {
@@ -118,4 +125,5 @@ void ARocketPunch::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLife
 
 	DOREPLIFETIME(ARocketPunch, bStaticMeshVisibility);
 	DOREPLIFETIME(ARocketPunch, CurrentMaterial);
+	DOREPLIFETIME(ARocketPunch, CurrentScale);
 }

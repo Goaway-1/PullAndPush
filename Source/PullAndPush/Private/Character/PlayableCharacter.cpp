@@ -42,12 +42,6 @@ void APlayableCharacter::PossessedBy(AController* NewController)
 {
 	Super::PossessedBy(NewController);
 
-	// Set Item Widget
-	PlayableController = Cast<APlayableController>(NewController);
-	if (PlayableController && ItemUsageComp)
-	{
-		ItemUsageComp->GetItemWidgetUpdateDelegate().BindUObject(PlayableController, &APlayableController::UpdateItemUI);
-	}
 }
 void APlayableCharacter::UnPossessed()
 {
@@ -63,6 +57,13 @@ void APlayableCharacter::BeginPlay()
 
 	/** Thread for Character Properties... */
 	SetMovementSpeed(DefaultMoveSpeed);
+
+	/** Set Item Widget */
+	PlayableController = Cast<APlayableController>(GetController());
+	if (PlayableController && ItemUsageComp)
+	{
+		ItemUsageComp->GetItemWidgetUpdateDelegate().BindUObject(PlayableController, &APlayableController::UpdateItemUI);
+	}
 }
 void APlayableCharacter::Tick(float DeltaTime)
 {
@@ -291,7 +292,13 @@ void APlayableCharacter::MoveToActor()
 }
 void APlayableCharacter::PickUpItem(UItemData* ItemData)
 {
-	// @TODO : Controller에 UI의 정보[델리게이트]와 ItemUsageComponent에 Item정보[함수 호출]를 넘겨준다. (데이터를 넘겨주는 역할)
+	if (HasAuthority())
+	{
+		ClientPickUpItem(ItemData);
+	}
+}
+void APlayableCharacter::ClientPickUpItem_Implementation(UItemData* ItemData)
+{
 	ItemUsageComp->PickUpItem(ItemData);
 }
 void APlayableCharacter::UseActiveItem() {

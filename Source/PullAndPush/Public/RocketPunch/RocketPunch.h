@@ -79,11 +79,18 @@ private:
 	UFUNCTION()
 	void OnRep_ChangeMaterial();
 
+	UFUNCTION()
+	void OnRep_ChangeScale();
+
 	UPROPERTY(Replicated, ReplicatedUsing = OnRep_ChangeMeshVisibility)
 	bool bStaticMeshVisibility;
 
 	UPROPERTY(Replicated, ReplicatedUsing = OnRep_ChangeMaterial)
 	TWeakObjectPtr<class UMaterial> CurrentMaterial;
+	
+	UPROPERTY(Replicated, ReplicatedUsing = OnRep_ChangeScale)
+	FVector CurrentScale;
+
 
 	// @TODO : 추후 색상이 아닌 메시로 변경해야 함.
 	UPROPERTY(EditDefaultsOnly, Category = "Materials")
@@ -91,4 +98,5 @@ private:
 
 	UPROPERTY(EditDefaultsOnly, Category = "Materials")
 	TObjectPtr<class UMaterial> PullMaterial;
+
 };

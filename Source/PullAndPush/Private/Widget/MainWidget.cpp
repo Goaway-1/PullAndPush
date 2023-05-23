@@ -42,8 +42,6 @@ void UMainWidget::UpdatePassiveItemUI(UDataAsset* CurrentItem)
     TScriptInterface<class IItemActionHandler> CurItemAction = CurrentItem;
     if (CurItemAction.GetInterface())
     {
-        UE_LOG(LogTemp, Warning, TEXT("UpdatePassiveItemUI"));
-
         ensure(PassiveItemWidgetClass);
         const FName ItemName = FName(CurItemAction->GetIdentifierString());
 

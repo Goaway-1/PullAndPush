@@ -106,7 +106,7 @@ void UItemUsageComponent::PickUpItem(UItemData* ItemData)
 	else {
 		CurActiveItemData = ItemData;
 
-		// Show 'Passive Widget'
+		// Show 'Active Widget'
 		OnItemWidgetUpdate.ExecuteIfBound(CurActiveItemData, false);	
 	}
 }
@@ -136,7 +136,6 @@ void UItemUsageComponent::TryToUseActiveItem()
 {
 	if (!CurActiveItemData) return;
 
-	PPLOG(Log, TEXT("UseActionItem"));
 	TScriptInterface<class IItemActionHandler> CurItemAction = CurActiveItemData;
 	if (CurItemAction.GetInterface())
 	{
@@ -148,7 +147,7 @@ void UItemUsageComponent::TryToUseActiveItem()
 		CurDeployableItem->SetActorLocation(GetOwner()->GetActorLocation());
 		CurDeployableItem->AttachToActor(GetOwner(), FAttachmentTransformRules::SnapToTargetNotIncludingScale, ItemSocketName);
 
-		// Hide 'Passive Widget'
+		// Hide 'Active Widget'
 		OnItemWidgetUpdate.ExecuteIfBound(nullptr, false);
 
 		bIsReadyToThrow = true;
@@ -162,7 +161,7 @@ void UItemUsageComponent::TryToUsePassiveItem(UItemData* ItemData)
 	{
 		CurItemAction->UseItem(GetOwner());
 
-		// Show 'Active Widget'
+		// Show 'Passive Widget'
 		OnItemWidgetUpdate.ExecuteIfBound(ItemData, true);
 	}
 }
