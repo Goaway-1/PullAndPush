@@ -79,4 +79,12 @@ private:
 	* @param	bool			Whether the update target is Passive or Active (Passive is True)
 	*/
 	FOnItemWidgetUpdate OnItemWidgetUpdate;
+
+/** Timer */
+protected:
+	FTimerHandle AddTimer(class UItemData* PassiveItem, bool& bIsItemActivated);
+	void RemoveTimer(FName TimerName);
+
+	UPROPERTY(VisibleAnywhere, Category = "Widget")
+	TMap<FName, FTimerHandle> TimerHandles;
 };

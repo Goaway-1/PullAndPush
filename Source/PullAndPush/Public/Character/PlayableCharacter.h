@@ -66,9 +66,9 @@ private:
 	UFUNCTION(Server, Reliable)
 	void ServerActiveMovementSpeed(const float InSpeed, const float InJump);
 
+	// Call On Tick..
 	void UpdateCurrnentMovementSpeed();
 
-	// Controller
 	TObjectPtr<class APlayableController> PlayableController;
 
 	UPROPERTY(Transient, VisibleAnywhere, Category = "Movement")
@@ -81,10 +81,10 @@ private:
 
 private:
 	UFUNCTION()
-	void SetAimPitch();
+	void UpdateAimPitch();
 
 	UFUNCTION(Server, Reliable)
-	void ServerSetAimPitch();
+	void ServerUpdateAimPitch();
 
 protected:
 	UPROPERTY(Replicated, VisibleAnywhere, BlueprintReadOnly, Category = "Camera")
@@ -102,11 +102,12 @@ private:
 	UFUNCTION()
 	void EndLaunch();
 
+	// Set Spring Arm
 	UFUNCTION()
 	void UpdateSpringArmLength(const float NewArmLength);
+	void SetPlayerView();
 
 	void InitSpringArm(USpringArmComponent* SpringArm, const float& NewTargetArmLength, const FVector& NewSocketOffset);
-	void SetPlayerView();
 
 	UFUNCTION(BlueprintCallable)
 	FORCEINLINE EPlayerAttackCondition GetPlayerAttackCondition() { return PlayerAttackCondition; }
@@ -134,10 +135,11 @@ protected:
 public:
 	virtual void KnockBackActor(const FVector& DirVec) override;
 	virtual void SetMoveToLocation(const FVector& HitVector) override;
-	void MoveToLocation(float DeltaTime);
-
 	virtual void SetMoveToActor(AActor* TargetActor) override;
-	void MoveToActor();
+
+private:
+	void UpdateMoveToLocation(float DeltaTime);
+	void UpdateMoveToActor();
 
 private:
 	uint8 bIsMoveToLocation : 1;

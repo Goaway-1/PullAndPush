@@ -24,6 +24,6 @@ public:
 
 /** Handler */
 public:
-	virtual void UseItem(class AActor* TargetActor) override;
-	virtual void EndActiveItem() override;
+	virtual void UsePassiveItem(class AActor* TargetActor, FTimerHandle Handler, bool InPassiveItemAlreadyActivated) override;
+	virtual void EndPassiveItem() override;
 };

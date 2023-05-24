@@ -3,9 +3,9 @@
 
 #include "Item/ItemData/PassiveItemData/PassiveItemDataRPSpeedUp.h"
 
-void UPassiveItemDataRPSpeedUp::UseItem(AActor* TargetActor)
+void UPassiveItemDataRPSpeedUp::UsePassiveItem(AActor* TargetActor, FTimerHandle Handler, bool InPassiveItemAlreadyActivated)
 {
-    Super::UseItem(TargetActor);
+    Super::UsePassiveItem(TargetActor, Handler, InPassiveItemAlreadyActivated);
 
     // Try Rocket Punch Speed Up
     if (!bIsItemActivated) {
@@ -13,9 +13,9 @@ void UPassiveItemDataRPSpeedUp::UseItem(AActor* TargetActor)
     }
 }
 
-void UPassiveItemDataRPSpeedUp::EndActiveItem()
+void UPassiveItemDataRPSpeedUp::EndPassiveItem()
 {
-    Super::EndActiveItem();
+    Super::EndPassiveItem();
 
     // Try Rocket Punch Speed Down
     CharacterPropertyHandler->RocketPunchAlphaSpeed(1.f);

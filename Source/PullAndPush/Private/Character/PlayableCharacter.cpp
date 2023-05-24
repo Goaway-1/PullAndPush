@@ -70,10 +70,10 @@ void APlayableCharacter::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 
 	// If Hit Event is Called.
-	MoveToLocation(DeltaTime);
-	MoveToActor();
+	UpdateMoveToLocation(DeltaTime);
+	UpdateMoveToActor();
 
-	SetAimPitch();
+	UpdateAimPitch();
 	UpdateCurrnentMovementSpeed();
 }
 void APlayableCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
@@ -148,14 +148,14 @@ void APlayableCharacter::Turn(float NewAxisValue)
 {
 	AddControllerYawInput(NewAxisValue);
 }
-void APlayableCharacter::SetAimPitch()
+void APlayableCharacter::UpdateAimPitch()
 {
 	if (HasAuthority() && GetPlayerAttackCondition() == EPlayerAttackCondition::EPAC_Charging)
 	{
-		ServerSetAimPitch();
+		ServerUpdateAimPitch();
 	}
 }
-void APlayableCharacter::ServerSetAimPitch_Implementation()
+void APlayableCharacter::ServerUpdateAimPitch_Implementation()
 {
 	FRotator TargetRot = UKismetMathLibrary::NormalizedDeltaRotator(GetControlRotation(), GetActorRotation());
 	AimPitch = TargetRot.Pitch;
@@ -256,7 +256,7 @@ void APlayableCharacter::SetMoveToLocation(const FVector& HitVector)
 	TargetLocation = HitVector;
 	StartLocation = GetActorLocation();
 }
-void APlayableCharacter::MoveToLocation(float DeltaTime)
+void APlayableCharacter::UpdateMoveToLocation(float DeltaTime)
 {
 	if (bIsMoveToLocation) {
 		const FVector Direction = (TargetLocation - StartLocation).GetSafeNormal();	
@@ -284,7 +284,7 @@ void APlayableCharacter::SetMoveToActor(AActor* TargetActor)
 		MoveTargetActor = nullptr;
 	}
 }
-void APlayableCharacter::MoveToActor()
+void APlayableCharacter::UpdateMoveToActor()
 {
 	if (bIsMoveToActor && MoveTargetActor.IsValid()) {
 		SetActorLocation(MoveTargetActor.Get()->GetActorLocation());

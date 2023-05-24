@@ -1,25 +1,19 @@
 #include "Item/ItemData/PassiveItemData/PassiveItemData.h"
-#include "Item/ItemTimerManager.h"
 
-void UPassiveItemData::UseItem(AActor* TargetActor)
+void UPassiveItemData::UsePassiveItem(AActor* TargetActor, FTimerHandle Handler, bool InPassiveItemAlreadyActivated)
 {
-	Super::UseItem(TargetActor);
-	ensure(TargetActor);
+	Super::UsePassiveItem(TargetActor, Handler, InPassiveItemAlreadyActivated);
+	IsValid(TargetActor);
 
-	// Add Timer
-	const FString ItemOwner = TargetActor->GetName();
-	CharacterPropertyHandler = TargetActor;
-	
 	// Get Timer Handler & Is Item Already Activated 
-	bool bItemAlreadyActivated;
-	ItemTimerHandler = AItemTimerManager::GetInstance()->AddTimer(ItemOwner, Name, DurationTime, false, this, bItemAlreadyActivated);
-
-	bIsItemActivated = bItemAlreadyActivated;
+	CharacterPropertyHandler = TargetActor;
+	ItemTimerHandler = Handler;
+	bIsItemActivated = InPassiveItemAlreadyActivated;
 	if (CharacterPropertyHandler.GetInterface() && !bIsItemActivated) {
 		PPLOG(Log, TEXT("[%s] Item Activated %f'sec"), *Name, DurationTime);
 	}
 }
-void UPassiveItemData::EndActiveItem()
+void UPassiveItemData::EndPassiveItem()
 {
 	PPLOG(Log, TEXT("[%s] Item Deactivated"), *Name);
 }

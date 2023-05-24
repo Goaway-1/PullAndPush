@@ -21,7 +21,7 @@ protected:
 	virtual void BeginPlay() override;
 
 public:
-	UPROPERTY(EditAnywhere, Category = "Widget")
+	UPROPERTY(EditDefaultsOnly, Category = "Widget")
 	TSubclassOf<class UMainWidget> MainWidgetClass;
 
 	UPROPERTY()
