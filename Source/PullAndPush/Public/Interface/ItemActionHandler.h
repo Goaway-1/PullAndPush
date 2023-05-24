@@ -21,9 +21,6 @@ class PULLANDPUSH_API IItemActionHandler
 	GENERATED_BODY()
 
 public:
-	UFUNCTION()
-	virtual void UseItem(class AActor* TargetActor) = 0;
-
 	virtual FString GetIdentifierString() const = 0;
 	virtual bool CheckIsActiveItem() const = 0;
 
@@ -33,6 +30,9 @@ public:
 	virtual UMaterialInterface* GetItemMaterialInterface() = 0;
 
 	// For Passive
+	UFUNCTION()
+	virtual void UsePassiveItem(class AActor* TargetActor, FTimerHandle Handler, bool InPassiveItemAlreadyActivated) = 0;
+	virtual void EndPassiveItem() = 0;								
 	virtual float GetDurationTime() = 0;
 	virtual FTimerHandle GetTimerHandler() = 0;
 

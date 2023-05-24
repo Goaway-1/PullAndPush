@@ -6,7 +6,7 @@
 #include "RocketPunch.generated.h"
 
 
-DECLARE_DELEGATE_OneParam(FRocketPunchOutOfUse, const bool&)
+DECLARE_DELEGATE_OneParam(FRocketPunchOutOfUse, const bool)
 
 UCLASS()
 class PULLANDPUSH_API ARocketPunch : public AActor
@@ -22,6 +22,8 @@ protected:
 public:	
 	virtual void Tick(float DeltaTime) override;
 
+/** Default */
+protected:
 	UPROPERTY(EditDefaultsOnly)
 	TObjectPtr<class USphereComponent> CollisionComp;
 
@@ -33,30 +35,32 @@ public:
 
 	UPROPERTY(VisibleAnywhere)
 	TObjectPtr<class URPCollisionComponent> RPCollisionComponent;
-
-	void ReadyToLaunch(const float& InForceAlpha, AActor* InCasterActor, const bool IsPush, const FVector& InVec, const FRotator& InRot, const float& AlphaSpeed, const float& AlphaRange, const float& AlphaSize);
-	void IsOutOfUse(const bool& Val);
-	AActor* GetCasterActor();
-
+	
+public:
+	FORCEINLINE AActor* GetCasterActor() {	if (CasterActor.IsValid()) return CasterActor.Get();	return nullptr;	}
 	FORCEINLINE class URPMovementComponent* GetRPMovementComponent() const {return RPMovementComponent;}
 	FORCEINLINE class URPCollisionComponent* GetRPCollisionComponent() const {return RPCollisionComponent;}
-
-	// For Log
-	// @TODO : 추후 색상이 아닌 메시로 변경해야 함.
-	UPROPERTY(EditDefaultsOnly, Category="Materials")
-	TObjectPtr<class UMaterial> PushMaterial;
-
-	UPROPERTY(EditDefaultsOnly, Category = "Materials")
-	TObjectPtr<class UMaterial> PullMaterial;
 
 	UFUNCTION()
 	void SetCollisionSimulatePhysics(bool Val);
 
 	FRocketPunchOutOfUse OutOfUse;
+private:
+	void IsOutOfUse(const bool& Val);
+
+	UPROPERTY()
+	TWeakObjectPtr<AActor> CasterActor;
+
+/** Launch */
+public:
+	void ReadyToLaunch(const float& InForceAlpha, AActor* InCasterActor, const bool IsPush, const FVector& InVec, const FRotator& InRot, const float& AlphaSpeed, const float& AlphaRange, const float& AlphaSize);
 
 private:
-	UPROPERTY()
-	TObjectPtr<AActor> CasterActor;
+	UFUNCTION(Server, Reliable)
+	void ServerReadyToLaunch(const float& InForceAlpha, AActor* InCasterActor, const bool IsPush, const FVector& InVec, const FRotator& InRot, const float& AlphaSpeed, const float& AlphaRange, const float& AlphaSize);
+
+	UFUNCTION()
+	void OnHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComponent, FVector NormalImpulse, const FHitResult& Hit);
 
 	UPROPERTY(Transient)
 	float ForceAlpha;
@@ -64,6 +68,35 @@ private:
 	uint8 bIsPush : 1;
 	const FName CollisionName = TEXT("RocketPunch");
 
+/** Visibility */
+public:
+	void SetMeshVisibility(bool InVisibility);
+
+private:
 	UFUNCTION()
-	void OnHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComponent, FVector NormalImpulse, const FHitResult& Hit);
+	void OnRep_ChangeMeshVisibility();
+
+	UFUNCTION()
+	void OnRep_ChangeMaterial();
+
+	UFUNCTION()
+	void OnRep_ChangeScale();
+
+	UPROPERTY(Replicated, ReplicatedUsing = OnRep_ChangeMeshVisibility)
+	bool bStaticMeshVisibility;
+
+	UPROPERTY(Replicated, ReplicatedUsing = OnRep_ChangeMaterial)
+	TWeakObjectPtr<class UMaterial> CurrentMaterial;
+	
+	UPROPERTY(Replicated, ReplicatedUsing = OnRep_ChangeScale)
+	FVector CurrentScale;
+
+
+	// @TODO : 추후 색상이 아닌 메시로 변경해야 함.
+	UPROPERTY(EditDefaultsOnly, Category = "Materials")
+	TObjectPtr<class UMaterial> PushMaterial;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Materials")
+	TObjectPtr<class UMaterial> PullMaterial;
+
 };

@@ -3,9 +3,9 @@
 
 #include "Item/ItemData/PassiveItemData/PassiveItemDataRPRangeUp.h"
 
-void UPassiveItemDataRPRangeUp::UseItem(AActor* TargetActor)
+void UPassiveItemDataRPRangeUp::UsePassiveItem(AActor* TargetActor, FTimerHandle Handler, bool InPassiveItemAlreadyActivated)
 {
-    Super::UseItem(TargetActor);
+    Super::UsePassiveItem(TargetActor, Handler, InPassiveItemAlreadyActivated);
 
     // Try Rocket Punch Range Up
     if (!bIsItemActivated) {
@@ -13,9 +13,9 @@ void UPassiveItemDataRPRangeUp::UseItem(AActor* TargetActor)
     }
 }
 
-void UPassiveItemDataRPRangeUp::EndActiveItem()
+void UPassiveItemDataRPRangeUp::EndPassiveItem()
 {
-    Super::EndActiveItem();
+    Super::EndPassiveItem();
 
     // Try Rocket Punch Range Down
     CharacterPropertyHandler->RocketPunchAlphaRange(1.f);

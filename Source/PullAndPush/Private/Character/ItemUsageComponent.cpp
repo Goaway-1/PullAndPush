@@ -4,7 +4,6 @@
 #include "Item/ItemData/ItemData.h"
 #include "Interface/ItemActionHandler.h"
 #include "Interface/DeployableItemHandler.h"
-
 #include "Kismet/GameplayStatics.h"
 #include "GameFramework/PlayerController.h"
 #include "Components/SplineComponent.h"
@@ -15,6 +14,7 @@ UItemUsageComponent::UItemUsageComponent()
 	bIsReadyToThrow(0)
 {
 	PrimaryComponentTick.bCanEverTick = true;
+	SetIsReplicatedByDefault(true);
 
 	SplineComp = CreateDefaultSubobject<USplineComponent>(TEXT("SplineComp"));
 }
@@ -106,8 +106,8 @@ void UItemUsageComponent::PickUpItem(UItemData* ItemData)
 	else {
 		CurActiveItemData = ItemData;
 
-		// Show 'Passive Widget'
-		OnItemWidgetUpdate.Execute(CurActiveItemData, false);
+		// Show 'Active Widget'
+		OnItemWidgetUpdate.ExecuteIfBound(CurActiveItemData, false);	
 	}
 }
 void UItemUsageComponent::ThrowDeployableItem()
@@ -136,7 +136,6 @@ void UItemUsageComponent::TryToUseActiveItem()
 {
 	if (!CurActiveItemData) return;
 
-	PPLOG(Log, TEXT("UseActionItem"));
 	TScriptInterface<class IItemActionHandler> CurItemAction = CurActiveItemData;
 	if (CurItemAction.GetInterface())
 	{
@@ -148,8 +147,8 @@ void UItemUsageComponent::TryToUseActiveItem()
 		CurDeployableItem->SetActorLocation(GetOwner()->GetActorLocation());
 		CurDeployableItem->AttachToActor(GetOwner(), FAttachmentTransformRules::SnapToTargetNotIncludingScale, ItemSocketName);
 
-		// Hide 'Passive Widget'
-		OnItemWidgetUpdate.Execute(nullptr, false);
+		// Hide 'Active Widget'
+		OnItemWidgetUpdate.ExecuteIfBound(nullptr, false);
 
 		bIsReadyToThrow = true;
 		CurActiveItemData = nullptr;
@@ -160,9 +159,53 @@ void UItemUsageComponent::TryToUsePassiveItem(UItemData* ItemData)
 	TScriptInterface<class IItemActionHandler> CurItemAction = ItemData;
 	if (CurItemAction.GetInterface())
 	{
-		CurItemAction->UseItem(GetOwner());
+		bool bItemAlreadyActivated;
+		FTimerHandle Handler = AddTimer(ItemData, bItemAlreadyActivated);
+		CurItemAction->UsePassiveItem(GetOwner(), Handler, bItemAlreadyActivated);
 
-		// Show 'Active Widget'
-		OnItemWidgetUpdate.Execute(ItemData, true);
+		// Show 'Passive Widget'
+		OnItemWidgetUpdate.ExecuteIfBound(ItemData, true);
+	}
+}
+FTimerHandle UItemUsageComponent::AddTimer(class UItemData* PassiveItem, bool& bIsItemActivated)
+{
+	// Check handler already exists
+	const FName TimerName = FName(PassiveItem->GetItemName());
+	const float Duration = PassiveItem->GetDurationTime();
+	if (TimerHandles.Contains(TimerName))
+	{
+		RemoveTimer(TimerName);
+		PPLOG(Log, TEXT("%s Item Time is already exists!"),*TimerName.ToString());
+		bIsItemActivated = true;
+	}
+	else
+	{
+		PPLOG(Log, TEXT("Add Item Timer, Item Name : %s, Duration : %f"), *TimerName.ToString(), Duration);
+		bIsItemActivated = false;
+	}
+
+	// Set Timer & Handler
+	FTimerHandle Handle;
+	FTimerDelegate CallbackDelegate;
+	CallbackDelegate.BindLambda([=]() {
+		PassiveItem->EndPassiveItem();
+		RemoveTimer(TimerName);
+		});
+	GetWorld()->GetTimerManager().SetTimer(Handle, CallbackDelegate, Duration, false);
+	
+	// Add the timer handle to the array
+	TimerHandles.Add(TimerName, Handle);
+
+	return Handle;
+}
+void UItemUsageComponent::RemoveTimer(FName TimerName)
+{
+	FTimerHandle* Handle = TimerHandles.Find(TimerName);
+
+	if (Handle->IsValid()) {
+		GetWorld()->GetTimerManager().ClearTimer(*Handle);
+		TimerHandles.Remove(TimerName);
+
+		PPLOG(Log, TEXT("Remove Item Handle : %s"), *TimerName.ToString());
 	}
 }

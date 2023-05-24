@@ -5,12 +5,16 @@
 #include "Components/StaticMeshComponent.h"
 #include "Kismet/KismetMathLibrary.h"
 #include "Engine/SkeletalMeshSocket.h"
+#include "Net/UnrealNetwork.h"
 
 ARocketPunch::ARocketPunch()
 	: 
 	bIsPush(false)
 {
  	PrimaryActorTick.bCanEverTick = true;
+
+	bReplicates = true;
+	SetReplicateMovement(true);
 
 	CollisionComp = CreateDefaultSubobject<USphereComponent>(TEXT("SphereComp"));
 	CollisionComp->InitSphereRadius(35.0f);
@@ -43,30 +47,42 @@ void ARocketPunch::BeginPlay()
 void ARocketPunch::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-
 }
 void ARocketPunch::ReadyToLaunch(const float& InForceAlpha, AActor* InCasterActor, const bool IsPush, const FVector& InVec, const FRotator& InRot, const float& AlphaSpeed, const float& AlphaRange, const float& AlphaSize)
 {
-	if(CasterActor == nullptr) CasterActor = InCasterActor;
-
-	// Set Scale of Visual & Collision
-	CollisionComp->SetWorldScale3D(FVector(AlphaSize));
-	StaticMeshComp->SetWorldScale3D(FVector(AlphaSize));
-
-	bIsPush = IsPush;
-	ForceAlpha = InForceAlpha;
-	RPMovementComponent->Launch(ForceAlpha, CasterActor, InVec, InRot, AlphaSpeed, AlphaSize);
-	PPLOG(Log, TEXT("AlphaSpeed : %f, AlphaRange : %f, AlphaSize : %f"), AlphaSpeed, AlphaRange, AlphaSize);
-	
-	// Setting Color of RP
-	// @TODO : 추후 색의 차이가 아닌, 새로운 매시로 구분하고 함수로 제작
-	if(!PushMaterial || !PullMaterial) {
-		UE_LOG(LogTemp, Warning, TEXT("[RocketPunch] Materials ared not exsit"));
-		return;
+	if (!HasAuthority()) 
+	{
+		ServerReadyToLaunch(InForceAlpha, InCasterActor, IsPush, InVec, InRot, AlphaSpeed, AlphaRange, AlphaSize);
 	}
+	else 
+	{
+		if (!CasterActor.IsValid()) CasterActor = InCasterActor;
 
-	UMaterial* CurMaterial = (bIsPush) ? PushMaterial : PullMaterial;
-	StaticMeshComp->SetMaterial(0, CurMaterial);
+		// @TODO : 스케일 조정 OnRep 써서 하면ㄷ ㅙ
+		// Set Scale of Visual & Collision
+		CurrentScale = FVector(AlphaSize);
+		CollisionComp->SetWorldScale3D(FVector(AlphaSize));
+		StaticMeshComp->SetWorldScale3D(FVector(AlphaSize));
+
+		bIsPush = IsPush;
+		ForceAlpha = InForceAlpha;
+		RPMovementComponent->Launch(ForceAlpha, CasterActor.Get(), InVec, InRot, AlphaSpeed, AlphaRange);
+		PPLOG(Log, TEXT("AlphaSpeed : %f, AlphaRange : %f, AlphaSize : %f"), AlphaSpeed, AlphaRange, AlphaSize);
+
+		// Setting Color of RP
+		// @TODO : 추후 색의 차이가 아닌, 새로운 매시로 구분하고 함수로 제작
+		if (!PushMaterial || !PullMaterial) {
+			UE_LOG(LogTemp, Warning, TEXT("[RocketPunch] Materials ared not exsit"));
+			return;
+		}
+
+		CurrentMaterial = (bIsPush) ? PushMaterial : PullMaterial;
+		StaticMeshComp->SetMaterial(0, CurrentMaterial.Get());
+	}
+}
+void ARocketPunch::ServerReadyToLaunch_Implementation(const float& InForceAlpha, AActor* InCasterActor, const bool IsPush, const FVector& InVec, const FRotator& InRot, const float& AlphaSpeed, const float& AlphaRange, const float& AlphaSize)
+{
+	ReadyToLaunch(InForceAlpha, InCasterActor, IsPush, InVec, InRot, AlphaSpeed, AlphaRange, AlphaSize);
 }
 void ARocketPunch::IsOutOfUse(const bool& Val)
 {
@@ -75,18 +91,39 @@ void ARocketPunch::IsOutOfUse(const bool& Val)
 	// Reset OverlapActors Array
 	RPCollisionComponent->OnArrayReset.Execute();
 }
-AActor* ARocketPunch::GetCasterActor()
-{
-	if(CasterActor) return CasterActor;
-	return nullptr;
-}
 void ARocketPunch::SetCollisionSimulatePhysics(bool Val)
 {
 	if(CollisionComp) CollisionComp->SetSimulatePhysics(Val);
+}
+void ARocketPunch::SetMeshVisibility(bool InVisibility)
+{
+	bStaticMeshVisibility = InVisibility;
+	StaticMeshComp->SetVisibility(InVisibility);
+}
+void ARocketPunch::OnRep_ChangeMeshVisibility()
+{
+	StaticMeshComp->SetVisibility(bStaticMeshVisibility);
+}
+void ARocketPunch::OnRep_ChangeMaterial()
+{
+	StaticMeshComp->SetMaterial(0, CurrentMaterial.Get());	
+}
+void ARocketPunch::OnRep_ChangeScale()
+{
+	CollisionComp->SetWorldScale3D(CurrentScale);
+	StaticMeshComp->SetWorldScale3D(CurrentScale);
 }
 void ARocketPunch::OnHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComponent, FVector NormalImpulse, const FHitResult& Hit)
 {
 	if (OtherActor != CasterActor) {
 		RPCollisionComponent->OnHit(HitComponent,OtherActor,OtherComponent, NormalImpulse, Hit, GetCasterActor(), bIsPush, ForceAlpha);
 	}
+}
+void ARocketPunch::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+	DOREPLIFETIME(ARocketPunch, bStaticMeshVisibility);
+	DOREPLIFETIME(ARocketPunch, CurrentMaterial);
+	DOREPLIFETIME(ARocketPunch, CurrentScale);
 }

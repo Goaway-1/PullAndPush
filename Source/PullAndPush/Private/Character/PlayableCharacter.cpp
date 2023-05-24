@@ -8,8 +8,9 @@
 #include "GameFramework/CharacterMovementComponent.h"
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
-#include "Runnable/CharacterPropertyRunnable.h"
 #include "Player/PlayableController.h"
+#include "Net/UnrealNetwork.h"
+#include "Kismet/KismetMathLibrary.h"
 
 APlayableCharacter::APlayableCharacter()
 	:
@@ -31,24 +32,16 @@ APlayableCharacter::APlayableCharacter()
 	GetCharacterMovement()->bOrientRotationToMovement = true;
 	GetCharacterMovement()->RotationRate = FRotator(0.f,700.f,0.f);
 	GetCharacterMovement()->MaxWalkSpeed = DefaultMoveSpeed;
+	GetCharacterMovement()->SetIsReplicated(true);
 }
 APlayableCharacter::~APlayableCharacter()
 {
-	if (PropertyRunnable != nullptr)
-	{
-		PropertyRunnable->Stop();
-	}
+
 }
 void APlayableCharacter::PossessedBy(AController* NewController)
 {
 	Super::PossessedBy(NewController);
 
-	// Set Item Widget
-	PlayableController = Cast<APlayableController>(NewController);
-	if (PlayableController && ItemUsageComp)
-	{
-		ItemUsageComp->GetItemWidgetUpdateDelegate().BindUObject(PlayableController, &APlayableController::UpdateItemUI);
-	}
 }
 void APlayableCharacter::UnPossessed()
 {
@@ -63,19 +56,25 @@ void APlayableCharacter::BeginPlay()
 	Super::BeginPlay();
 
 	/** Thread for Character Properties... */
-	PropertyRunnable = new FCharacterPropertyRunnable();
-	PropertyRunnable->CompleteSignature.BindUObject(this, &APlayableCharacter::ActiveMovementSpeed);
-	SetMovementSpeed(false, DefaultMoveSpeed);
+	SetMovementSpeed(DefaultMoveSpeed);
+
+	/** Set Item Widget */
+	PlayableController = Cast<APlayableController>(GetController());
+	if (PlayableController && ItemUsageComp)
+	{
+		ItemUsageComp->GetItemWidgetUpdateDelegate().BindUObject(PlayableController, &APlayableController::UpdateItemUI);
+	}
 }
 void APlayableCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	SetPlayerView();
-
 	// If Hit Event is Called.
-	MoveToLocation(DeltaTime);
-	MoveToActor();
+	UpdateMoveToLocation(DeltaTime);
+	UpdateMoveToActor();
+
+	UpdateAimPitch();
+	UpdateCurrnentMovementSpeed();
 }
 void APlayableCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
@@ -101,10 +100,16 @@ void APlayableCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputC
 void APlayableCharacter::SetPlayerAttackCondition(const bool IsCharging)
 {
 	PlayerAttackCondition = (IsCharging) ? EPlayerAttackCondition::EPAC_Charging : EPlayerAttackCondition::EPAC_Idle;
+	ServerSetPlayerAttackCondition(IsCharging);
 
 	AimingComp->ZoomInOut(IsCharging);
-	SetMovementSpeed(IsCharging);
-	ActiveMovementSpeed(IsCharging);	
+	SetPlayerView();
+	SetMovementSpeed();
+}
+void APlayableCharacter::ServerSetPlayerAttackCondition_Implementation(const bool IsCharging)
+{
+	PlayerAttackCondition = (IsCharging) ? EPlayerAttackCondition::EPAC_Charging : EPlayerAttackCondition::EPAC_Idle;
+	SetPlayerView();
 }
 void APlayableCharacter::InitEnhancedInput()
 {
@@ -143,6 +148,18 @@ void APlayableCharacter::Turn(float NewAxisValue)
 {
 	AddControllerYawInput(NewAxisValue);
 }
+void APlayableCharacter::UpdateAimPitch()
+{
+	if (HasAuthority() && GetPlayerAttackCondition() == EPlayerAttackCondition::EPAC_Charging)
+	{
+		ServerUpdateAimPitch();
+	}
+}
+void APlayableCharacter::ServerUpdateAimPitch_Implementation()
+{
+	FRotator TargetRot = UKismetMathLibrary::NormalizedDeltaRotator(GetControlRotation(), GetActorRotation());
+	AimPitch = TargetRot.Pitch;
+}
 void APlayableCharacter::TryLaunch(const FVector2D& Value)
 {
 	// If item exists, throw it
@@ -161,35 +178,52 @@ void APlayableCharacter::EndLaunch()
 {
 	AttackComp->EndLaunch(bIsPush);
 }
-void APlayableCharacter::SetMovementSpeed(const bool& IsCharging, const float& NewMoveSpeed)
+void APlayableCharacter::SetMovementSpeed(const float NewMoveSpeed)
 {
-	ensure(PropertyRunnable);
-
 	// Is Item Activated
 	if (NewMoveSpeed > 0.f || NewMoveSpeed < 0.f) {
 		float Speed = CurrentMoveSpeed + NewMoveSpeed;
-
-		// Thread for Character Properties
-		PropertyRunnable->SetMoveSpeed(Speed);
+		PendingMoveSpeed.exchange(Speed);
+	}
+	else
+	{
+		ActiveMovementSpeed();
 	}
 }
-void APlayableCharacter::ActiveMovementSpeed(const bool& IsCharging)
+void APlayableCharacter::ActiveMovementSpeed()
 {
-	ensure(PropertyRunnable);
-
 	// Update CurrentMoveSpeed (in Local)
-	CurrentMoveSpeed = PropertyRunnable->GetMoveSpeed();
 	float Speed = CurrentMoveSpeed;
 	float Velocity = MaxJumpVelocity;
 
-	if (IsCharging || GetPlayerAttackCondition() == EPlayerAttackCondition::EPAC_Charging) {
+	if (GetPlayerAttackCondition() == EPlayerAttackCondition::EPAC_Charging) 
+	{
 		Speed /= 2;
 		Velocity /= 2;
 	}
 
 	// Set Character Movmemt Properties...
-	GetCharacterMovement()->MaxWalkSpeed = Speed;
-	GetCharacterMovement()->JumpZVelocity = Velocity;
+	if (GetLocalRole() == ROLE_Authority)
+	{
+		GetCharacterMovement()->MaxWalkSpeed = Speed;
+		GetCharacterMovement()->JumpZVelocity = Velocity;
+	}
+	else
+	{
+		ServerActiveMovementSpeed(Speed, Velocity);
+	}
+}
+void APlayableCharacter::ServerActiveMovementSpeed_Implementation(const float InSpeed, const float InJump)
+{
+	GetCharacterMovement()->MaxWalkSpeed = InSpeed;
+	GetCharacterMovement()->JumpZVelocity = InJump;
+}
+void APlayableCharacter::UpdateCurrnentMovementSpeed()
+{
+	if (PendingMoveSpeed != CurrentMoveSpeed) {
+		CurrentMoveSpeed = PendingMoveSpeed;
+		ActiveMovementSpeed();
+	}
 }
 void APlayableCharacter::InitSpringArm(USpringArmComponent* SpringArm, const float& NewTargetArmLength, const FVector& NewSocketOffset)
 {
@@ -205,12 +239,8 @@ void APlayableCharacter::InitSpringArm(USpringArmComponent* SpringArm, const flo
 }
 void APlayableCharacter::SetPlayerView()
 {
-	if (GetPlayerAttackCondition() == EPlayerAttackCondition::EPAC_Charging) {
-		FRotator NewRot = GetControlRotation();
-		NewRot.Roll = 0;
-		NewRot.Pitch = 0;
-		SetActorRotation(NewRot);
-	}
+	bUseControllerRotationYaw = (GetPlayerAttackCondition() == EPlayerAttackCondition::EPAC_Charging) ? true : false;
+	GetCharacterMovement()->bOrientRotationToMovement = (GetPlayerAttackCondition() == EPlayerAttackCondition::EPAC_Charging) ? false : true;
 }
 void APlayableCharacter::UpdateSpringArmLength(const float NewArmLength)
 {
@@ -226,7 +256,7 @@ void APlayableCharacter::SetMoveToLocation(const FVector& HitVector)
 	TargetLocation = HitVector;
 	StartLocation = GetActorLocation();
 }
-void APlayableCharacter::MoveToLocation(float DeltaTime)
+void APlayableCharacter::UpdateMoveToLocation(float DeltaTime)
 {
 	if (bIsMoveToLocation) {
 		const FVector Direction = (TargetLocation - StartLocation).GetSafeNormal();	
@@ -254,7 +284,7 @@ void APlayableCharacter::SetMoveToActor(AActor* TargetActor)
 		MoveTargetActor = nullptr;
 	}
 }
-void APlayableCharacter::MoveToActor()
+void APlayableCharacter::UpdateMoveToActor()
 {
 	if (bIsMoveToActor && MoveTargetActor.IsValid()) {
 		SetActorLocation(MoveTargetActor.Get()->GetActorLocation());
@@ -262,7 +292,13 @@ void APlayableCharacter::MoveToActor()
 }
 void APlayableCharacter::PickUpItem(UItemData* ItemData)
 {
-	// @TODO : Controller에 UI의 정보[델리게이트]와 ItemUsageComponent에 Item정보[함수 호출]를 넘겨준다. (데이터를 넘겨주는 역할)
+	if (HasAuthority())
+	{
+		ClientPickUpItem(ItemData);
+	}
+}
+void APlayableCharacter::ClientPickUpItem_Implementation(UItemData* ItemData)
+{
 	ItemUsageComp->PickUpItem(ItemData);
 }
 void APlayableCharacter::UseActiveItem() {
@@ -284,4 +320,11 @@ void APlayableCharacter::RocketPunchAlphaRange(const float& AlphaRange)
 void APlayableCharacter::RocketPunchAlphaSize(const float& AlphaSize)
 {
 	AttackComp->SetRPAlphaSize(AlphaSize);
+}
+void APlayableCharacter::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+	DOREPLIFETIME_CONDITION(APlayableCharacter, PlayerAttackCondition, COND_SkipOwner);
+	DOREPLIFETIME(APlayableCharacter, AimPitch);
 }

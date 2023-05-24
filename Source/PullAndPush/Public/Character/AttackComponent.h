@@ -17,13 +17,24 @@ public:
 protected:
 	virtual void BeginPlay() override;
 
+	virtual void ReadyForReplication() override;
+
 public:	
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
 	bool TryLaunch();
 	void ChargingLaunch();
 	void EndLaunch(bool bIsPush);
+private:
+	void SpawnRocketPunch();
 
+	UFUNCTION(Server, Reliable)
+	void ServerSpawnRocketPunch();
+
+	void ChangeMovementSpeed(const bool& IsCharging);
+
+	UFUNCTION(Client, Reliable)
+	void ClientSetCanLaunch(const bool Val);
 private:
 	// Charging Value
 	UPROPERTY(Transient)
@@ -36,23 +47,19 @@ private:
 	const float CanLaunchedTime = 1.0f;
 	const float MaxChargingTime = 2.5f;
 	const float MinChargingTime = 0.2f;
-
-	void ChangeMovementSpeed(const bool& IsCharging);
-	
+		
 	// Delegate : Make it possible to attack again
 	uint8 bIsCanLaunch:1;
 
-	UFUNCTION()
-	void SetCanLaunch(const bool& Val);
-
 	TWeakObjectPtr<class ACharacter> OwnerCharacter;
+
 	USkeletalMeshSocket const* RocketPunchSocket;
 
 protected:
-	UPROPERTY(EditAnywhere, Category = "Weapon")
+	UPROPERTY(EditAnywhere, Category = "RocketPunch")
 	TSubclassOf<class ARocketPunch> RocketPunchClass;
 
-	UPROPERTY(VisibleAnywhere, Category = "Weapon")
+	UPROPERTY(Replicated, VisibleAnywhere, Category = "RocketPunch")
 	TObjectPtr<class ARocketPunch> RocketPunch;
 
 /** Item Alpha Value */
@@ -62,12 +69,13 @@ public:
 	FORCEINLINE void SetRPAlphaSize(const float& AlphaSize) { RPAlphaSize = AlphaSize; }
 
 private:
-	UPROPERTY(Transient, VisibleAnywhere, Category = "Alpha Value")
+	// @TODO : VisibleAnywhere·Î ¼öÁ¤
+	UPROPERTY(Transient, EditAnywhere, Category = "RocketPunch | Alpha Value")
 	float RPAlphaSpeed;
 
-	UPROPERTY(Transient, VisibleAnywhere, Category = "Alpha Value")
+	UPROPERTY(Transient, EditAnywhere, Category = "RocketPunch | Alpha Value")
 	float RPAlphaRange;
 
-	UPROPERTY(Transient, VisibleAnywhere, Category = "Alpha Value")
+	UPROPERTY(Transient, EditAnywhere, Category = "RocketPunch | Alpha Value")
 	float RPAlphaSize;
 };

@@ -29,16 +29,6 @@ public:
 	virtual void Tick(float DeltaTime) override;
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
-	UFUNCTION(BlueprintCallable)
-	FORCEINLINE EPlayerAttackCondition GetPlayerAttackCondition() {return PlayerAttackCondition;}
-
-	UFUNCTION(BlueprintCallable)
-	virtual void SetPlayerAttackCondition(const bool IsCharging) override;
-
-	// Try to set Movement Speed
-	// Call Item or Charging
-	virtual void SetMovementSpeed(const bool& IsCharging, const float& NewMoveSpeed = 0.f) override;
-
 protected:
 	virtual void BeginPlay() override;
 
@@ -66,20 +56,40 @@ private:
 	void LookUp(float NewAxisValue);
 	void Turn(float NewAxisValue);
 
+	// Try to set Movement Speed
+	// Call Item or Charging
+	virtual void SetMovementSpeed(const float NewMoveSpeed = 0.f) override;
+
 	// Actually set Movement Speed
-	void ActiveMovementSpeed(const bool& IsCharging = false);
+	void ActiveMovementSpeed();
 
-	// Controller
+	UFUNCTION(Server, Reliable)
+	void ServerActiveMovementSpeed(const float InSpeed, const float InJump);
+
+	// Call On Tick..
+	void UpdateCurrnentMovementSpeed();
+
 	TObjectPtr<class APlayableController> PlayableController;
-
-	// Move properties
-	TObjectPtr<class FCharacterPropertyRunnable> PropertyRunnable;
 
 	UPROPERTY(Transient, VisibleAnywhere, Category = "Movement")
 	float CurrentMoveSpeed;
 
+	std::atomic<float> PendingMoveSpeed;
+
 	const float DefaultMoveSpeed = 600.f;
 	const float MaxJumpVelocity = 420.f;
+
+private:
+	UFUNCTION()
+	void UpdateAimPitch();
+
+	UFUNCTION(Server, Reliable)
+	void ServerUpdateAimPitch();
+
+protected:
+	UPROPERTY(Replicated, VisibleAnywhere, BlueprintReadOnly, Category = "Camera")
+	float AimPitch;
+
 #pragma endregion
 
 /** Charging */
@@ -92,13 +102,23 @@ private:
 	UFUNCTION()
 	void EndLaunch();
 
+	// Set Spring Arm
 	UFUNCTION()
 	void UpdateSpringArmLength(const float NewArmLength);
-
-	void InitSpringArm(USpringArmComponent* SpringArm, const float& NewTargetArmLength, const FVector& NewSocketOffset);
 	void SetPlayerView();
 
-	UPROPERTY(VisibleAnywhere, Category = "Condition")
+	void InitSpringArm(USpringArmComponent* SpringArm, const float& NewTargetArmLength, const FVector& NewSocketOffset);
+
+	UFUNCTION(BlueprintCallable)
+	FORCEINLINE EPlayerAttackCondition GetPlayerAttackCondition() { return PlayerAttackCondition; }
+
+	UFUNCTION(BlueprintCallable)
+	virtual void SetPlayerAttackCondition(const bool IsCharging) override;
+
+	UFUNCTION(Server, Reliable)
+	void ServerSetPlayerAttackCondition(const bool IsCharging);
+public:
+	UPROPERTY(Replicated, VisibleAnywhere, BlueprintReadOnly,Category = "Condition")
 	EPlayerAttackCondition PlayerAttackCondition;
 
 	uint8 bIsPush : 1;
@@ -115,10 +135,11 @@ protected:
 public:
 	virtual void KnockBackActor(const FVector& DirVec) override;
 	virtual void SetMoveToLocation(const FVector& HitVector) override;
-	void MoveToLocation(float DeltaTime);
-
 	virtual void SetMoveToActor(AActor* TargetActor) override;
-	void MoveToActor();
+
+private:
+	void UpdateMoveToLocation(float DeltaTime);
+	void UpdateMoveToActor();
 
 private:
 	uint8 bIsMoveToLocation : 1;
@@ -169,6 +190,9 @@ private:
 #pragma region ITEM
 public:
 	virtual void PickUpItem(class UItemData* ItemData) override;
+
+	UFUNCTION(Client, Reliable)
+	void ClientPickUpItem(class UItemData* ItemData);
 
 	// Set Alpha Value Affected By Item
 	virtual void RocketPunchAlphaSpeed(const float& AlphaSpeed) override;

@@ -43,9 +43,6 @@ public:
 	UFUNCTION(BlueprintCallable)
 	virtual bool CheckIsActiveItem() const override;
 
-	virtual void UseItem(class AActor* TargetActor) override {
-		
-	}
 	virtual FString GetItemName() override {
 		return Name;
 	}
@@ -60,12 +57,23 @@ public:
 		return MaterialUI.Get();
 	}
 	virtual float GetDurationTime() override {
+		if(CheckIsActiveItem()) PPLOG(Warning,TEXT("Invalid access to the Active item"));
 		return 0.f;
 	}
 	virtual FTimerHandle GetTimerHandler() override {
+		if (CheckIsActiveItem()) PPLOG(Warning, TEXT("Invalid access to the Active item"));
 		return FTimerHandle();
 	}
+	virtual void UsePassiveItem(class AActor* TargetActor, FTimerHandle Handler, bool InPassiveItemAlreadyActivated) override {
+		if (CheckIsActiveItem()) PPLOG(Warning, TEXT("Invalid access to the Active item"));
+		return;
+	}
+	virtual void EndPassiveItem() override {
+		if (CheckIsActiveItem()) PPLOG(Warning, TEXT("Invalid access to the Active item"));
+		return;
+	}
 	virtual TSubclassOf<AActor> GetSpawnItemClass() const override {
+		if (!CheckIsActiveItem()) PPLOG(Warning, TEXT("Invalid access to the Passive item"));
 		return nullptr;
 	}
 };

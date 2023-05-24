@@ -3,28 +3,29 @@
 
 #include "Player/PlayableController.h"
 #include "Blueprint/UserWidget.h"
-#include "Widget/MainWidget.h"
+#include "Widget/MainHUD.h"
 
 APlayableController::APlayableController() {
 
 }
-void APlayableController::BeginPlay() {
-	ensure(MainWidgetClass);
-
-	MainWidget = CreateWidget<UMainWidget>(this, MainWidgetClass);
-	if (MainWidget) {
-		MainWidget->AddToViewport();
-		MainWidget->SetVisibility(ESlateVisibility::Visible);
-	}
-}
-void APlayableController::UpdateItemUI(UDataAsset* CurrentItem, const bool& IsPassvieItem)
+void APlayableController::BeginPlay() 
 {
-	ensure(MainWidget);
+	Super::BeginPlay();
 
+	MainHUD = Cast<AMainHUD>(GetHUD());
+}
+void APlayableController::UpdateItemUI(UDataAsset* CurrentItem, const bool IsPassvieItem)
+{
 	// Set Item Widget
-	MainWidget->UpdateItemUI(CurrentItem, IsPassvieItem);
+	if (MainHUD)
+	{
+		MainHUD->UpdateItemUI(CurrentItem, IsPassvieItem);
+	}
 }
 void APlayableController::ChangeVisibleItemInfo(bool bVisibility)
 {
-	MainWidget->OnChangeVisibleItemWidget.Execute(bVisibility);
+	if (MainHUD)
+	{
+		MainHUD->ChangeVisibleItemInfo(bVisibility);
+	}
 }

@@ -12,7 +12,7 @@
 * @param	DataAsset		Item Data Asset
 * @param	bool			Whether the update target is Passive or Active (Passive is True)
 */
-DECLARE_DELEGATE_TwoParams(FOnItemWidgetUpdate, class UDataAsset*, const bool&)
+DECLARE_DELEGATE_TwoParams(FOnItemWidgetUpdate, class UDataAsset*, const bool)
 
 UCLASS(ClassGroup = (Custom), meta = (BlueprintSpawnableComponent))
 class PULLANDPUSH_API UItemUsageComponent : public UActorComponent, public IPickupActionHandler
@@ -79,4 +79,12 @@ private:
 	* @param	bool			Whether the update target is Passive or Active (Passive is True)
 	*/
 	FOnItemWidgetUpdate OnItemWidgetUpdate;
+
+/** Timer */
+protected:
+	FTimerHandle AddTimer(class UItemData* PassiveItem, bool& bIsItemActivated);
+	void RemoveTimer(FName TimerName);
+
+	UPROPERTY(VisibleAnywhere, Category = "Widget")
+	TMap<FName, FTimerHandle> TimerHandles;
 };

@@ -25,7 +25,8 @@ void UPassiveItemWidget::NativeTick(const FGeometry& MyGeometry, float InDeltaTi
 		ConditionalBeginDestroy();
 	}
 }
-void UPassiveItemWidget::UpdateItemSetting(FTimerHandle TimerHandler, UMaterialInterface* Material, float Cost) {
+void UPassiveItemWidget::UpdateItemSetting(FTimerHandle TimerHandler, UMaterialInterface* Material, float Cost) 
+{
 	// Set Default Setting (Material, Handler, Cost..)
 	ItemMaterial = UMaterialInstanceDynamic::Create(Material, this);
 	ItemCost = Cost;

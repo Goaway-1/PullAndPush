@@ -2,9 +2,9 @@
 
 #include "Item/ItemData/PassiveItemData/PassiveItemDataRPSizeUp.h"
 
-void UPassiveItemDataRPSizeUp::UseItem(AActor* TargetActor)
+void UPassiveItemDataRPSizeUp::UsePassiveItem(AActor* TargetActor, FTimerHandle Handler, bool InPassiveItemAlreadyActivated)
 {
-    Super::UseItem(TargetActor);
+    Super::UsePassiveItem(TargetActor, Handler, InPassiveItemAlreadyActivated);
 
     // Try Rocket Punch Size Up
     if (!bIsItemActivated) {
@@ -12,9 +12,9 @@ void UPassiveItemDataRPSizeUp::UseItem(AActor* TargetActor)
     }
 }
 
-void UPassiveItemDataRPSizeUp::EndActiveItem()
+void UPassiveItemDataRPSizeUp::EndPassiveItem()
 {
-    Super::EndActiveItem();
+    Super::EndPassiveItem();
 
     // Try Rocket Punch Size Down
     CharacterPropertyHandler->RocketPunchAlphaSize(1.f);

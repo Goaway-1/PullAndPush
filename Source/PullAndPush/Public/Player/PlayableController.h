@@ -20,13 +20,13 @@ protected:
 	virtual void BeginPlay() override;
 
 public:
-	void UpdateItemUI(class UDataAsset* CurrentItem, const bool& IsPassvieItem);
+	UFUNCTION()
+	void UpdateItemUI(class UDataAsset* CurrentItem, const bool IsPassvieItem);
 
+	UFUNCTION()
 	void ChangeVisibleItemInfo(bool bVisibility);
-private:
-	UPROPERTY(EditAnywhere, Category = "Widget")
-	TSubclassOf<class UMainWidget> MainWidgetClass;
 
+private:
 	UPROPERTY()
-	TObjectPtr<class UMainWidget> MainWidget;
+	TObjectPtr<class AMainHUD> MainHUD;
 };

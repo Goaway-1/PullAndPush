@@ -40,7 +40,7 @@ public:
 * Not Only Items, Also Calls When Rocket Punch Charging...
 */
 	UFUNCTION()
-	virtual void SetMovementSpeed(const bool& IsCharging, const float& NewMoveSpeed = 0.f) = 0;
+	virtual void SetMovementSpeed(const float NewMoveSpeed = 0.f) = 0;
 
 /** Item : For Rocket Punch */
 #pragma endregion

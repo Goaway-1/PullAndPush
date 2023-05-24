@@ -5,6 +5,7 @@
 #include "Math/Quat.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Interface/CharacterPropertyHandler.h"
+#include "Net/UnrealNetwork.h"
 
 UAttackComponent::UAttackComponent() 
 	:
@@ -14,6 +15,7 @@ UAttackComponent::UAttackComponent()
 {
 	PrimaryComponentTick.bCanEverTick = true;
 
+	SetIsReplicatedByDefault(true);
 }
 void UAttackComponent::BeginPlay(){
 	Super::BeginPlay();
@@ -22,15 +24,17 @@ void UAttackComponent::BeginPlay(){
 	RPAlphaRange = 1.f;
 	RPAlphaSize = 1.f;
 
-	// Spawn RocketPunch & Setting CharacterSocket
-	RocketPunch = GetWorld()->SpawnActor<ARocketPunch>(RocketPunchClass);
-	ensure(RocketPunch != nullptr);
-	RocketPunch->SetActorLocation(GetOwner()->GetActorLocation());
-	RocketPunch->OutOfUse.BindUObject(this, &UAttackComponent::SetCanLaunch);	
-
+	// Setting CharacterSocket
 	OwnerCharacter = Cast<ACharacter>(GetOwner());
 	RocketPunchSocket = OwnerCharacter.Get()->GetMesh()->GetSocketByName(RocketPunchSocketName);
 	ensure(RocketPunchSocket);
+}
+void UAttackComponent::ReadyForReplication()
+{
+	Super::ReadyForReplication();
+
+	// Spawn RocketPunch
+	SpawnRocketPunch();
 }
 void UAttackComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
 {
@@ -50,7 +54,7 @@ bool UAttackComponent::TryLaunch()
 void UAttackComponent::ChargingLaunch()
 {
 	if (bIsCharging && MaxChargingTime >= ChargingTime) {
-		ChargingTime += GetWorld()->GetDeltaSeconds();			
+		ChargingTime += GetWorld()->GetDeltaSeconds();
 
 		// Change Speed & View if Charging
 		if (!bIsChangeValue && ChargingTime > DecideChargingTime) {
@@ -66,20 +70,42 @@ void UAttackComponent::EndLaunch(bool bIsPush)
 	bIsCharging = false;
 	bIsChangeValue = false;
 	ChangeMovementSpeed(bIsCharging);
-	
+			
 	// Clamp ChargingTime and Check is can launch
 	ChargingTime = FMath::Clamp(ChargingTime, MinChargingTime, MaxChargingTime);
 	PPLOG(Log, TEXT("EndLaunch ChargingTime : %f"), ChargingTime);
-	if (RocketPunch && RocketPunchSocket && ChargingTime >= CanLaunchedTime) {
+	if (RocketPunch && RocketPunchSocket && ChargingTime >= CanLaunchedTime) 
+	{
 		// Location & Rotator & Charging Percent
-		const FVector LaunchLocation = RocketPunchSocket->GetSocketLocation(OwnerCharacter.Get()->GetMesh());
-		const FRotator LaunchRotation = OwnerCharacter.Get()->GetControlRotation();
 		const float ChargingAlpha = (ChargingTime - CanLaunchedTime) / (MaxChargingTime - CanLaunchedTime);
+		const FVector LaunchLocation = RocketPunchSocket->GetSocketLocation(OwnerCharacter.Get()->GetMesh());
+		const FRotator LaunchRotation = OwnerCharacter.Get()->GetControlRotation(); 
 		
-		// Set ReadyToLaunch
 		RocketPunch->ReadyToLaunch(ChargingAlpha, GetOwner(), bIsPush, LaunchLocation, LaunchRotation, RPAlphaSpeed, RPAlphaRange, RPAlphaSize);
 	}
 	else bIsCanLaunch = true;
+}
+void UAttackComponent::SpawnRocketPunch()
+{
+	if (!GetOwner()->HasAuthority())
+	{
+		ServerSpawnRocketPunch();
+	}
+	else if (!RocketPunch && RocketPunchClass)
+	{
+		FActorSpawnParameters SpawnParams;
+		SpawnParams.Owner = GetOwner();
+		SpawnParams.Instigator = GetOwner()->GetInstigator();
+
+		RocketPunch = GetWorld()->SpawnActor<ARocketPunch>(RocketPunchClass, SpawnParams);
+		ensure(RocketPunch != nullptr);
+		RocketPunch->SetActorLocation(GetOwner()->GetActorLocation());
+		RocketPunch->OutOfUse.BindUObject(this, &UAttackComponent::ClientSetCanLaunch);
+	}
+}
+void UAttackComponent::ServerSpawnRocketPunch_Implementation()
+{
+	SpawnRocketPunch();
 }
 void UAttackComponent::ChangeMovementSpeed(const bool& IsCharging)
 {	
@@ -93,8 +119,14 @@ void UAttackComponent::ChangeMovementSpeed(const bool& IsCharging)
 		CharacterPropertyHandler->SetPlayerAttackCondition(IsCharging);
 	}
 }
-void UAttackComponent::SetCanLaunch(const bool& Val)
+void UAttackComponent::ClientSetCanLaunch_Implementation(const bool Val)
 {
 	UE_LOG(LogTemp, Log, TEXT("[UAttackComponent] Make it possible to attack again"));
 	bIsCanLaunch = Val;
+}
+void UAttackComponent::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+	DOREPLIFETIME(UAttackComponent, RocketPunch);
 }

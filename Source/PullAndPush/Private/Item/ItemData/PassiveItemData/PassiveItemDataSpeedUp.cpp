@@ -1,19 +1,19 @@
 #include "Item/ItemData/PassiveItemData/PassiveItemDataSpeedUp.h"
 
-void UPassiveItemDataSpeedUp::UseItem(AActor* TargetActor)
+void UPassiveItemDataSpeedUp::UsePassiveItem(AActor* TargetActor, FTimerHandle Handler, bool InPassiveItemAlreadyActivated)
 {
-    Super::UseItem(TargetActor);
+    Super::UsePassiveItem(TargetActor, Handler, InPassiveItemAlreadyActivated);
 
     // Try Character Movement Speed Up
     if (!bIsItemActivated) {
-        CharacterPropertyHandler->SetMovementSpeed(false, WeightValue);
+        CharacterPropertyHandler->SetMovementSpeed(WeightValue);
     }
 }
 
-void UPassiveItemDataSpeedUp::EndActiveItem()
+void UPassiveItemDataSpeedUp::EndPassiveItem()
 {
-    Super::EndActiveItem();
+    Super::EndPassiveItem();
 
     // Try Character Movement Speed Down
-    CharacterPropertyHandler->SetMovementSpeed(false, -WeightValue);
+    CharacterPropertyHandler->SetMovementSpeed(-WeightValue);
 }

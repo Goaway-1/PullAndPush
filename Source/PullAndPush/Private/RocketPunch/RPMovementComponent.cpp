@@ -2,6 +2,7 @@
 #include "Kismet/KismetMathLibrary.h"
 #include "RocketPunch/RocketPunch.h"
 #include "DrawDebugHelpers.h"
+#include "Net/UnrealNetwork.h"
 
 URPMovementComponent::URPMovementComponent()
 	:
@@ -9,6 +10,7 @@ URPMovementComponent::URPMovementComponent()
 	ReturnMoveSpeed(30.f), MaxMoveSpeed(25.f), MinMoveSpeed(15.f), MaxDistance(2000.f), MinDistance(1000.f)
 {
 	PrimaryComponentTick.bCanEverTick = true;
+	SetIsReplicatedByDefault(true);
 
 	CurMoveSpeed = MinMoveSpeed;
 }
@@ -28,7 +30,7 @@ void URPMovementComponent::InitSetting()
 {
 	Owner = Cast<ARocketPunch>(GetOwner());
 	Owner->SetActorEnableCollision(false);
-	Owner->SetActorHiddenInGame(true);
+	Owner->SetMeshVisibility(false);
 	Owner->SetActorTickEnabled(false);
 }
 void URPMovementComponent::SetPreDistance(bool IsReturn, float InTargetDistance)
@@ -51,7 +53,7 @@ void URPMovementComponent::Launch(const float& ForceAlpha, AActor* InCasterActor
 	// Rocket Punch Setting
 	Owner->SetActorLocationAndRotation(InVec, InRot);
 	Owner->SetActorEnableCollision(true);
-	Owner->SetActorHiddenInGame(false);
+	Owner->SetMeshVisibility(true);
 	Owner->SetActorTickEnabled(true);
 	Owner->SetCollisionSimulatePhysics(true);
 
@@ -69,8 +71,10 @@ void URPMovementComponent::Launch(const float& ForceAlpha, AActor* InCasterActor
 
 	UE_LOG(LogTemp, Log, TEXT("[URPMovementComponent] ForceAlpha : %f, Distance : %f , Speed : %f"), ForceAlpha, LerpDistance, LerpMoveSpeed);
 }
-void URPMovementComponent::UpdateLocation() {
-	Owner->SetActorLocation(Owner->GetActorLocation() + (Owner->GetActorForwardVector() * CurMoveSpeed));
+void URPMovementComponent::UpdateLocation()
+{
+	CurLocation = Owner->GetActorLocation() + (Owner->GetActorForwardVector() * CurMoveSpeed);
+	Owner->SetActorLocation(CurLocation);
 
 	// Check is nearby target pos
 	CurDistance = (EndLoc - Owner->GetActorLocation()).Size();
@@ -89,17 +93,25 @@ void URPMovementComponent::UpdateLocation() {
 			bIsLaunch = false;
 			SetCanLaunch(true);
 			Owner->SetActorLocation(FVector(999.f));		// Set Location Safe Place
-			Owner->SetActorHiddenInGame(true);
+			Owner->SetMeshVisibility(false);
 			Owner->SetActorTickEnabled(false);
 		}
 	}
 	else PreDistance = CurDistance;
 }
+void URPMovementComponent::OnRep_ChangeLocation()
+{
+	Owner->SetActorLocation(CurLocation);
+}
 void URPMovementComponent::UpdateRotation() 
 {
-	const FRotator NewRot = UKismetMathLibrary::FindLookAtRotation(Owner->GetActorLocation(), CasterActor->GetActorLocation());
-	Owner->SetActorRotation(NewRot);
+	CurRotation = UKismetMathLibrary::FindLookAtRotation(Owner->GetActorLocation(), CasterActor->GetActorLocation());
+	Owner->SetActorRotation(CurRotation);
 	EndLoc = CasterActor->GetActorLocation() - ((CasterActor->GetActorLocation() - Owner->GetActorLocation()).GetSafeNormal() * 150.f);
+}
+void URPMovementComponent::OnRep_ChangeRotation()
+{
+	Owner->SetActorRotation(CurRotation);
 }
 void URPMovementComponent::SetCanLaunch(const bool& Val)
 {
@@ -109,4 +121,11 @@ void URPMovementComponent::SetCanLaunch(const bool& Val)
 void URPMovementComponent::SetIsForceReturn(const bool& Val)
 {
 	bIsForceReturn = Val;
+}
+void URPMovementComponent::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+	DOREPLIFETIME(URPMovementComponent, CurLocation);
+	DOREPLIFETIME(URPMovementComponent, CurRotation);
 }

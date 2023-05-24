@@ -29,10 +29,8 @@ protected:
 
 /** Handler */
 public:
-	virtual void UseItem(class AActor* TargetActor) override;
-
-	UFUNCTION()
-	virtual void EndActiveItem();
+	virtual void UsePassiveItem(class AActor* TargetActor, FTimerHandle Handler, bool InPassiveItemAlreadyActivated) override;
+	virtual void EndPassiveItem() override;
 
 	virtual float GetDurationTime() override {
 		return DurationTime;
