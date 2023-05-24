@@ -45,5 +45,13 @@ protected:
 
 /** Handler Interface */
 public:
+	// @TODO : 여기서 넘겨주면 쉽게 처리 가능
 	virtual void SetActivePhysicsAndCollision(bool InActive = true) override;
+
+	//test
+	UPROPERTY(Replicated, ReplicatedUsing = OnRep_ChangePhysicsAndCollision)
+	uint8 bActivePhysicsAndCollision:1;
+
+	UFUNCTION()
+	void OnRep_ChangePhysicsAndCollision();
 };

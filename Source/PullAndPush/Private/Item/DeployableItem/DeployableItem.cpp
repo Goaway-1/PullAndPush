@@ -1,8 +1,11 @@
 #include "Item/DeployableItem/DeployableItem.h"
+#include "Net/UnrealNetwork.h"
 
 ADeployableItem::ADeployableItem()
 {
 	PrimaryActorTick.bCanEverTick = true;
+	bReplicates = true;
+	SetReplicateMovement(true);
 
 	MeshComp = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("MeshComp"));
 	MeshComp->SetCollisionObjectType(ECC_PhysicsBody);
@@ -31,6 +34,7 @@ void ADeployableItem::DestoryDeployableItem()
 void ADeployableItem::SetActivePhysicsAndCollision(bool InActive)
 {
 	// Set of 'Tick, Physics, Gravity, Collision'
+	bActivePhysicsAndCollision = InActive;
 	SetActorTickEnabled(InActive);
 	MeshComp->SetSimulatePhysics(InActive);
 	MeshComp->SetEnableGravity(InActive);
@@ -45,4 +49,24 @@ void ADeployableItem::SetActivePhysicsAndCollision(bool InActive)
 	{
 		MeshComp->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 	}
+}
+void ADeployableItem::OnRep_ChangePhysicsAndCollision()
+{
+	MeshComp->SetSimulatePhysics(bActivePhysicsAndCollision);
+	MeshComp->SetEnableGravity(bActivePhysicsAndCollision);
+
+	if (bActivePhysicsAndCollision)
+	{
+		MeshComp->SetCollisionEnabled(ECollisionEnabled::PhysicsOnly);
+	}
+	else
+	{
+		MeshComp->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	}
+}
+void ADeployableItem::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+	DOREPLIFETIME(ADeployableItem, bActivePhysicsAndCollision);
 }

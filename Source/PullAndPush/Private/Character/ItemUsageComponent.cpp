@@ -8,6 +8,8 @@
 #include "GameFramework/PlayerController.h"
 #include "Components/SplineComponent.h"
 #include "Components/SplineMeshComponent.h"
+#include "Components/SplineMeshComponent.h"
+#include "Net/UnrealNetwork.h"
 
 UItemUsageComponent::UItemUsageComponent()
 	:
@@ -110,10 +112,25 @@ void UItemUsageComponent::PickUpItem(UItemData* ItemData)
 		OnItemWidgetUpdate.ExecuteIfBound(CurActiveItemData, false);	
 	}
 }
+void UItemUsageComponent::ServerSpawnDeployableItem_Implementation(UClass* DeployableItemClass)
+{
+	CurDeployableItem = GetWorld()->SpawnActor(DeployableItemClass);
+	IsValid(CurDeployableItem);
+	CurDeployableItem->SetActorLocation(GetOwner()->GetActorLocation());
+	CurDeployableItem->AttachToActor(GetOwner(), FAttachmentTransformRules::SnapToTargetNotIncludingScale, ItemSocketName);
+}
 void UItemUsageComponent::ThrowDeployableItem()
 {
 	if (!CurDeployableItem) return;
 
+	ServerThrowDeployableItem();
+	ClearSplineMeshComponents();
+
+	CurDeployableItem = nullptr;
+	bIsReadyToThrow = false;
+}
+void UItemUsageComponent::ServerThrowDeployableItem_Implementation()
+{
 	// Set Location and Detach
 	CurDeployableItem.Get()->DetachFromActor(FDetachmentTransformRules::KeepWorldTransform);
 
@@ -125,12 +142,9 @@ void UItemUsageComponent::ThrowDeployableItem()
 	}
 
 	// Throw Deployable Item
+	PPLOG(Error, TEXT("ServerThrowDeployableItem_Implementation 2222"));
 	UStaticMeshComponent* DeployableMesh = Cast<UStaticMeshComponent>(CurDeployableItem.Get()->GetRootComponent());
 	DeployableMesh->SetAllPhysicsLinearVelocity(LaunchVelocity * 2.5f);
-	ClearSplineMeshComponents();
-
-	CurDeployableItem = nullptr;
-	bIsReadyToThrow = false;
 }
 void UItemUsageComponent::TryToUseActiveItem()
 {
@@ -141,15 +155,10 @@ void UItemUsageComponent::TryToUseActiveItem()
 	{
 		// Spawn
 		TSubclassOf<class AActor> DeployableItemClass = CurItemAction->GetSpawnItemClass();
-		CurDeployableItem = GetWorld()->SpawnActor(DeployableItemClass);
-
-		ensure(CurDeployableItem != nullptr);
-		CurDeployableItem->SetActorLocation(GetOwner()->GetActorLocation());
-		CurDeployableItem->AttachToActor(GetOwner(), FAttachmentTransformRules::SnapToTargetNotIncludingScale, ItemSocketName);
+		ServerSpawnDeployableItem(DeployableItemClass);
 
 		// Hide 'Active Widget'
 		OnItemWidgetUpdate.ExecuteIfBound(nullptr, false);
-
 		bIsReadyToThrow = true;
 		CurActiveItemData = nullptr;
 	}
@@ -208,4 +217,11 @@ void UItemUsageComponent::RemoveTimer(FName TimerName)
 
 		PPLOG(Log, TEXT("Remove Item Handle : %s"), *TimerName.ToString());
 	}
+}
+void UItemUsageComponent::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+	DOREPLIFETIME(UItemUsageComponent, CurDeployableItem);
+	DOREPLIFETIME(UItemUsageComponent, CurActiveItemData);
 }

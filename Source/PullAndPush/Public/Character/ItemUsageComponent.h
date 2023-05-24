@@ -31,18 +31,24 @@ public:
 	void TryToUseActiveItem();
 
 private:
-	UPROPERTY(VisibleAnywhere, Category = Item)
+	UPROPERTY(Replicated, VisibleAnywhere, Category = Item)
 	TObjectPtr<class UItemData> CurActiveItemData;
 
-	UPROPERTY(VisibleAnywhere, Category = Item)
+	UPROPERTY(Replicated, VisibleAnywhere, Category = Item)
 	TObjectPtr<class AActor> CurDeployableItem;
 
 	const FName ItemSocketName = "ItemSocket";
 	uint8 bIsReadyToThrow : 1;
 
 /** Throw Deployable Item */
-public:
+public:	
+	UFUNCTION(Server, Reliable)
+	void ServerSpawnDeployableItem(UClass* DeployableItemClass);
+
 	void ThrowDeployableItem();
+
+	UFUNCTION(Server, Reliable)
+	void ServerThrowDeployableItem();
 
 	FORCEINLINE bool GetIsReadyToThrow() { return bIsReadyToThrow; }
 
