@@ -23,6 +23,7 @@ class PULLANDPUSH_API IItemActionHandler
 public:
 	virtual FString GetIdentifierString() const = 0;
 	virtual bool CheckIsActiveItem() const = 0;
+	virtual UStaticMesh* GetStaticMesh() const = 0;
 
 	// For UI
 	virtual FString GetItemName() = 0;

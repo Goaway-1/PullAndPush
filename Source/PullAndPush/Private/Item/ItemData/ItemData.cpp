@@ -23,7 +23,7 @@ FPrimaryAssetId UItemData::GetPrimaryAssetId() const
 	return FPrimaryAssetId(ItemType, GetFName());
 }
 
-UStaticMesh* UItemData::GetStaticMesh()
+UStaticMesh* UItemData::GetStaticMesh() const
 {
 	if (StaticMesh.IsPending())
 	{

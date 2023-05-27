@@ -34,6 +34,8 @@ void ABlackHoleItem::ActiveDeployableItem()
 	bIsBlackHoleActived = true;
 	MeshComp->SetSimulatePhysics(false);
 	MeshComp->SetEnableGravity(false);
+	ProjectileMovementComponent->ProjectileGravityScale = 0;
+	ProjectileMovementComponent->Velocity = FVector::Zero();
 }
 void ABlackHoleItem::ActivateBlackHole()
 {
