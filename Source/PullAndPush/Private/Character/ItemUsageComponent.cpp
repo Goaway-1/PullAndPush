@@ -3,13 +3,13 @@
 #include "Character/ItemUsageComponent.h"
 #include "Item/ItemData/ItemData.h"
 #include "Interface/ItemActionHandler.h"
-#include "Interface/DeployableItemHandler.h"
 #include "Kismet/GameplayStatics.h"
 #include "GameFramework/PlayerController.h"
 #include "Components/SplineComponent.h"
 #include "Components/SplineMeshComponent.h"
 #include "Components/SplineMeshComponent.h"
 #include "Net/UnrealNetwork.h"
+#include "GameFramework/Character.h"
 
 UItemUsageComponent::UItemUsageComponent()
 	:
@@ -19,6 +19,21 @@ UItemUsageComponent::UItemUsageComponent()
 	SetIsReplicatedByDefault(true);
 
 	SplineComp = CreateDefaultSubobject<USplineComponent>(TEXT("SplineComp"));
+	ItemStaticMeshComp = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("ItemStaticMeshComp"));
+	MuzzleOffset = FVector(100.0f, 0.0f, 10.0f);
+}
+void UItemUsageComponent::BeginPlay()
+{
+	Super::BeginPlay();
+
+	// Set Item Static Mesh Component
+	ACharacter* OwnerCharacter = Cast<ACharacter>(GetOwner());
+	if (OwnerCharacter)
+	{
+		ItemStaticMeshComp->SetWorldLocation(OwnerCharacter->GetMesh()->GetSocketLocation(ItemSocketName));
+		ItemStaticMeshComp->AttachToComponent(OwnerCharacter->GetMesh(), FAttachmentTransformRules::SnapToTargetNotIncludingScale, ItemSocketName);
+		ItemStaticMeshComp->SetVisibility(false);
+	}
 }
 void UItemUsageComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
 {
@@ -112,56 +127,59 @@ void UItemUsageComponent::PickUpItem(UItemData* ItemData)
 		OnItemWidgetUpdate.ExecuteIfBound(CurActiveItemData, false);	
 	}
 }
-void UItemUsageComponent::ServerSpawnDeployableItem_Implementation(UClass* DeployableItemClass)
+void UItemUsageComponent::ServerSetDeployableItemMesh_Implementation(UItemData* ActiveItemData)
 {
-	CurDeployableItem = GetWorld()->SpawnActor(DeployableItemClass);
-	IsValid(CurDeployableItem);
-	CurDeployableItem->SetActorLocation(GetOwner()->GetActorLocation());
-	CurDeployableItem->AttachToActor(GetOwner(), FAttachmentTransformRules::SnapToTargetNotIncludingScale, ItemSocketName);
+	TScriptInterface<class IItemActionHandler> CurItemAction = ActiveItemData;
+	if (CurItemAction.GetInterface())
+	{
+		CurDeployableItemStaticMesh = CurItemAction->GetStaticMesh();
+		ItemStaticMeshComp->SetStaticMesh(CurDeployableItemStaticMesh);
+		ItemStaticMeshComp->SetVisibility(true);
+	}
+	else
+	{
+		CurDeployableItemStaticMesh = nullptr;
+		ItemStaticMeshComp->SetVisibility(false);
+	}
 }
 void UItemUsageComponent::ThrowDeployableItem()
 {
-	if (!CurDeployableItem) return;
+	if (!CurRequiredActiveItemData) return;
 
-	ServerThrowDeployableItem();
+	TSubclassOf<class AActor> DeployableItemClass = CurRequiredActiveItemData->GetSpawnItemClass();
+	ServerThrowDeployableItem(DeployableItemClass);
 	ClearSplineMeshComponents();
 
-	CurDeployableItem = nullptr;
 	bIsReadyToThrow = false;
+	CurRequiredActiveItemData = nullptr;
 }
-void UItemUsageComponent::ServerThrowDeployableItem_Implementation()
+void UItemUsageComponent::ServerThrowDeployableItem_Implementation(UClass* DeployableItemClass)
 {
-	// Set Location and Detach
-	CurDeployableItem.Get()->DetachFromActor(FDetachmentTransformRules::KeepWorldTransform);
+	// Spawn & Throw Deployable Item
+	APlayerController* PlayerController = Cast<APlayerController>(GetOwner()->GetInstigatorController());
+	const FRotator SpawnRotation = (PlayerController->GetControlRotation().Vector() + DefaultLaunchForwardVector).GetSafeNormal().Rotation();
+	const FVector SpawnLocation = GetOwner()->GetActorLocation() + SpawnRotation.RotateVector(MuzzleOffset);
 
-	// Set Deployable Item Physics and Collision
-	TScriptInterface<class IDeployableItemHandler> CurItemHandler = CurDeployableItem.Get();
-	if (CurItemHandler.GetInterface())
-	{
-		CurItemHandler->SetActivePhysicsAndCollision();
-	}
+	// Set Spawn Collision Handling Override
+	FActorSpawnParameters ActorSpawnParams;
+	ActorSpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButDontSpawnIfColliding;
 
-	// Throw Deployable Item
-	PPLOG(Error, TEXT("ServerThrowDeployableItem_Implementation 2222"));
-	UStaticMeshComponent* DeployableMesh = Cast<UStaticMeshComponent>(CurDeployableItem.Get()->GetRootComponent());
-	DeployableMesh->SetAllPhysicsLinearVelocity(LaunchVelocity * 2.5f);
+	// Spawn the projectile at the muzzle
+	GetWorld()->SpawnActor<AActor>(DeployableItemClass, SpawnLocation, SpawnRotation, ActorSpawnParams);
+	ServerSetDeployableItemMesh();
 }
 void UItemUsageComponent::TryToUseActiveItem()
 {
 	if (!CurActiveItemData) return;
 
-	TScriptInterface<class IItemActionHandler> CurItemAction = CurActiveItemData;
-	if (CurItemAction.GetInterface())
-	{
-		// Spawn
-		TSubclassOf<class AActor> DeployableItemClass = CurItemAction->GetSpawnItemClass();
-		ServerSpawnDeployableItem(DeployableItemClass);
+	// Set Item Mesh 
+	ServerSetDeployableItemMesh(CurActiveItemData);
 
-		// Hide 'Active Widget'
-		OnItemWidgetUpdate.ExecuteIfBound(nullptr, false);
-		bIsReadyToThrow = true;
-		CurActiveItemData = nullptr;
-	}
+	// Hide 'Active Widget'
+	OnItemWidgetUpdate.ExecuteIfBound(nullptr, false);
+	bIsReadyToThrow = true;
+	CurRequiredActiveItemData = CurActiveItemData;
+	CurActiveItemData = nullptr;
 }
 void UItemUsageComponent::TryToUsePassiveItem(UItemData* ItemData)
 {
@@ -218,10 +236,22 @@ void UItemUsageComponent::RemoveTimer(FName TimerName)
 		PPLOG(Log, TEXT("Remove Item Handle : %s"), *TimerName.ToString());
 	}
 }
-void UItemUsageComponent::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const
+void UItemUsageComponent::OnRep_ChangeItemStaticMesh()
+{
+	if (CurDeployableItemStaticMesh)
+	{
+		ItemStaticMeshComp->SetStaticMesh(CurDeployableItemStaticMesh);
+		ItemStaticMeshComp->SetVisibility(true);
+	}
+	else
+	{
+		ItemStaticMeshComp->SetVisibility(false);
+	}
+}void UItemUsageComponent::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
-	DOREPLIFETIME(UItemUsageComponent, CurDeployableItem);
 	DOREPLIFETIME(UItemUsageComponent, CurActiveItemData);
+	DOREPLIFETIME(UItemUsageComponent, CurRequiredActiveItemData);
+	DOREPLIFETIME(UItemUsageComponent, CurDeployableItemStaticMesh);
 }

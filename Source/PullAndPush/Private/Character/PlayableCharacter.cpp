@@ -203,14 +203,14 @@ void APlayableCharacter::ActiveMovementSpeed()
 	}
 
 	// Set Character Movmemt Properties...
-	if (GetLocalRole() == ROLE_Authority)
+	if (GetLocalRole() ==  ROLE_AutonomousProxy)
 	{
-		GetCharacterMovement()->MaxWalkSpeed = Speed;
-		GetCharacterMovement()->JumpZVelocity = Velocity;
+		ServerActiveMovementSpeed(Speed, Velocity);
 	}
 	else
 	{
-		ServerActiveMovementSpeed(Speed, Velocity);
+		GetCharacterMovement()->MaxWalkSpeed = Speed;
+		GetCharacterMovement()->JumpZVelocity = Velocity;
 	}
 }
 void APlayableCharacter::ServerActiveMovementSpeed_Implementation(const float InSpeed, const float InJump)

@@ -4,11 +4,11 @@
 
 #include "PullAndPush.h"
 #include "GameFramework/Actor.h"
-#include "Interface/DeployableItemHandler.h"
+#include "GameFramework/ProjectileMovementComponent.h"
 #include "DeployableItem.generated.h"
 
 UCLASS()
-class PULLANDPUSH_API ADeployableItem : public AActor, public IDeployableItemHandler
+class PULLANDPUSH_API ADeployableItem : public AActor
 {
 	GENERATED_BODY()
 	
@@ -43,15 +43,7 @@ protected:
 	FTimerHandle ActiveHandler;
 	FTimerHandle DestoryHandler;
 
-/** Handler Interface */
-public:
-	// @TODO : 여기서 넘겨주면 쉽게 처리 가능
-	virtual void SetActivePhysicsAndCollision(bool InActive = true) override;
-
-	//test
-	UPROPERTY(Replicated, ReplicatedUsing = OnRep_ChangePhysicsAndCollision)
-	uint8 bActivePhysicsAndCollision:1;
-
-	UFUNCTION()
-	void OnRep_ChangePhysicsAndCollision();
+protected:
+	UPROPERTY(VisibleAnywhere, Category = "Movement")
+	class UProjectileMovementComponent* ProjectileMovementComponent;
 };

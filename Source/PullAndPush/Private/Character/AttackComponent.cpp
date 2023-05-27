@@ -87,7 +87,7 @@ void UAttackComponent::EndLaunch(bool bIsPush)
 }
 void UAttackComponent::SpawnRocketPunch()
 {
-	if (!GetOwner()->HasAuthority())
+	if (GetOwnerRole() == ROLE_AutonomousProxy)
 	{
 		ServerSpawnRocketPunch();
 	}

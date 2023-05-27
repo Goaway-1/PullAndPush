@@ -33,7 +33,7 @@ public:
 	/** Overridden to use saved type */
 	virtual FPrimaryAssetId GetPrimaryAssetId() const override;
 
-	UStaticMesh* GetStaticMesh();
+	virtual UStaticMesh* GetStaticMesh() const override;
 public:
 /** Handler */
 	/** Returns the logical name, equivalent to the primary asset id */
