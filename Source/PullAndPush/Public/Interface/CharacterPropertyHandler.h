@@ -42,14 +42,13 @@ public:
 	UFUNCTION()
 	virtual void SetMovementSpeed(const float NewMoveSpeed = 0.f) = 0;
 
-/** Item : For Rocket Punch */
+	/** Item : For Rocket Punch */
+	virtual void SetRocketPunchSpeed(const float& DeltaSpeed) = 0;
+	virtual void SetRocketPunchRange(const float& DeltaRange) = 0;
+	virtual void SetRocketPunchScale(const float& DeltaSize) = 0;
+
+	virtual float GetRocketPunchSpeed() = 0;
+	virtual float GetRocketPunchRange() = 0;
+	virtual float GetRocketPunchScale() = 0;
 #pragma endregion
-	UFUNCTION()
-	virtual void RocketPunchAlphaSpeed(const float& AlphaSpeed) = 0;
-
-	UFUNCTION()
-	virtual void RocketPunchAlphaRange(const float& AlphaRange) = 0;
-
-	UFUNCTION()
-	virtual void RocketPunchAlphaSize(const float& AlphaSize) = 0;
 };

@@ -247,7 +247,8 @@ void UItemUsageComponent::OnRep_ChangeItemStaticMesh()
 	{
 		ItemStaticMeshComp->SetVisibility(false);
 	}
-}void UItemUsageComponent::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const
+}
+void UItemUsageComponent::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 

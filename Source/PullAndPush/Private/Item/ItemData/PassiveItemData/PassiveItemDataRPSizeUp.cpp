@@ -8,7 +8,7 @@ void UPassiveItemDataRPSizeUp::UsePassiveItem(AActor* TargetActor, FTimerHandle 
 
     // Try Rocket Punch Size Up
     if (!bIsItemActivated) {
-        CharacterPropertyHandler->RocketPunchAlphaSize(WeightValue);
+        CharacterPropertyHandler->SetRocketPunchScale(WeightValue);
     }
 }
 
@@ -17,5 +17,5 @@ void UPassiveItemDataRPSizeUp::EndPassiveItem()
     Super::EndPassiveItem();
 
     // Try Rocket Punch Size Down
-    CharacterPropertyHandler->RocketPunchAlphaSize(1.f);
+    CharacterPropertyHandler->SetRocketPunchScale(1.f);
 }
