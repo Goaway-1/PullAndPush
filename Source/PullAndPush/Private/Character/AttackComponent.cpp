@@ -4,7 +4,7 @@
 #include "Engine/SkeletalMeshSocket.h"
 #include "Math/Quat.h"
 #include "GameFramework/CharacterMovementComponent.h"
-#include "Interface/CharacterPropertyHandler.h"
+#include "Interface/CharacterStatHandler.h"
 #include "Net/UnrealNetwork.h"
 
 UAttackComponent::UAttackComponent() 
@@ -77,7 +77,7 @@ void UAttackComponent::EndLaunch(bool bIsPush)
 		const FRotator LaunchRotation = OwnerCharacter.Get()->GetControlRotation(); 
 		
 		// Try To Launch
-		TScriptInterface<class ICharacterPropertyHandler> OwnerHandler = OwnerCharacter.Get();
+		TScriptInterface<class ICharacterStatHandler> OwnerHandler = OwnerCharacter.Get();
 		if (OwnerHandler.GetInterface())
 		{
 			const float RPAlphaSpeed = OwnerHandler->GetRocketPunchSpeed();
@@ -115,7 +115,7 @@ void UAttackComponent::ChangeMovementSpeed(const bool& IsCharging)
 	bIsChangeValue = true;
 	
 	// Set PlayerCharacter Properties...
-	TScriptInterface<class ICharacterPropertyHandler> CharacterPropertyHandler = GetOwner();
+	TScriptInterface<class ICharacterStatHandler> CharacterPropertyHandler = GetOwner();
 	if (CharacterPropertyHandler.GetInterface())
 	{
 		// Set Character AttackCondition & MovementSpeed

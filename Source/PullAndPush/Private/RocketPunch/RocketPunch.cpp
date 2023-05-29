@@ -1,7 +1,7 @@
 #include "RocketPunch/RocketPunch.h"
 #include "RocketPunch/RPMovementComponent.h"
 #include "RocketPunch/RPCollisionComponent.h"
-#include "Interface/CharacterPropertyHandler.h"
+#include "Interface/CharacterStatHandler.h"
 #include "Components/SphereComponent.h"
 #include "Components/StaticMeshComponent.h"
 #include "Kismet/KismetMathLibrary.h"

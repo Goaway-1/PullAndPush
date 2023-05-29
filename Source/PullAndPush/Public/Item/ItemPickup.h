@@ -4,13 +4,13 @@
 
 #include "PullAndPush.h"
 #include "GameFramework/Actor.h"
-#include "Interface/ItemPickupPropertyHandler.h"
+#include "Interface/ItemPickupHandler.h"
 #include "ItemPickup.generated.h"
 
 DECLARE_DELEGATE(FItemPickupOnAction)
 
 UCLASS()
-class PULLANDPUSH_API AItemPickup : public AActor , public IItemPickupPropertyHandler
+class PULLANDPUSH_API AItemPickup : public AActor , public IItemPickupHandler
 {
 	GENERATED_BODY()
 	

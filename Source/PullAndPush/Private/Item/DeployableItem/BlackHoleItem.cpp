@@ -1,6 +1,6 @@
 #include "Item/DeployableItem/BlackHoleItem.h"
 #include "Components/SphereComponent.h"
-#include "Interface/ItemPickupPropertyHandler.h"
+#include "Interface/ItemPickupHandler.h"
 
 ABlackHoleItem::ABlackHoleItem()
 	: 
@@ -65,7 +65,7 @@ void ABlackHoleItem::AddOverlapActors(UPrimitiveComponent* OverlappedComponent, 
 		OverlapComponent.Add(OtherComp);
 		
 		// Exception handling if item
-		TScriptInterface<class IItemPickupPropertyHandler> ActionHandler = OtherComp;
+		TScriptInterface<class IItemPickupHandler> ActionHandler = OtherComp;
 		if (ActionHandler.GetInterface()) {
 			ActionHandler->SetActiveItemPickup(true);
 		}

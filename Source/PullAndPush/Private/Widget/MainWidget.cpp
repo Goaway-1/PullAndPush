@@ -7,7 +7,7 @@
 #include "Components/CanvasPanel.h"
 #include "Components/CanvasPanelSlot.h"
 #include "Components/HorizontalBox.h"
-#include "Interface/ItemActionHandler.h"
+#include "Interface/ItemDataHandler.h"
 
 void UMainWidget::NativeConstruct()
 {
@@ -39,7 +39,7 @@ void UMainWidget::UpdateItemUI(UDataAsset* CurrentItem, const bool& IsPassvieIte
 }
 void UMainWidget::UpdatePassiveItemUI(UDataAsset* CurrentItem)
 {
-    TScriptInterface<class IItemActionHandler> CurItemAction = CurrentItem;
+    TScriptInterface<class IItemDataHandler> CurItemAction = CurrentItem;
     if (CurItemAction.GetInterface())
     {
         ensure(PassiveItemWidgetClass);

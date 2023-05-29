@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
 #include "Item/DeployableItem/DeployableItem.h"
+#include "GameData/CharacterStat.h"
 #include "Bomb.generated.h"
 
 UCLASS()
@@ -32,6 +33,18 @@ private:
 	UPROPERTY(EditDefaultsOnly, Category = "Item | FX")
 	TObjectPtr<class UMaterialInterface> ExplodedMaterial;
 
-	UPROPERTY(EditDefaultsOnly, Category = "Item | Explosion")
-	float ExplosionImpulse;
+	// Explosion Impulse Over Oneself
+	const float SelfExplosionImpulse = 400.f;
+
+	// Explosion Value other things
+	const float ExplosionRadius = 250.f;
+	const float ExplosionImpulse = 1000.f;
+
+/** For Change Character Stat */
+private:
+	// Find overlapping characters and change their status
+	void ModifyOverlappingCharacterStates();
+
+	ECharacterStat ModifyCharacterStat;
+	const float StatChangeDuration = 3.f;
 };

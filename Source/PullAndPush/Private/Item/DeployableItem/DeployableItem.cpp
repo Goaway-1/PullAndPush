@@ -35,5 +35,6 @@ void ADeployableItem::ActiveDeployableItem()
 void ADeployableItem::DestoryDeployableItem()
 {
 	PPLOG(Log, TEXT("Destroy DeployableItem"));
+
 	Destroy();
 }

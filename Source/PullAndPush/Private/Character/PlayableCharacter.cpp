@@ -121,6 +121,8 @@ void APlayableCharacter::InitEnhancedInput()
 }
 void APlayableCharacter::Move(const FVector2D& Value)
 {
+	if(StatComp->IsStatFlagSet(ECharacterStat::Stun)) return;
+
 	MoveForward(Value.Y);
 	MoveRight(Value.X);
 }
@@ -296,6 +298,18 @@ void APlayableCharacter::ChangeVisibleItemInfo(const FInputActionValue& Value)
 {
 	bool bActiveItemVisible = Value.Get<bool>();
 	PlayableController->ChangeVisibleItemInfo(bActiveItemVisible);
+}
+void APlayableCharacter::EnableStatFlag(ECharacterStat InFlag, float ChangeDuration)
+{
+	StatComp->EnableStatFlag(InFlag, ChangeDuration);
+}
+void APlayableCharacter::DisableStatFlag(ECharacterStat InFlag)
+{
+	StatComp->DisableStatFlag(InFlag);
+}
+bool APlayableCharacter::IsStatFlagSet(ECharacterStat InFlag)
+{
+	return (StatComp) ? StatComp->IsStatFlagSet(InFlag) : false;
 }
 void APlayableCharacter::SetRocketPunchSpeed(const float& DeltaSpeed)
 { 

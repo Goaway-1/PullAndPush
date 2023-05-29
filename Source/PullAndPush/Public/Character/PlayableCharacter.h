@@ -4,16 +4,16 @@
 
 #include "PullAndPush.h"
 #include "GameFramework/Character.h"
-#include "Interface/CollisionActionHandler.h"
-#include "Interface/PickupActionHandler.h"
-#include "Interface/CharacterPropertyHandler.h"
+#include "Interface/CharacterInterActionHandler.h"
+#include "Interface/CharacterPickupHandler.h"
+#include "Interface/CharacterStatHandler.h"
 #include "PlayableCharacter.generated.h"
 
 class USpringArmComponent;
 class UCameraComponent;
 
 UCLASS()
-class PULLANDPUSH_API APlayableCharacter : public ACharacter, public ICollisionActionHandler, public IPickupActionHandler, public ICharacterPropertyHandler
+class PULLANDPUSH_API APlayableCharacter : public ACharacter, public ICharacterInterActionHandler, public ICharacterPickupHandler, public ICharacterStatHandler
 {
 	GENERATED_BODY()
 
@@ -200,6 +200,14 @@ private:
 
 	UFUNCTION()
 	void ChangeVisibleItemInfo(const FInputActionValue& Value);
+#pragma endregion
+
+/** Stat */
+#pragma region STAT
+public:
+	virtual void EnableStatFlag(ECharacterStat InFlag, float ChangeDuration) override;
+	virtual void DisableStatFlag(ECharacterStat InFlag) override;
+	virtual bool IsStatFlagSet(ECharacterStat InFlag) override;
 #pragma endregion
 
 };
