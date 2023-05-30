@@ -20,11 +20,15 @@ protected:
 	virtual void BeginPlay() override;
 
 public:
+	// For Item
 	UFUNCTION()
 	void UpdateItemUI(class UDataAsset* CurrentItem, const bool IsPassvieItem);
 
 	UFUNCTION()
 	void ChangeVisibleItemInfo(bool bVisibility);
+
+	UFUNCTION()
+	void UpdateStatUI(const FString& StatName, UMaterialInterface* Material);
 
 private:
 	UPROPERTY()

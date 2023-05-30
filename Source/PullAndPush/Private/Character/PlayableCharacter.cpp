@@ -59,11 +59,17 @@ void APlayableCharacter::BeginPlay()
 	/** Bind if MoveSpeed is Changed */
 	StatComp->OnMoveSpeedChanged.BindUObject(this, &APlayableCharacter::ActiveMovementSpeed);
 
-	/** Set Item Widget */
+	/** Binding Create Item Widget */
 	PlayableController = Cast<APlayableController>(GetController());
 	if (PlayableController && ItemUsageComp)
 	{
 		ItemUsageComp->GetItemWidgetUpdateDelegate().BindUObject(PlayableController, &APlayableController::UpdateItemUI);
+	}
+
+	/** Binding Create Stat Widget */
+	if (PlayableController && StatComp)
+	{
+		StatComp->OnUpdateStatWidget.BindUObject(PlayableController, &APlayableController::UpdateStatUI);
 	}
 }
 void APlayableCharacter::Tick(float DeltaTime)

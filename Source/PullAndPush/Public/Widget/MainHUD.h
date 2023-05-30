@@ -33,4 +33,5 @@ public:
 
 	void ChangeVisibleItemInfo(bool bVisibility);
 
+	void UpdateStatUI(const FString& StatName, UMaterialInterface* Material);
 };

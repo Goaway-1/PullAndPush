@@ -43,9 +43,9 @@ void ABomb::ModifyOverlappingCharacterStates()
 
 	if (bIsHit)
 	{
+		TSet<AActor*> UniqueActors;				// Deduplication prevention
 		for (auto& Hit : OutHits)
 		{
-			TSet<AActor*> UniqueActors;				// Deduplication prevention
 			AActor* HitActor = Hit.GetActor();
 			if (HitActor && !UniqueActors.Contains(HitActor))
 			{

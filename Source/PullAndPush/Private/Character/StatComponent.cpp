@@ -1,5 +1,5 @@
 #include "Character/StatComponent.h"
-#include "Net/UnrealNetwork.h"
+#include "GameData/CharacterStatMaterialTable.h"
 
 UStatComponent::UStatComponent()
 	:
@@ -7,7 +7,6 @@ UStatComponent::UStatComponent()
 	StatFlags(0)
 {
 	PrimaryComponentTick.bCanEverTick = true;
-	SetIsReplicatedByDefault(true);
 }
 void UStatComponent::BeginPlay()
 {
@@ -44,15 +43,13 @@ void UStatComponent::EnableStatFlag(ECharacterStat InFlag, float ChangeDuration)
 	if(!IsStatFlagSet(InFlag))
 	{
 		StatFlags |= (uint8)InFlag;
-		 
-		// @TODO : Widget
 	}
 	else 
 	{
-		RemoveFlagTimer(InFlag);
+		RemoveStatFlagTimer(InFlag);
 	}
 
-	CreateFlagTimer(InFlag, ChangeDuration);
+	CreateStatFlagTimer(InFlag, ChangeDuration);
 }
 void UStatComponent::DisableStatFlag(ECharacterStat InFlag)
 {
@@ -60,18 +57,16 @@ void UStatComponent::DisableStatFlag(ECharacterStat InFlag)
 	{
 		StatFlags &= ~(uint8)InFlag;
 
-		RemoveFlagTimer(InFlag);
-
-		// @TODO : Widget
+		RemoveStatFlagTimer(InFlag);
 	}
 }
 bool UStatComponent::IsStatFlagSet(ECharacterStat InFlag)
 {
 	return ((StatFlags & (uint8)InFlag) == (uint8)InFlag) ? true : false;
 }
-void UStatComponent::CreateFlagTimer(ECharacterStat InFlag, float ChangeDuration)
+void UStatComponent::CreateStatFlagTimer(ECharacterStat InFlag, float ChangeDuration)
 {
-	FName FlagName = UEnum::GetValueAsName(InFlag);
+	FString FlagName = UEnum::GetValueAsString(InFlag);
 	FTimerHandle Handle;
 	FTimerDelegate CallbackDelegate;
 	CallbackDelegate.BindLambda([=]() {
@@ -79,15 +74,48 @@ void UStatComponent::CreateFlagTimer(ECharacterStat InFlag, float ChangeDuration
 		});
 	GetWorld()->GetTimerManager().SetTimer(Handle, CallbackDelegate, ChangeDuration, false);
 
-	FlagHandles.Add(FlagName, Handle);
+	StatFlagHandles.Add(FlagName, Handle);
+
+	UpdateStatWidget(FlagName, true);
 }
-void UStatComponent::RemoveFlagTimer(ECharacterStat InFlag)
+void UStatComponent::RemoveStatFlagTimer(ECharacterStat InFlag)
 {
-	FName FlagName = UEnum::GetValueAsName(InFlag);
-	FTimerHandle* Handle = FlagHandles.Find(FlagName);
+	FString FlagName = UEnum::GetValueAsString(InFlag);
+	FTimerHandle* Handle = StatFlagHandles.Find(FlagName);
 
 	if (Handle->IsValid()) {
 		GetWorld()->GetTimerManager().ClearTimer(*Handle);
-		FlagHandles.Remove(FlagName);
+		StatFlagHandles.Remove(FlagName);
 	}
+
+	UpdateStatWidget(FlagName, false);
+}
+void UStatComponent::UpdateStatWidget(FString StatName, bool IsCreateWidget)
+{
+	if (IsCreateWidget)
+	{
+		UMaterialInterface* StatMaterial = GetMaterialForCharacterStat(StatName);
+		if (StatMaterial)
+		{
+			OnUpdateStatWidget.ExecuteIfBound(StatName, StatMaterial);
+		}
+	}
+	else 
+	{
+		OnUpdateStatWidget.ExecuteIfBound(StatName, nullptr);
+	}
+}
+UMaterialInterface* UStatComponent::GetMaterialForCharacterStat(FString StatName)
+{
+	if (StatMartialTable)
+	{
+		FCharacterStatMaterialTable* Row = StatMartialTable->FindRow<FCharacterStatMaterialTable>(FName(StatName), TEXT(""));
+		if (Row)
+		{
+			return Row->MaterialUI;
+		}
+
+	}
+	PPLOG(Warning, TEXT("No valid MaterialUI found in StatMartialTable"));
+	return nullptr; 
 }

@@ -2,12 +2,19 @@
 
 #pragma once
 
-#include "CoreMinimal.h"
+#include "PullAndPush.h"
 #include "Components/ActorComponent.h"
 #include "GameData/CharacterStat.h"
 #include "StatComponent.generated.h"
 
 DECLARE_DELEGATE(FMoveSpeedChanged)
+
+/**
+* Update Stat Widget..
+* @param	FString					Stat Name
+* @param	UMaterialInterface		Whether to create or delete 
+*/
+DECLARE_DELEGATE_TwoParams(FOnUpdateStatWidget, const FString&, UMaterialInterface* /** null is Delete */)
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class PULLANDPUSH_API UStatComponent : public UActorComponent
@@ -76,13 +83,29 @@ public:
 	UFUNCTION()
 	bool IsStatFlagSet(ECharacterStat InFlag);	// Is Flag bit enable?
 
-	void CreateFlagTimer(ECharacterStat InFlag, float ChangeDuration);
-	void RemoveFlagTimer(ECharacterStat InFlag);
+protected:
+	// 'Create or Delete' Stat Timer
+	void CreateStatFlagTimer(ECharacterStat InFlag, float ChangeDuration);
+	void RemoveStatFlagTimer(ECharacterStat InFlag);
 
 protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Stat | Flag", meta = (Bitmask, BitmaskEnum = "/Script/PullAndPush.ECharacterStat"))
 	uint8 StatFlags;
 
 	UPROPERTY(VisibleAnywhere, Category = "Stat | Flag")
-	TMap<FName, FTimerHandle> FlagHandles;
+	TMap<FString, FTimerHandle> StatFlagHandles;
+
+/** Stat Widget */
+public:
+	FOnUpdateStatWidget OnUpdateStatWidget;
+
+protected:
+	// 'Create or Delete' Stat Widget
+	void UpdateStatWidget(FString StatName, bool IsCreateWidget);
+
+	// Get Stat Material
+	UMaterialInterface* GetMaterialForCharacterStat(FString StatName);
+protected:
+	UPROPERTY(EditDefaultsOnly, Category = "Stat | Flag")
+	TObjectPtr<class UDataTable> StatMartialTable;
 };

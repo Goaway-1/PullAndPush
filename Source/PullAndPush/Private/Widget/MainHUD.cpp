@@ -12,7 +12,10 @@ void AMainHUD::BeginPlay()
 		MainWidget->AddToViewport();
 	}
 }
-
+void AMainHUD::DrawHUD()
+{
+	Super::DrawHUD();
+}
 void AMainHUD::UpdateItemUI(UDataAsset* CurrentItem, const bool IsPassvieItem)
 {
 	MainWidget->UpdateItemUI(CurrentItem, IsPassvieItem);
@@ -21,7 +24,7 @@ void AMainHUD::ChangeVisibleItemInfo(bool bVisibility)
 {
 	MainWidget->OnChangeVisibleItemWidget.Execute(bVisibility);
 }
-void AMainHUD::DrawHUD()
+void AMainHUD::UpdateStatUI(const FString& StatName, UMaterialInterface* Material)
 {
-	Super::DrawHUD();
+	MainWidget->UpdateStatUI(StatName, Material);
 }
