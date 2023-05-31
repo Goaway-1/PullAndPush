@@ -208,6 +208,10 @@ public:
 	virtual void EnableStatFlag(ECharacterStat InFlag, float ChangeDuration) override;
 	virtual void DisableStatFlag(ECharacterStat InFlag) override;
 	virtual bool IsStatFlagSet(ECharacterStat InFlag) override;
+
+protected:
+	bool IsCanMove();
+	bool IsCanAttack();
 #pragma endregion
 
 };

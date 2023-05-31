@@ -127,7 +127,7 @@ void APlayableCharacter::InitEnhancedInput()
 }
 void APlayableCharacter::Move(const FVector2D& Value)
 {
-	if(StatComp->IsStatFlagSet(ECharacterStat::Stun)) return;
+	if(!IsCanMove()) return;
 
 	MoveForward(Value.Y);
 	MoveRight(Value.X);
@@ -170,6 +170,8 @@ void APlayableCharacter::ServerUpdateAimPitch_Implementation()
 }
 void APlayableCharacter::TryLaunch(const FVector2D& Value)
 {
+	if(!IsCanAttack()) return;
+
 	// If item exists, throw it
 	if (ItemUsageComp->GetIsReadyToThrow()) {
 		ItemUsageComp->ThrowDeployableItem();
@@ -316,6 +318,14 @@ void APlayableCharacter::DisableStatFlag(ECharacterStat InFlag)
 bool APlayableCharacter::IsStatFlagSet(ECharacterStat InFlag)
 {
 	return (StatComp) ? StatComp->IsStatFlagSet(InFlag) : false;
+}
+bool APlayableCharacter::IsCanMove()
+{
+	return (StatComp->IsStatFlagSet(ECharacterStat::Stun) || StatComp->IsStatFlagSet(ECharacterStat::Snare)) ? false : true;
+}
+bool APlayableCharacter::IsCanAttack()
+{
+	return (StatComp->IsStatFlagSet(ECharacterStat::Stun)) ? false : true;
 }
 void APlayableCharacter::SetRocketPunchSpeed(const float& DeltaSpeed)
 { 
