@@ -3,20 +3,19 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "GameData/CharacterStat.h"
 #include "Item/DeployableItem/DeployableItem.h"
-#include "SnareDeployableItem.generated.h"
+#include "GameData/CharacterStat.h"
+#include "VelocityInhibitorDeployableItem.generated.h"
 
 /**
- * Snare the Character...
+ * 
  */
 UCLASS()
-class PULLANDPUSH_API ASnareDeployableItem : public ADeployableItem
+class PULLANDPUSH_API AVelocityInhibitorDeployableItem : public ADeployableItem
 {
 	GENERATED_BODY()
-	
 public:
-	ASnareDeployableItem();
+	AVelocityInhibitorDeployableItem();
 
 protected:
 	virtual void BeginPlay() override;
@@ -25,13 +24,14 @@ protected:
 
 	UFUNCTION()
 	void AddOverlapActors(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
+
+	UFUNCTION()
+	void DeleteOverlapActors(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex);
+
 protected:
 	UPROPERTY(EditDefaultsOnly, Category = "DeployableItem | VelocityInhibitor")
 	TObjectPtr<class UBoxComponent> CollisionComp;
 
-
 	UPROPERTY(EditDefaultsOnly, Category = "DeployableItem | Stat")
 	FCharacterStatModifier CharacterStatModifier;
-
-	uint8 bIsCollision : 1;
 };

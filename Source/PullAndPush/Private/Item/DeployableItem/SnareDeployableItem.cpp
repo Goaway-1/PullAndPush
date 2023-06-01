@@ -9,21 +9,33 @@ ASnareDeployableItem::ASnareDeployableItem()
 	:
 	bIsCollision(0)
 {
-	MeshComp->SetSimulatePhysics(true);
-	MeshComp->SetCollisionProfileName(CollisionName);
+	CollisionComp = CreateDefaultSubobject<UBoxComponent>(TEXT("CollisionComp"));
+	CollisionComp->SetBoxExtent(FVector(40.f, 40.f, 40.f));
+	CollisionComp->SetupAttachment(GetRootComponent());
+	CollisionComp->SetSimulatePhysics(false);
+	CollisionComp->SetGenerateOverlapEvents(false);
 
 	CharacterStatModifier.Stat = ECharacterStat::Snare;
 	CharacterStatModifier.ChangeDuration = 3.f;
+	bIsAutoActive = false;
 }
 void ASnareDeployableItem::BeginPlay()
 {
 	Super::BeginPlay();
 
-	MeshComp->OnComponentHit.AddDynamic(this, &ASnareDeployableItem::OnHit);
+	CollisionComp->OnComponentBeginOverlap.AddDynamic(this, &ASnareDeployableItem::AddOverlapActors);
 }
-void ASnareDeployableItem::OnHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComponent, FVector NormalImpulse, const FHitResult& Hit)
+void ASnareDeployableItem::ActiveDeployableItem()
 {
-	if(bIsCollision) return;
+	Super::ActiveDeployableItem();
+
+	MeshComp->SetSimulatePhysics(false);
+	CollisionComp->SetGenerateOverlapEvents(true);
+	ProjectileMovementComponent->Velocity = FVector::Zero();
+}
+void ASnareDeployableItem::AddOverlapActors(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
+{
+	if (bIsCollision) return;
 
 	// Actor to Bind
 	TScriptInterface<class ICharacterStatHandler> ActionHandler = OtherActor;

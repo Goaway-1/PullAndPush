@@ -25,6 +25,8 @@ protected:
 	UPROPERTY(VisibleAnywhere, Category = "DeployableItem")
 	TObjectPtr<class UStaticMeshComponent> MeshComp;
 
+	const FName CollisionName = "PhysicsActor";
+
 /** Timer */
 protected:
 	UFUNCTION()
@@ -50,7 +52,13 @@ protected:
 	UPROPERTY(EditDefaultsOnly, Category = "DeployableItem | Time")
 	uint8 bIsAutoActive : 1;
 
+	FVector PreviousLocation = FVector::Zero();
+
 protected:
 	UPROPERTY(VisibleAnywhere, Category = "Movement")
 	class UProjectileMovementComponent* ProjectileMovementComponent;
+
+	// The timer is activated when it bounce, which is used when "bIsAutoActive" is false.
+	UFUNCTION()
+	void OnProjectileBounce(const FHitResult& ImpactResult, const FVector& ImpactVelocity);
 };

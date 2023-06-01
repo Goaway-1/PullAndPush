@@ -201,7 +201,15 @@ void APlayableCharacter::ActiveMovementSpeed()
 	float Speed = StatComp->GetMoveSpeed();
 	float Velocity = StatComp->GetJumpVelocity();
 
+	// if Character is Charging
 	if (GetPlayerAttackCondition() == EPlayerAttackCondition::EPAC_Charging) 
+	{
+		Speed /= 2;
+		Velocity /= 2;
+	}
+
+	// if Character Stat is Slow..
+	if (StatComp->IsStatFlagSet(ECharacterStat::Slow))
 	{
 		Speed /= 2;
 		Velocity /= 2;

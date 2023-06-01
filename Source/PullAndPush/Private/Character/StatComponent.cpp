@@ -43,6 +43,12 @@ void UStatComponent::EnableStatFlag(ECharacterStat InFlag, float ChangeDuration)
 	if(!IsStatFlagSet(InFlag))
 	{
 		StatFlags |= (uint8)InFlag;
+		
+		// If the stat associated with the speed has changed
+		if (InFlag == ECharacterStat::Slow)
+		{
+			OnMoveSpeedChanged.ExecuteIfBound();
+		}
 	}
 	else 
 	{
@@ -56,8 +62,13 @@ void UStatComponent::DisableStatFlag(ECharacterStat InFlag)
 	if (IsStatFlagSet(InFlag))
 	{
 		StatFlags &= ~(uint8)InFlag;
-
 		RemoveStatFlagTimer(InFlag);
+
+		// If the stat associated with the speed has changed
+		if (InFlag == ECharacterStat::Slow)
+		{
+			OnMoveSpeedChanged.ExecuteIfBound();
+		}
 	}
 }
 bool UStatComponent::IsStatFlagSet(ECharacterStat InFlag)

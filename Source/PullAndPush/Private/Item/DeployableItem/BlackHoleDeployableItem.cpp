@@ -6,16 +6,18 @@ ABlackHoleDeployableItem::ABlackHoleDeployableItem()
 	: 
 	ForceStength(10000.f),bIsBlackHoleActived(0)
 {
-	SphereComp = CreateDefaultSubobject<USphereComponent>(TEXT("SphereComp"));
-	SphereComp->SetupAttachment(GetRootComponent());
-	SphereComp->SetSphereRadius(1500.f);
+	CollisionComp = CreateDefaultSubobject<USphereComponent>(TEXT("SphereComp"));
+	CollisionComp->SetupAttachment(GetRootComponent());
+	CollisionComp->SetSphereRadius(1500.f);
+
+	ProjectileMovementComponent->bRotationFollowsVelocity = true;
 }
 void ABlackHoleDeployableItem::BeginPlay()
 {
 	Super::BeginPlay();
 
-	SphereComp->OnComponentBeginOverlap.AddDynamic(this,&ABlackHoleDeployableItem::AddOverlapActors);
-	SphereComp->OnComponentEndOverlap.AddDynamic(this, &ABlackHoleDeployableItem::DeleteOverlapActors);
+	CollisionComp->OnComponentBeginOverlap.AddDynamic(this,&ABlackHoleDeployableItem::AddOverlapActors);
+	CollisionComp->OnComponentEndOverlap.AddDynamic(this, &ABlackHoleDeployableItem::DeleteOverlapActors);
 }
 void ABlackHoleDeployableItem::Tick(float DeltaTime)
 {

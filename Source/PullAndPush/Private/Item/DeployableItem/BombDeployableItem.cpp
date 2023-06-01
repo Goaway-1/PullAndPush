@@ -12,6 +12,7 @@ ABombDeployableItem::ABombDeployableItem()
 	RadialForceComp->bImpulseVelChange = true;
 	RadialForceComp->bAutoActivate = false;
 
+	ProjectileMovementComponent->bRotationFollowsVelocity = true;
 	CharacterStatModifier.Stat = ECharacterStat::Stun;
 	CharacterStatModifier.ChangeDuration = 4.f;
 }

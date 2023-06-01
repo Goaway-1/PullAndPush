@@ -37,7 +37,7 @@ protected:
 
 protected:
 	UPROPERTY(EditAnywhere, Category="DeployableItem | BlackHole")
-	TObjectPtr<class USphereComponent> SphereComp;
+	TObjectPtr<class USphereComponent> CollisionComp;
 
 	UPROPERTY(VisibleAnywhere, Category = "DeployableItem | BlackHole")
 	TArray<TWeakObjectPtr<UPrimitiveComponent>> OverlapComponent;
