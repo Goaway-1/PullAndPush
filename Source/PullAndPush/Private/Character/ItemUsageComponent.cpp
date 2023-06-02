@@ -166,6 +166,7 @@ void UItemUsageComponent::ServerThrowDeployableItem_Implementation(UClass* Deplo
 
 	// Spawn the projectile at the muzzle
 	GetWorld()->SpawnActor<AActor>(DeployableItemClass, SpawnLocation, SpawnRotation, ActorSpawnParams);
+	GetWorld()->SpawnActor<AActor>(DeployableItemClass, SpawnLocation, SpawnRotation);
 	ServerSetDeployableItemMesh();
 }
 void UItemUsageComponent::TryToUseActiveItem()

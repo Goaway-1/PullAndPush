@@ -2,6 +2,10 @@
 #include "Components/SphereComponent.h"
 #include "Interface/ItemPickupHandler.h"
 
+
+#include "GameFramework/Character.h"
+#include "GameFramework/CharacterMovementComponent.h"
+
 ABlackHoleDeployableItem::ABlackHoleDeployableItem()
 	: 
 	ForceStength(10000.f),bIsBlackHoleActived(0)

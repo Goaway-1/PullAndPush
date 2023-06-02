@@ -29,7 +29,6 @@ protected:
 	UPROPERTY(EditDefaultsOnly, Category = "DeployableItem | VelocityInhibitor")
 	TObjectPtr<class UBoxComponent> CollisionComp;
 
-
 	UPROPERTY(EditDefaultsOnly, Category = "DeployableItem | Stat")
 	FCharacterStatModifier CharacterStatModifier;
 

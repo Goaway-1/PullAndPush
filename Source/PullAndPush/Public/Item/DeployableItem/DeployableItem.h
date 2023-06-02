@@ -52,8 +52,6 @@ protected:
 	UPROPERTY(EditDefaultsOnly, Category = "DeployableItem | Time")
 	uint8 bIsAutoActive : 1;
 
-	FVector PreviousLocation = FVector::Zero();
-
 protected:
 	UPROPERTY(VisibleAnywhere, Category = "Movement")
 	class UProjectileMovementComponent* ProjectileMovementComponent;
