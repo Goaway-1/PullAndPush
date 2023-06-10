@@ -7,9 +7,9 @@ UENUM(BlueprintType, meta = (Bitflags, UseEnumValuesAsMaskValuesInEditor = "true
 enum class ECharacterStat : uint8
 {
 	None = 0 UMETA(Hidden),
-	Stun = 1 << 0 UMETA(DisplayName = "Stun"),
-	Snare = 1 << 1 UMETA(DisplayName = "Snare"),
-	Slow = 1 << 2 UMETA(DisplayName = "Slow")
+	Stun = 0x01 UMETA(DisplayName = "Stun"),
+	Snare = 0x02 UMETA(DisplayName = "Snare"),
+	Slow = 0x04 UMETA(DisplayName = "Slow")
 };
 ENUM_CLASS_FLAGS(ECharacterStat);
 

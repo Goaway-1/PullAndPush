@@ -160,12 +160,7 @@ void UItemUsageComponent::ServerThrowDeployableItem_Implementation(UClass* Deplo
 	const FRotator SpawnRotation = (PlayerController->GetControlRotation().Vector() + DefaultLaunchForwardVector).GetSafeNormal().Rotation();
 	const FVector SpawnLocation = GetOwner()->GetActorLocation() + SpawnRotation.RotateVector(MuzzleOffset);
 
-	// Set Spawn Collision Handling Override
-	FActorSpawnParameters ActorSpawnParams;
-	ActorSpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButDontSpawnIfColliding;
-
 	// Spawn the projectile at the muzzle
-	GetWorld()->SpawnActor<AActor>(DeployableItemClass, SpawnLocation, SpawnRotation, ActorSpawnParams);
 	GetWorld()->SpawnActor<AActor>(DeployableItemClass, SpawnLocation, SpawnRotation);
 	ServerSetDeployableItemMesh();
 }

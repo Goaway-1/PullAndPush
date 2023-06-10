@@ -73,7 +73,7 @@ void UStatComponent::DisableStatFlag(ECharacterStat InFlag)
 }
 bool UStatComponent::IsStatFlagSet(ECharacterStat InFlag)
 {
-	return ((StatFlags & (uint8)InFlag) == (uint8)InFlag) ? true : false;
+	return StatFlags & (uint8)InFlag;
 }
 void UStatComponent::CreateStatFlagTimer(ECharacterStat InFlag, float ChangeDuration)
 {
