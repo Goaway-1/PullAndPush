@@ -2,6 +2,7 @@
 #include "Character/AttackComponent.h"
 #include "Character/ItemUsageComponent.h"
 #include "Character/AimingComponent.h"
+#include "Character/StatComponent.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "Camera/CameraComponent.h"
 #include "Components/CapsuleComponent.h"
@@ -23,6 +24,7 @@ APlayableCharacter::APlayableCharacter()
 	AttackComp = CreateDefaultSubobject<UAttackComponent>(TEXT("AttackComp"));
 	ItemUsageComp = CreateDefaultSubobject<UItemUsageComponent>(TEXT("ItemUsageComp"));
 	AimingComp = CreateDefaultSubobject<UAimingComponent>(TEXT("AimingComp"));
+	StatComp = CreateDefaultSubobject<UStatComponent>(TEXT("StatComp"));	
 
 	// Camera Setting
 	InitSpringArm(SpringArmComp, 450.f, FVector(0.f, 0.f, 60.f));
@@ -31,7 +33,6 @@ APlayableCharacter::APlayableCharacter()
 
 	GetCharacterMovement()->bOrientRotationToMovement = true;
 	GetCharacterMovement()->RotationRate = FRotator(0.f,700.f,0.f);
-	GetCharacterMovement()->MaxWalkSpeed = DefaultMoveSpeed;
 	GetCharacterMovement()->SetIsReplicated(true);
 }
 APlayableCharacter::~APlayableCharacter()
@@ -55,14 +56,20 @@ void APlayableCharacter::BeginPlay()
 {
 	Super::BeginPlay();
 
-	/** Thread for Character Properties... */
-	SetMovementSpeed(DefaultMoveSpeed);
+	/** Bind if MoveSpeed is Changed */
+	StatComp->OnMoveSpeedChanged.BindUObject(this, &APlayableCharacter::ActiveMovementSpeed);
 
-	/** Set Item Widget */
+	/** Binding Create Item Widget */
 	PlayableController = Cast<APlayableController>(GetController());
 	if (PlayableController && ItemUsageComp)
 	{
 		ItemUsageComp->GetItemWidgetUpdateDelegate().BindUObject(PlayableController, &APlayableController::UpdateItemUI);
+	}
+
+	/** Binding Create Stat Widget */
+	if (PlayableController && StatComp)
+	{
+		StatComp->OnUpdateStatWidget.BindUObject(PlayableController, &APlayableController::UpdateStatUI);
 	}
 }
 void APlayableCharacter::Tick(float DeltaTime)
@@ -74,7 +81,6 @@ void APlayableCharacter::Tick(float DeltaTime)
 	UpdateMoveToActor();
 
 	UpdateAimPitch();
-	UpdateCurrnentMovementSpeed();
 }
 void APlayableCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
@@ -104,7 +110,7 @@ void APlayableCharacter::SetPlayerAttackCondition(const bool IsCharging)
 
 	AimingComp->ZoomInOut(IsCharging);
 	SetPlayerView();
-	SetMovementSpeed();
+	SetMovementSpeed(); 
 }
 void APlayableCharacter::ServerSetPlayerAttackCondition_Implementation(const bool IsCharging)
 {
@@ -121,6 +127,8 @@ void APlayableCharacter::InitEnhancedInput()
 }
 void APlayableCharacter::Move(const FVector2D& Value)
 {
+	if(!IsCanMove()) return;
+
 	MoveForward(Value.Y);
 	MoveRight(Value.X);
 }
@@ -162,6 +170,8 @@ void APlayableCharacter::ServerUpdateAimPitch_Implementation()
 }
 void APlayableCharacter::TryLaunch(const FVector2D& Value)
 {
+	if(!IsCanAttack()) return;
+
 	// If item exists, throw it
 	if (ItemUsageComp->GetIsReadyToThrow()) {
 		ItemUsageComp->ThrowDeployableItem();
@@ -179,24 +189,27 @@ void APlayableCharacter::EndLaunch()
 	AttackComp->EndLaunch(bIsPush);
 }
 void APlayableCharacter::SetMovementSpeed(const float NewMoveSpeed)
-{
-	// Is Item Activated
-	if (NewMoveSpeed > 0.f || NewMoveSpeed < 0.f) {
-		float Speed = CurrentMoveSpeed + NewMoveSpeed;
-		PendingMoveSpeed.exchange(Speed);
-	}
-	else
+{	
+	// Set Move Speed
+	if (!StatComp->ModifyMoveSpeed(NewMoveSpeed))
 	{
 		ActiveMovementSpeed();
 	}
 }
 void APlayableCharacter::ActiveMovementSpeed()
 {
-	// Update CurrentMoveSpeed (in Local)
-	float Speed = CurrentMoveSpeed;
-	float Velocity = MaxJumpVelocity;
+	float Speed = StatComp->GetMoveSpeed();
+	float Velocity = StatComp->GetJumpVelocity();
 
+	// if Character is Charging
 	if (GetPlayerAttackCondition() == EPlayerAttackCondition::EPAC_Charging) 
+	{
+		Speed /= 2;
+		Velocity /= 2;
+	}
+
+	// if Character Stat is Slow..
+	if (StatComp->IsStatFlagSet(ECharacterStat::Slow))
 	{
 		Speed /= 2;
 		Velocity /= 2;
@@ -217,13 +230,6 @@ void APlayableCharacter::ServerActiveMovementSpeed_Implementation(const float In
 {
 	GetCharacterMovement()->MaxWalkSpeed = InSpeed;
 	GetCharacterMovement()->JumpZVelocity = InJump;
-}
-void APlayableCharacter::UpdateCurrnentMovementSpeed()
-{
-	if (PendingMoveSpeed != CurrentMoveSpeed) {
-		CurrentMoveSpeed = PendingMoveSpeed;
-		ActiveMovementSpeed();
-	}
 }
 void APlayableCharacter::InitSpringArm(USpringArmComponent* SpringArm, const float& NewTargetArmLength, const FVector& NewSocketOffset)
 {
@@ -309,17 +315,49 @@ void APlayableCharacter::ChangeVisibleItemInfo(const FInputActionValue& Value)
 	bool bActiveItemVisible = Value.Get<bool>();
 	PlayableController->ChangeVisibleItemInfo(bActiveItemVisible);
 }
-void APlayableCharacter::RocketPunchAlphaSpeed(const float& AlphaSpeed)
+void APlayableCharacter::EnableStatFlag(ECharacterStat InFlag, float ChangeDuration)
 {
-	AttackComp->SetRPAlphaSpeed(AlphaSpeed);
+	StatComp->EnableStatFlag(InFlag, ChangeDuration);
 }
-void APlayableCharacter::RocketPunchAlphaRange(const float& AlphaRange)
+void APlayableCharacter::DisableStatFlag(ECharacterStat InFlag)
 {
-	AttackComp->SetRPAlphaRange(AlphaRange);
+	StatComp->DisableStatFlag(InFlag);
 }
-void APlayableCharacter::RocketPunchAlphaSize(const float& AlphaSize)
+bool APlayableCharacter::IsStatFlagSet(ECharacterStat InFlag)
 {
-	AttackComp->SetRPAlphaSize(AlphaSize);
+	return (StatComp) ? StatComp->IsStatFlagSet(InFlag) : false;
+}
+bool APlayableCharacter::IsCanMove()
+{
+	return (StatComp->IsStatFlagSet(ECharacterStat::Stun) || StatComp->IsStatFlagSet(ECharacterStat::Snare)) ? false : true;
+}
+bool APlayableCharacter::IsCanAttack()
+{
+	return (StatComp->IsStatFlagSet(ECharacterStat::Stun)) ? false : true;
+}
+void APlayableCharacter::SetRocketPunchSpeed(const float& DeltaSpeed)
+{ 
+	StatComp->SetRocketPunchSpeed(DeltaSpeed); 
+}
+void APlayableCharacter::SetRocketPunchRange(const float& DeltaRange)
+{ 
+	StatComp->SetRocketPunchRange(DeltaRange); 
+}
+void APlayableCharacter::SetRocketPunchScale(const float& DeltaSize)
+{ 
+	StatComp->SetRocketPunchScale(DeltaSize); 
+}
+float APlayableCharacter::GetRocketPunchSpeed()
+{ 
+	return StatComp->GetRocketPunchSpeed(); 
+}
+float APlayableCharacter::GetRocketPunchRange()
+{ 
+	return StatComp->GetRocketPunchRange(); 
+}
+float APlayableCharacter::GetRocketPunchScale()
+{ 
+	return StatComp->GetRocketPunchScale(); 
 }
 void APlayableCharacter::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const
 {

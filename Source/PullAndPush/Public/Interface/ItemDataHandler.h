@@ -4,11 +4,11 @@
 
 #include "CoreMinimal.h"
 #include "UObject/Interface.h"
-#include "ItemActionHandler.generated.h"
+#include "ItemDataHandler.generated.h"
 
 // This class does not need to be modified.
 UINTERFACE(MinimalAPI)
-class UItemActionHandler : public UInterface
+class UItemDataHandler : public UInterface
 {
 	GENERATED_BODY()
 };
@@ -16,7 +16,7 @@ class UItemActionHandler : public UInterface
 /**
  * Item Action... 
  */
-class PULLANDPUSH_API IItemActionHandler
+class PULLANDPUSH_API IItemDataHandler
 {
 	GENERATED_BODY()
 

@@ -29,3 +29,10 @@ void APlayableController::ChangeVisibleItemInfo(bool bVisibility)
 		MainHUD->ChangeVisibleItemInfo(bVisibility);
 	}
 }
+void APlayableController::UpdateStatUI(const FString& StatName, UMaterialInterface* Material)
+{
+	if (MainHUD)
+	{
+		MainHUD->UpdateStatUI(StatName,Material);
+	}
+}

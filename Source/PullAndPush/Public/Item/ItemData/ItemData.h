@@ -5,11 +5,11 @@
 #include "PullAndPush.h"
 #include "Engine/DataAsset.h"
 #include "Item/ItemAssetManager.h"
-#include "Interface/ItemActionHandler.h"
+#include "Interface/ItemDataHandler.h"
 #include "ItemData.generated.h"
 
 UCLASS()
-class PULLANDPUSH_API UItemData : public UDataAsset, public IItemActionHandler
+class PULLANDPUSH_API UItemData : public UDataAsset, public IItemDataHandler
 {
 	GENERATED_BODY()
 

@@ -4,14 +4,13 @@
 #include "Engine/SkeletalMeshSocket.h"
 #include "Math/Quat.h"
 #include "GameFramework/CharacterMovementComponent.h"
-#include "Interface/CharacterPropertyHandler.h"
+#include "Interface/CharacterStatHandler.h"
 #include "Net/UnrealNetwork.h"
 
 UAttackComponent::UAttackComponent() 
 	:
 	ChargingTime(0.f), bIsCharging(false), bIsChangeValue(false),
-	bIsCanLaunch(true), RocketPunch(nullptr),
-	RPAlphaSpeed(1.f), RPAlphaRange(1.f), RPAlphaSize(1.f)
+	bIsCanLaunch(true), RocketPunch(nullptr)
 {
 	PrimaryComponentTick.bCanEverTick = true;
 
@@ -19,10 +18,6 @@ UAttackComponent::UAttackComponent()
 }
 void UAttackComponent::BeginPlay(){
 	Super::BeginPlay();
-
-	RPAlphaSpeed = 1.f;
-	RPAlphaRange = 1.f;
-	RPAlphaSize = 1.f;
 
 	// Setting CharacterSocket
 	OwnerCharacter = Cast<ACharacter>(GetOwner());
@@ -81,7 +76,15 @@ void UAttackComponent::EndLaunch(bool bIsPush)
 		const FVector LaunchLocation = RocketPunchSocket->GetSocketLocation(OwnerCharacter.Get()->GetMesh());
 		const FRotator LaunchRotation = OwnerCharacter.Get()->GetControlRotation(); 
 		
-		RocketPunch->ReadyToLaunch(ChargingAlpha, GetOwner(), bIsPush, LaunchLocation, LaunchRotation, RPAlphaSpeed, RPAlphaRange, RPAlphaSize);
+		// Try To Launch
+		TScriptInterface<class ICharacterStatHandler> OwnerHandler = OwnerCharacter.Get();
+		if (OwnerHandler.GetInterface())
+		{
+			const float RPAlphaSpeed = OwnerHandler->GetRocketPunchSpeed();
+			const float RPAlphaRange = OwnerHandler->GetRocketPunchRange();
+			const float RPAlphaSize = OwnerHandler->GetRocketPunchScale();
+			RocketPunch->ReadyToLaunch(ChargingAlpha, GetOwner(), bIsPush, LaunchLocation, LaunchRotation, RPAlphaSpeed, RPAlphaRange, RPAlphaSize);
+		}
 	}
 	else bIsCanLaunch = true;
 }
@@ -112,7 +115,7 @@ void UAttackComponent::ChangeMovementSpeed(const bool& IsCharging)
 	bIsChangeValue = true;
 	
 	// Set PlayerCharacter Properties...
-	TScriptInterface<class ICharacterPropertyHandler> CharacterPropertyHandler = GetOwner();
+	TScriptInterface<class ICharacterStatHandler> CharacterPropertyHandler = GetOwner();
 	if (CharacterPropertyHandler.GetInterface())
 	{
 		// Set Character AttackCondition & MovementSpeed

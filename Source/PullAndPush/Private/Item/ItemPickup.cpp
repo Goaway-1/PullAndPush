@@ -1,6 +1,6 @@
 #include "Item/ItemPickup.h"
 #include "Components/SphereComponent.h"
-#include "Interface/PickupActionHandler.h"
+#include "Interface/CharacterPickupHandler.h"
 #include "Item/ItemData/ItemData.h"
 #include "Net/UnrealNetwork.h"
 
@@ -35,7 +35,7 @@ void AItemPickup::OnHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, U
 	// Hit Event of Push & Pull or Character
 	if (OtherCompCollsionName == "Pawn") {		
 		/** Character's Pickup Action */
-		TScriptInterface<class IPickupActionHandler> ActionHandler = OtherActor;
+		TScriptInterface<class ICharacterPickupHandler> ActionHandler = OtherActor;
 		if (ActionHandler.GetInterface() && CurItemData.IsValid())
 		{
 			ActionHandler->PickUpItem(CurItemData.Get());

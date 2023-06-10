@@ -61,21 +61,4 @@ protected:
 
 	UPROPERTY(Replicated, VisibleAnywhere, Category = "RocketPunch")
 	TObjectPtr<class ARocketPunch> RocketPunch;
-
-/** Item Alpha Value */
-public:
-	FORCEINLINE void SetRPAlphaSpeed(const float& AlphaSpeed) { RPAlphaSpeed = AlphaSpeed; }
-	FORCEINLINE void SetRPAlphaRange(const float& AlphaRange) { RPAlphaRange = AlphaRange; }
-	FORCEINLINE void SetRPAlphaSize(const float& AlphaSize) { RPAlphaSize = AlphaSize; }
-
-private:
-	// @TODO : VisibleAnywhere·Î ¼öÁ¤
-	UPROPERTY(Transient, EditAnywhere, Category = "RocketPunch | Alpha Value")
-	float RPAlphaSpeed;
-
-	UPROPERTY(Transient, EditAnywhere, Category = "RocketPunch | Alpha Value")
-	float RPAlphaRange;
-
-	UPROPERTY(Transient, EditAnywhere, Category = "RocketPunch | Alpha Value")
-	float RPAlphaSize;
 };

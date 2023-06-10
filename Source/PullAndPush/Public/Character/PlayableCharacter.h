@@ -4,16 +4,16 @@
 
 #include "PullAndPush.h"
 #include "GameFramework/Character.h"
-#include "Interface/CollisionActionHandler.h"
-#include "Interface/PickupActionHandler.h"
-#include "Interface/CharacterPropertyHandler.h"
+#include "Interface/CharacterInterActionHandler.h"
+#include "Interface/CharacterPickupHandler.h"
+#include "Interface/CharacterStatHandler.h"
 #include "PlayableCharacter.generated.h"
 
 class USpringArmComponent;
 class UCameraComponent;
 
 UCLASS()
-class PULLANDPUSH_API APlayableCharacter : public ACharacter, public ICollisionActionHandler, public IPickupActionHandler, public ICharacterPropertyHandler
+class PULLANDPUSH_API APlayableCharacter : public ACharacter, public ICharacterInterActionHandler, public ICharacterPickupHandler, public ICharacterStatHandler
 {
 	GENERATED_BODY()
 
@@ -32,10 +32,10 @@ public:
 protected:
 	virtual void BeginPlay() override;
 
-	UPROPERTY(EditDefaultsOnly, Category = "Camera")
+	UPROPERTY(EditDefaultsOnly, Category = "Components")
 	TObjectPtr<USpringArmComponent> SpringArmComp;
 
-	UPROPERTY(EditDefaultsOnly, Category = "Camera")
+	UPROPERTY(EditDefaultsOnly, Category = "Components")
 	TObjectPtr<UCameraComponent> CameraComp;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
@@ -43,6 +43,9 @@ protected:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
 	TObjectPtr<class UItemUsageComponent> ItemUsageComp;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
+	TObjectPtr<class UStatComponent> StatComp;
 
 private:
 	UFUNCTION()
@@ -56,8 +59,7 @@ private:
 	void LookUp(float NewAxisValue);
 	void Turn(float NewAxisValue);
 
-	// Try to set Movement Speed
-	// Call Item or Charging
+	// Try to set Movement Speed (Call Item or Charging)
 	virtual void SetMovementSpeed(const float NewMoveSpeed = 0.f) override;
 
 	// Actually set Movement Speed
@@ -66,18 +68,7 @@ private:
 	UFUNCTION(Server, Reliable)
 	void ServerActiveMovementSpeed(const float InSpeed, const float InJump);
 
-	// Call On Tick..
-	void UpdateCurrnentMovementSpeed();
-
 	TObjectPtr<class APlayableController> PlayableController;
-
-	UPROPERTY(Transient, VisibleAnywhere, Category = "Movement")
-	float CurrentMoveSpeed;
-
-	std::atomic<float> PendingMoveSpeed;
-
-	const float DefaultMoveSpeed = 600.f;
-	const float MaxJumpVelocity = 420.f;
 
 private:
 	UFUNCTION()
@@ -195,9 +186,13 @@ public:
 	void ClientPickUpItem(class UItemData* ItemData);
 
 	// Set Alpha Value Affected By Item
-	virtual void RocketPunchAlphaSpeed(const float& AlphaSpeed) override;
-	virtual void RocketPunchAlphaRange(const float& AlphaRange) override;
-	virtual void RocketPunchAlphaSize(const float& AlphaSize) override;
+	virtual void SetRocketPunchSpeed(const float& deltaspeed) override;
+	virtual void SetRocketPunchRange(const float& deltarange) override;
+	virtual void SetRocketPunchScale(const float& deltasize) override;
+
+	virtual float GetRocketPunchSpeed() override;
+	virtual float GetRocketPunchRange() override;
+	virtual float GetRocketPunchScale() override;
 
 private:
 	UFUNCTION()
@@ -205,6 +200,18 @@ private:
 
 	UFUNCTION()
 	void ChangeVisibleItemInfo(const FInputActionValue& Value);
+#pragma endregion
+
+/** Stat */
+#pragma region STAT
+public:
+	virtual void EnableStatFlag(ECharacterStat InFlag, float ChangeDuration) override;
+	virtual void DisableStatFlag(ECharacterStat InFlag) override;
+	virtual bool IsStatFlagSet(ECharacterStat InFlag) override;
+
+protected:
+	bool IsCanMove();
+	bool IsCanAttack();
 #pragma endregion
 
 };

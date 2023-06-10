@@ -2,7 +2,7 @@
 
 #include "Character/ItemUsageComponent.h"
 #include "Item/ItemData/ItemData.h"
-#include "Interface/ItemActionHandler.h"
+#include "Interface/ItemDataHandler.h"
 #include "Kismet/GameplayStatics.h"
 #include "GameFramework/PlayerController.h"
 #include "Components/SplineComponent.h"
@@ -129,7 +129,7 @@ void UItemUsageComponent::PickUpItem(UItemData* ItemData)
 }
 void UItemUsageComponent::ServerSetDeployableItemMesh_Implementation(UItemData* ActiveItemData)
 {
-	TScriptInterface<class IItemActionHandler> CurItemAction = ActiveItemData;
+	TScriptInterface<class IItemDataHandler> CurItemAction = ActiveItemData;
 	if (CurItemAction.GetInterface())
 	{
 		CurDeployableItemStaticMesh = CurItemAction->GetStaticMesh();
@@ -160,12 +160,8 @@ void UItemUsageComponent::ServerThrowDeployableItem_Implementation(UClass* Deplo
 	const FRotator SpawnRotation = (PlayerController->GetControlRotation().Vector() + DefaultLaunchForwardVector).GetSafeNormal().Rotation();
 	const FVector SpawnLocation = GetOwner()->GetActorLocation() + SpawnRotation.RotateVector(MuzzleOffset);
 
-	// Set Spawn Collision Handling Override
-	FActorSpawnParameters ActorSpawnParams;
-	ActorSpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButDontSpawnIfColliding;
-
 	// Spawn the projectile at the muzzle
-	GetWorld()->SpawnActor<AActor>(DeployableItemClass, SpawnLocation, SpawnRotation, ActorSpawnParams);
+	GetWorld()->SpawnActor<AActor>(DeployableItemClass, SpawnLocation, SpawnRotation);
 	ServerSetDeployableItemMesh();
 }
 void UItemUsageComponent::TryToUseActiveItem()
@@ -183,7 +179,7 @@ void UItemUsageComponent::TryToUseActiveItem()
 }
 void UItemUsageComponent::TryToUsePassiveItem(UItemData* ItemData)
 {
-	TScriptInterface<class IItemActionHandler> CurItemAction = ItemData;
+	TScriptInterface<class IItemDataHandler> CurItemAction = ItemData;
 	if (CurItemAction.GetInterface())
 	{
 		bool bItemAlreadyActivated;
@@ -247,7 +243,8 @@ void UItemUsageComponent::OnRep_ChangeItemStaticMesh()
 	{
 		ItemStaticMeshComp->SetVisibility(false);
 	}
-}void UItemUsageComponent::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const
+}
+void UItemUsageComponent::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 

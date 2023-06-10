@@ -2,7 +2,7 @@
 #include "Components/Image.h"
 #include "Components/TextBlock.h"
 #include "Components/CanvasPanel.h"
-#include "Interface/ItemActionHandler.h"
+#include "Interface/ItemDataHandler.h"
 
 void UActiveItemWidget::NativeConstruct()
 {
@@ -12,7 +12,7 @@ void UActiveItemWidget::NativeConstruct()
 }
 void UActiveItemWidget::UpdateItem(UDataAsset* ItemData)
 {
-	TScriptInterface<class IItemActionHandler> CurItemAction = ItemData;
+	TScriptInterface<class IItemDataHandler> CurItemAction = ItemData;
 	if (CurItemAction.GetInterface())
 	{
 		Icon->SetBrushFromMaterial(CurItemAction->GetItemMaterialInterface());
@@ -34,7 +34,7 @@ void UActiveItemWidget::ChangeVisibleItemInfo(bool bVisibility)
 	{
 		TextCanvasPanel->SetVisibility(ESlateVisibility::Visible);
 				
-		TScriptInterface<class IItemActionHandler> CurItemAction = CurrentItemData.Get();
+		TScriptInterface<class IItemDataHandler> CurItemAction = CurrentItemData.Get();
 		if (CurItemAction.GetInterface())
 		{
 			InNameText = FText::FromString(CurItemAction->GetItemName());

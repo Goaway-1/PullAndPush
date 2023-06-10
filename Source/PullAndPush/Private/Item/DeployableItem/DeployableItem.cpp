@@ -1,32 +1,39 @@
 #include "Item/DeployableItem/DeployableItem.h"
 
 ADeployableItem::ADeployableItem()
+	:
+	bIsAutoActive(1)
 {
 	PrimaryActorTick.bCanEverTick = true;
 	bReplicates = true;
 	SetReplicateMovement(true);
 
 	MeshComp = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("MeshComp"));
-	MeshComp->SetSimulatePhysics(true);
+	MeshComp->SetSimulatePhysics(false);
 	MeshComp->SetEnableGravity(true);
-	MeshComp->SetCollisionObjectType(ECC_PhysicsBody);
-	MeshComp->SetCollisionEnabled(ECollisionEnabled::PhysicsOnly);
+	MeshComp->SetCollisionProfileName(CollisionName);
 	SetRootComponent(MeshComp);
 
 	ProjectileMovementComponent = CreateDefaultSubobject<UProjectileMovementComponent>(TEXT("ProjectileMovementComponent"));
 	ProjectileMovementComponent->SetUpdatedComponent(MeshComp);
 	ProjectileMovementComponent->InitialSpeed = 1300.f;
+	ProjectileMovementComponent->bShouldBounce = true;
 }
 void ADeployableItem::BeginPlay()
 {
 	Super::BeginPlay();
 
-	if(ActiveTime < KINDA_SMALL_NUMBER) PPLOG(Warning,TEXT("ActiveTime is small than 0"));
-	if(DestoryTime < KINDA_SMALL_NUMBER) PPLOG(Warning,TEXT("ActiveTime is small than 0"));
-
-	// Set Timer
-	GetWorld()->GetTimerManager().SetTimer(ActiveHandler, this, &ADeployableItem::ActiveDeployableItem, ActiveTime, false);
-	GetWorld()->GetTimerManager().SetTimer(DestoryHandler, this, &ADeployableItem::DestoryDeployableItem, DestoryTime, false);
+	// Activate timer Automatically or Not
+	if (bIsAutoActive)
+	{
+		SetActiveTimer();
+	}
+	else 
+	{
+		ActiveTime = 0.1f;
+		SetActorRotation(FRotator::ZeroRotator);
+		ProjectileMovementComponent->OnProjectileBounce.AddDynamic(this, &ADeployableItem::OnProjectileBounce);
+	}
 }
 void ADeployableItem::ActiveDeployableItem()
 {
@@ -35,5 +42,27 @@ void ADeployableItem::ActiveDeployableItem()
 void ADeployableItem::DestoryDeployableItem()
 {
 	PPLOG(Log, TEXT("Destroy DeployableItem"));
+
+	GetWorld()->GetTimerManager().ClearTimer(ActiveHandler);
+	GetWorld()->GetTimerManager().ClearTimer(DestoryHandler);
+
+	// @TODO : 애니메이션 하고, 천천히 삭제되도록 처리...
 	Destroy();
+}
+void ADeployableItem::SetActiveTimer()
+{
+	if (ActiveTime < KINDA_SMALL_NUMBER) PPLOG(Log, TEXT("ActiveTime is small than 0"));
+	if (DestoryTime < KINDA_SMALL_NUMBER) PPLOG(Log, TEXT("ActiveTime is small than 0"));
+
+	// Set Timer
+	GetWorld()->GetTimerManager().SetTimer(ActiveHandler, this, &ADeployableItem::ActiveDeployableItem, ActiveTime, false);
+	GetWorld()->GetTimerManager().SetTimer(DestoryHandler, this, &ADeployableItem::DestoryDeployableItem, DestoryTime, false);
+}
+void ADeployableItem::OnProjectileBounce(const FHitResult& ImpactResult, const FVector& ImpactVelocity)
+{
+	if (!bIsAutoActive)
+	{
+		SetActiveTimer();
+		bIsAutoActive = true;
+	}
 }

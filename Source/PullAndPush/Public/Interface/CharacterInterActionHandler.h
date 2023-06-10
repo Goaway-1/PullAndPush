@@ -4,11 +4,11 @@
 
 #include "CoreMinimal.h"
 #include "UObject/Interface.h"
-#include "CollisionActionHandler.generated.h"
+#include "CharacterInterActionHandler.generated.h"
 
 // This class does not need to be modified.
 UINTERFACE(MinimalAPI)
-class UCollisionActionHandler : public UInterface
+class UCharacterInterActionHandler : public UInterface
 {
 	GENERATED_BODY()
 };
@@ -16,7 +16,7 @@ class UCollisionActionHandler : public UInterface
 /**
  * 
  */
-class PULLANDPUSH_API ICollisionActionHandler
+class PULLANDPUSH_API ICharacterInterActionHandler
 {
 	GENERATED_BODY()
 

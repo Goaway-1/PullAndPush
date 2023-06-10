@@ -9,7 +9,7 @@ void UPassiveItemDataRPRangeUp::UsePassiveItem(AActor* TargetActor, FTimerHandle
 
     // Try Rocket Punch Range Up
     if (!bIsItemActivated) {
-        CharacterPropertyHandler->RocketPunchAlphaRange(WeightValue);
+        CharacterPropertyHandler->SetRocketPunchRange(WeightValue);
     }
 }
 
@@ -18,5 +18,5 @@ void UPassiveItemDataRPRangeUp::EndPassiveItem()
     Super::EndPassiveItem();
 
     // Try Rocket Punch Range Down
-    CharacterPropertyHandler->RocketPunchAlphaRange(1.f);
+    CharacterPropertyHandler->SetRocketPunchRange(1.f);
 }

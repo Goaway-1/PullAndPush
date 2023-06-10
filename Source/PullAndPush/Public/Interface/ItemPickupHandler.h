@@ -4,11 +4,11 @@
 
 #include "CoreMinimal.h"
 #include "UObject/Interface.h"
-#include "ItemPickupPropertyHandler.generated.h"
+#include "ItemPickupHandler.generated.h"
 
 // This class does not need to be modified.
 UINTERFACE(MinimalAPI)
-class UItemPickupPropertyHandler : public UInterface
+class UItemPickupHandler : public UInterface
 {
 	GENERATED_BODY()
 };
@@ -16,7 +16,7 @@ class UItemPickupPropertyHandler : public UInterface
 /**
  * 
  */
-class PULLANDPUSH_API IItemPickupPropertyHandler
+class PULLANDPUSH_API IItemPickupHandler
 {
 	GENERATED_BODY()
 

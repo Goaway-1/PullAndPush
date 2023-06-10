@@ -1,23 +1,29 @@
-#include "Item/DeployableItem/BlackHoleItem.h"
+#include "Item/DeployableItem/BlackHoleDeployableItem.h"
 #include "Components/SphereComponent.h"
-#include "Interface/ItemPickupPropertyHandler.h"
+#include "Interface/ItemPickupHandler.h"
 
-ABlackHoleItem::ABlackHoleItem()
+
+#include "GameFramework/Character.h"
+#include "GameFramework/CharacterMovementComponent.h"
+
+ABlackHoleDeployableItem::ABlackHoleDeployableItem()
 	: 
 	ForceStength(10000.f),bIsBlackHoleActived(0)
 {
-	SphereComp = CreateDefaultSubobject<USphereComponent>(TEXT("SphereComp"));
-	SphereComp->SetupAttachment(GetRootComponent());
-	SphereComp->SetSphereRadius(1500.f);
+	CollisionComp = CreateDefaultSubobject<USphereComponent>(TEXT("SphereComp"));
+	CollisionComp->SetupAttachment(GetRootComponent());
+	CollisionComp->SetSphereRadius(1500.f);
+
+	ProjectileMovementComponent->bRotationFollowsVelocity = true;
 }
-void ABlackHoleItem::BeginPlay()
+void ABlackHoleDeployableItem::BeginPlay()
 {
 	Super::BeginPlay();
 
-	SphereComp->OnComponentBeginOverlap.AddDynamic(this,&ABlackHoleItem::AddOverlapActors);
-	SphereComp->OnComponentEndOverlap.AddDynamic(this, &ABlackHoleItem::DeleteOverlapActors);
+	CollisionComp->OnComponentBeginOverlap.AddDynamic(this,&ABlackHoleDeployableItem::AddOverlapActors);
+	CollisionComp->OnComponentEndOverlap.AddDynamic(this, &ABlackHoleDeployableItem::DeleteOverlapActors);
 }
-void ABlackHoleItem::Tick(float DeltaTime)
+void ABlackHoleDeployableItem::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
@@ -27,7 +33,7 @@ void ABlackHoleItem::Tick(float DeltaTime)
 		ActivateBlackHole();
 	}
 }
-void ABlackHoleItem::ActiveDeployableItem()
+void ABlackHoleDeployableItem::ActiveDeployableItem()
 {
 	Super::ActiveDeployableItem();
 
@@ -37,7 +43,7 @@ void ABlackHoleItem::ActiveDeployableItem()
 	ProjectileMovementComponent->ProjectileGravityScale = 0;
 	ProjectileMovementComponent->Velocity = FVector::Zero();
 }
-void ABlackHoleItem::ActivateBlackHole()
+void ABlackHoleDeployableItem::ActivateBlackHole()
 {
 	// Activated Black Hole Gravity
 	for (auto PrimitiveComp : OverlapComponent)
@@ -58,20 +64,20 @@ void ABlackHoleItem::ActivateBlackHole()
 		}
 	}
 }
-void ABlackHoleItem::AddOverlapActors(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
+void ABlackHoleDeployableItem::AddOverlapActors(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
 	if (OtherComp->IsSimulatingPhysics())
 	{
 		OverlapComponent.Add(OtherComp);
 		
 		// Exception handling if item
-		TScriptInterface<class IItemPickupPropertyHandler> ActionHandler = OtherComp;
+		TScriptInterface<class IItemPickupHandler> ActionHandler = OtherComp;
 		if (ActionHandler.GetInterface()) {
 			ActionHandler->SetActiveItemPickup(true);
 		}
 	}
 }
-void ABlackHoleItem::DeleteOverlapActors(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
+void ABlackHoleDeployableItem::DeleteOverlapActors(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
 {
 	OverlapComponent.Remove(OtherComp);
 }

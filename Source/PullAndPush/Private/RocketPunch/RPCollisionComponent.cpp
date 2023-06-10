@@ -1,7 +1,7 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 #include "RocketPunch/RPCollisionComponent.h"
-#include "Interface/CollisionActionHandler.h"
+#include "Interface/CharacterInterActionHandler.h"
 
 URPCollisionComponent::URPCollisionComponent()
 	:
@@ -75,7 +75,7 @@ void URPCollisionComponent::ResetOverlapActors()
 {
 	/** Reset Grap Object */
 	// Item, Character of Pull
-	TScriptInterface<class ICollisionActionHandler> ActionHandler = GrapActor.Get();
+	TScriptInterface<class ICharacterInterActionHandler> ActionHandler = GrapActor.Get();
 	if (ActionHandler.GetInterface()) {
 		ActionHandler->SetMoveToActor(nullptr);
 		GrapActor = nullptr;
@@ -95,7 +95,7 @@ void URPCollisionComponent::ResetOverlapActors()
 }
 void URPCollisionComponent::KnockBackActor(UPrimitiveComponent* HitComponent, AActor* TargetActor, float ImpulseForce)
 {
-	TScriptInterface<class ICollisionActionHandler> ActionHandler = TargetActor;
+	TScriptInterface<class ICharacterInterActionHandler> ActionHandler = TargetActor;
 	if (ActionHandler.GetInterface()) {
 		FVector ImpulseDirection = HitComponent->GetForwardVector() * ImpulseForce;
 		ActionHandler->KnockBackActor(ImpulseDirection);
@@ -108,7 +108,7 @@ void URPCollisionComponent::KnockBackPrimitiveComponent(UPrimitiveComponent* Oth
 }
 void URPCollisionComponent::GrapMoveToLocation(AActor* TargetActor, FVector Location)
 {
-	TScriptInterface<class ICollisionActionHandler> ActionHandler = TargetActor;
+	TScriptInterface<class ICharacterInterActionHandler> ActionHandler = TargetActor;
 	if (ActionHandler.GetInterface()) {
 		ActionHandler->SetMoveToLocation(Location);
 	}
@@ -123,7 +123,7 @@ void URPCollisionComponent::GrapActorToOwner(AActor* TargetActor, UPrimitiveComp
 		GrapActor.Get()->AttachToActor(GetOwner(), FAttachmentTransformRules::KeepWorldTransform);
 	}
 	else{
-		TScriptInterface<class ICollisionActionHandler> ActionHandler = GrapActor.Get();
+		TScriptInterface<class ICharacterInterActionHandler> ActionHandler = GrapActor.Get();
 		if (ActionHandler.GetInterface()) {
 			ActionHandler->SetMoveToActor(GetOwner());
 		}

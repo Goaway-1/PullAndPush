@@ -1,6 +1,7 @@
 #include "RocketPunch/RocketPunch.h"
 #include "RocketPunch/RPMovementComponent.h"
 #include "RocketPunch/RPCollisionComponent.h"
+#include "Interface/CharacterStatHandler.h"
 #include "Components/SphereComponent.h"
 #include "Components/StaticMeshComponent.h"
 #include "Kismet/KismetMathLibrary.h"
@@ -48,26 +49,25 @@ void ARocketPunch::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 }
-void ARocketPunch::ReadyToLaunch(const float& InForceAlpha, AActor* InCasterActor, const bool IsPush, const FVector& InVec, const FRotator& InRot, const float& AlphaSpeed, const float& AlphaRange, const float& AlphaSize)
+void ARocketPunch::ReadyToLaunch(const float& InForceAlpha, AActor* InCasterActor, const bool IsPush, const FVector& InVec, const FRotator& InRot, const float& DeltaSpeed, const float& DeltaRange, const float& DeltaScale)
 {
 	if (!HasAuthority()) 
 	{
-		ServerReadyToLaunch(InForceAlpha, InCasterActor, IsPush, InVec, InRot, AlphaSpeed, AlphaRange, AlphaSize);
+		ServerReadyToLaunch(InForceAlpha, InCasterActor, IsPush, InVec, InRot, DeltaSpeed, DeltaRange, DeltaScale);
 	}
 	else 
 	{
 		if (!CasterActor.IsValid()) CasterActor = InCasterActor;
 
-		// @TODO : 스케일 조정 OnRep 써서 하면ㄷ ㅙ
 		// Set Scale of Visual & Collision
-		CurrentScale = FVector(AlphaSize);
-		CollisionComp->SetWorldScale3D(FVector(AlphaSize));
-		StaticMeshComp->SetWorldScale3D(FVector(AlphaSize));
+		CurrentScale = FVector(DeltaScale);
+		CollisionComp->SetWorldScale3D(CurrentScale);
+		StaticMeshComp->SetWorldScale3D(CurrentScale);
 
 		bIsPush = IsPush;
 		ForceAlpha = InForceAlpha;
-		RPMovementComponent->Launch(ForceAlpha, CasterActor.Get(), InVec, InRot, AlphaSpeed, AlphaRange);
-		PPLOG(Log, TEXT("AlphaSpeed : %f, AlphaRange : %f, AlphaSize : %f"), AlphaSpeed, AlphaRange, AlphaSize);
+		RPMovementComponent->Launch(ForceAlpha, CasterActor.Get(), InVec, InRot, DeltaSpeed, DeltaRange);
+		PPLOG(Log, TEXT("AlphaSpeed : %f, AlphaRange : %f, AlphaSize : %s"), DeltaSpeed, DeltaRange, *CurrentScale.ToString());
 
 		// Setting Color of RP
 		// @TODO : 추후 색의 차이가 아닌, 새로운 매시로 구분하고 함수로 제작
@@ -80,9 +80,9 @@ void ARocketPunch::ReadyToLaunch(const float& InForceAlpha, AActor* InCasterActo
 		StaticMeshComp->SetMaterial(0, CurrentMaterial.Get());
 	}
 }
-void ARocketPunch::ServerReadyToLaunch_Implementation(const float& InForceAlpha, AActor* InCasterActor, const bool IsPush, const FVector& InVec, const FRotator& InRot, const float& AlphaSpeed, const float& AlphaRange, const float& AlphaSize)
+void ARocketPunch::ServerReadyToLaunch_Implementation(const float& InForceAlpha, AActor* InCasterActor, const bool IsPush, const FVector& InVec, const FRotator& InRot, const float& DeltaSpeed, const float& DeltaRange, const float& DeltaScale)
 {
-	ReadyToLaunch(InForceAlpha, InCasterActor, IsPush, InVec, InRot, AlphaSpeed, AlphaRange, AlphaSize);
+	ReadyToLaunch(InForceAlpha, InCasterActor, IsPush, InVec, InRot, DeltaSpeed, DeltaRange, DeltaScale);
 }
 void ARocketPunch::IsOutOfUse(const bool& Val)
 {

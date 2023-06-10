@@ -4,15 +4,15 @@
 
 #include "CoreMinimal.h"
 #include "UObject/Interface.h"
-#include "PickupActionHandler.generated.h"
+#include "CharacterPickupHandler.generated.h"
 
 UINTERFACE(MinimalAPI)
-class UPickupActionHandler : public UInterface
+class UCharacterPickupHandler : public UInterface
 {
 	GENERATED_BODY()
 };
 
-class PULLANDPUSH_API IPickupActionHandler
+class PULLANDPUSH_API ICharacterPickupHandler
 {
 	GENERATED_BODY()
 

@@ -4,7 +4,7 @@
 
 #include "PullAndPush.h"
 #include "Components/ActorComponent.h"
-#include "Interface/PickupActionHandler.h"
+#include "Interface/CharacterPickupHandler.h"
 #include "ItemUsageComponent.generated.h"
 
 /**
@@ -15,7 +15,7 @@
 DECLARE_DELEGATE_TwoParams(FOnItemWidgetUpdate, class UDataAsset*, const bool)
 
 UCLASS(ClassGroup = (Custom), meta = (BlueprintSpawnableComponent))
-class PULLANDPUSH_API UItemUsageComponent : public UActorComponent, public IPickupActionHandler
+class PULLANDPUSH_API UItemUsageComponent : public UActorComponent, public ICharacterPickupHandler
 {
 	GENERATED_BODY()
 

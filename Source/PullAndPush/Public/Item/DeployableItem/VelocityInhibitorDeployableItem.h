@@ -4,30 +4,23 @@
 
 #include "CoreMinimal.h"
 #include "Item/DeployableItem/DeployableItem.h"
-#include "BlackHoleItem.generated.h"
+#include "GameData/CharacterStat.h"
+#include "VelocityInhibitorDeployableItem.generated.h"
 
 /**
  * 
  */
 UCLASS()
-class PULLANDPUSH_API ABlackHoleItem : public ADeployableItem
+class PULLANDPUSH_API AVelocityInhibitorDeployableItem : public ADeployableItem
 {
 	GENERATED_BODY()
-
 public:
-	ABlackHoleItem();
+	AVelocityInhibitorDeployableItem();
 
 protected:
 	virtual void BeginPlay() override;
 
-public:
-	virtual void Tick(float DeltaTime) override;
-
-protected:
 	virtual void ActiveDeployableItem() override;
-
-	// Set Acitve Black Hole
-	void ActivateBlackHole();
 
 	UFUNCTION()
 	void AddOverlapActors(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
@@ -36,14 +29,9 @@ protected:
 	void DeleteOverlapActors(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex);
 
 protected:
-	UPROPERTY(EditAnywhere, Category="Item | BlackHole")
-	TObjectPtr<class USphereComponent> SphereComp;
+	UPROPERTY(EditDefaultsOnly, Category = "DeployableItem | VelocityInhibitor")
+	TObjectPtr<class UBoxComponent> CollisionComp;
 
-	UPROPERTY(VisibleAnywhere, Category = "Item | BlackHole")
-	TArray<TWeakObjectPtr<UPrimitiveComponent>> OverlapComponent;
-
-	UPROPERTY(EditAnywhere, Category = "Item | BlackHole")
-	float ForceStength;
-
-	uint8 bIsBlackHoleActived:1;
+	UPROPERTY(EditDefaultsOnly, Category = "DeployableItem | Stat")
+	FCharacterStatModifier CharacterStatModifier;
 };

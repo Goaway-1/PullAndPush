@@ -4,7 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Item/ItemData/ItemData.h"
-#include "Interface/CharacterPropertyHandler.h"
+#include "Interface/CharacterStatHandler.h"
 #include "PassiveItemData.generated.h"
 
 UCLASS()
@@ -44,7 +44,7 @@ protected:
 	uint8 bIsItemActivated : 1;
 
 	UPROPERTY()
-	TScriptInterface<class ICharacterPropertyHandler> CharacterPropertyHandler;
+	TScriptInterface<class ICharacterStatHandler> CharacterPropertyHandler;
 
 	// Use with ItemWidget
 	FTimerHandle ItemTimerHandler;
