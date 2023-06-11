@@ -19,6 +19,7 @@ public:
 	virtual void PostInitializeComponents() override;
 	virtual void Tick(float DeltaTime) override;
 
+#pragma region TRANSFORM
 protected:
 	UPROPERTY(EditDefaultsOnly)
 	TObjectPtr<class USceneComponent> DefaultSceneComp;
@@ -31,6 +32,8 @@ protected:
 
 	UPROPERTY(EditDefaultsOnly)
 	TObjectPtr<class UTimelineComponent> RotationTimelineComp;
+
+	void SetInitTimeline();
 
 	// Update 'Static Mesh' Location
 	void InterpolateLocation(float DeltaTime);
@@ -65,6 +68,28 @@ protected:
 
 	FOnTimelineVector SlideLocationInterpFunction;
 	FOnTimelineVector SlideRotationInterpFunction;
-	const FName CollisionName = FName("Gimmick");
+	const FName MeshCollisionName = FName("Gimmick");
 	const float InterpolationSpeed = 5.0f;
+#pragma endregion
+
+#pragma region HIT
+private:
+	void SetOnHitEvent();
+
+protected:
+	UPROPERTY(EditDefaultsOnly)
+	TObjectPtr<class UCapsuleComponent> CollisionComp;
+
+	UFUNCTION()
+	void OnHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComponent, FVector NormalImpulse, const FHitResult& Hit);
+
+	UPROPERTY(EditAnywhere, Category = "Gimmick")
+	float ImpulseForce;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Gimmick")
+	uint8 bIsCanHitEvent:1;
+
+	const FName CollisionName = TEXT("BlockAllDynamic");
+#pragma endregion
+
 };

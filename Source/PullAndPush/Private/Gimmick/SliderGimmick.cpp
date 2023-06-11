@@ -1,9 +1,11 @@
 #include "Gimmick/SliderGimmick.h"
+#include "Components/CapsuleComponent.h"
+#include "Interface/CharacterInterActionHandler.h"
 #include "Net/UnrealNetwork.h"
 
 ASliderGimmick::ASliderGimmick()
 	:
-	MovementStartTime(0.1f)
+	MovementStartTime(0.1f), ImpulseForce(100000.f), bIsCanHitEvent(0)
 {
 	PrimaryActorTick.bCanEverTick = true;
 	bReplicates = true;
@@ -11,6 +13,7 @@ ASliderGimmick::ASliderGimmick()
 	NetUpdateFrequency = 60.f;
 
 	DefaultSceneComp = CreateDefaultSubobject<USceneComponent>(TEXT("DefaultSceneComp"));
+	CollisionComp = CreateDefaultSubobject<UCapsuleComponent>(TEXT("CollisionComp"));
 	StaticMeshComp = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("StaticMeshComp"));
 	LocationTimelineComp = CreateDefaultSubobject<UTimelineComponent>(TEXT("LocationTimelineComp"));
 	RotationTimelineComp = CreateDefaultSubobject<UTimelineComponent>(TEXT("RotationTimelineComp"));
@@ -18,13 +21,33 @@ ASliderGimmick::ASliderGimmick()
 	SetRootComponent(DefaultSceneComp);
 	StaticMeshComp->SetupAttachment(GetRootComponent());
 	StaticMeshComp->SetGenerateOverlapEvents(false);
-	StaticMeshComp->SetCollisionProfileName(CollisionName);
-	StaticMeshComp->SetIsReplicated(true);						
+	StaticMeshComp->SetCollisionProfileName(MeshCollisionName);
+	StaticMeshComp->SetIsReplicated(true);
+
+	CollisionComp->SetupAttachment(StaticMeshComp);
+	CollisionComp->SetSimulatePhysics(false);
+	CollisionComp->SetEnableGravity(false);
+	CollisionComp->SetGenerateOverlapEvents(false);
+	CollisionComp->SetNotifyRigidBodyCollision(false);
+	CollisionComp->SetCollisionProfileName(CollisionName);
+	CollisionComp->bHiddenInGame = true;
 }
 void ASliderGimmick::PostInitializeComponents()
 {
 	Super::PostInitializeComponents();
 
+	SetInitTimeline();
+	SetOnHitEvent();
+}
+void ASliderGimmick::Tick(float DeltaTime)
+{
+	Super::Tick(DeltaTime);
+
+	InterpolateLocation(DeltaTime);
+	InterpolateRotator(DeltaTime);
+}
+void ASliderGimmick::SetInitTimeline()
+{
 	if (!LocationTimelineComp || !RotationTimelineComp) return;
 
 	// Set Location & Rotation Slide
@@ -54,13 +77,6 @@ void ASliderGimmick::PostInitializeComponents()
 			GetWorld()->GetTimerManager().SetTimer(TimelineHanlder, this, &ASliderGimmick::StartMovement, MovementStartTime, false);
 		}
 	}
-}
-void ASliderGimmick::Tick(float DeltaTime)
-{
-	Super::Tick(DeltaTime);
-
-	InterpolateLocation(DeltaTime);
-	InterpolateRotator(DeltaTime);
 }
 void ASliderGimmick::InterpolateLocation(float DeltaTime)
 {
@@ -97,6 +113,24 @@ void ASliderGimmick::StartMovement()
 {
 	if(LocationSlideCurve != nullptr) LocationTimelineComp->Play();
 	if(RotationSlideCurve != nullptr) RotationTimelineComp->Play();
+}
+void ASliderGimmick::SetOnHitEvent()
+{
+	if (bIsCanHitEvent)
+	{
+		CollisionComp->SetNotifyRigidBodyCollision(true);
+		CollisionComp->bHiddenInGame = false;
+		CollisionComp->OnComponentHit.AddDynamic(this, &ASliderGimmick::OnHit);
+	}
+}
+void ASliderGimmick::OnHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComponent, FVector NormalImpulse, const FHitResult& Hit)
+{
+	TScriptInterface<class ICharacterInterActionHandler> ActionHandler = OtherActor;
+	if (ActionHandler.GetInterface()) {
+		PPLOG(Warning,TEXT("Hit"));
+		FVector ImpulseDirection = CollisionComp->GetForwardVector() * ImpulseForce;
+		ActionHandler->KnockBackActor(ImpulseDirection);
+	}
 }
 void ASliderGimmick::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
 {
