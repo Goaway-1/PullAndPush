@@ -26,25 +26,45 @@ protected:
 	UPROPERTY(EditDefaultsOnly)
 	TObjectPtr<class UStaticMeshComponent> StaticMeshComp;
 
-	UPROPERTY(EditDefaultsOnly, Category = "Gimmick")
-	TObjectPtr<class UTimelineComponent> TimelineComp;
+	UPROPERTY(EditDefaultsOnly)
+	TObjectPtr<class UTimelineComponent> LocationTimelineComp;
+
+	UPROPERTY(EditDefaultsOnly)
+	TObjectPtr<class UTimelineComponent> RotationTimelineComp;
 
 	// Update 'Static Mesh' Location
-	UFUNCTION()
 	void InterpolateLocation(float DeltaTime);
+	void InterpolateRotator(float DeltaTime);
 
 private:
 	UFUNCTION(Server, Reliable)
 	void ServerUpdateLocation(const FVector NewLocation);
 
+	UFUNCTION(Server, Reliable)
+	void ServerUpdateRotation(const FVector NewRotator);
+
+	UFUNCTION()
+	void StartMovement();
+
 protected:
 	UPROPERTY(EditDefaultsOnly, Category = "Gimmick")
-	TObjectPtr<UCurveVector> SlideCurve;
+	TObjectPtr<UCurveVector> LocationSlideCurve;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Gimmick")
+	TObjectPtr<UCurveVector> RotationSlideCurve;
+
+	// Time to start Timeline
+	UPROPERTY(EditAnywhere, Category = "Gimmick")
+	float MovementStartTime;
 
 	UPROPERTY(Replicated)
 	FVector PredictedLocation;
 
-	FOnTimelineVector SlideInterpFunction;
+	UPROPERTY(Replicated)
+	FRotator PredictedRotation;
+
+	FOnTimelineVector SlideLocationInterpFunction;
+	FOnTimelineVector SlideRotationInterpFunction;
 	const FName CollisionName = FName("Gimmick");
-	float InterpolationSpeed = 5.0f;
+	const float InterpolationSpeed = 5.0f;
 };
