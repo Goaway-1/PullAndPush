@@ -32,7 +32,7 @@ void AObstacleMover::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 
 	InterpolateLocation(DeltaTime);
-	InterpolateRotator(DeltaTime);
+	InterpolateRotation(DeltaTime);
 }
 void AObstacleMover::SetInitTimeline()
 {
@@ -76,7 +76,7 @@ void AObstacleMover::InterpolateLocation(float DeltaTime)
 		StaticMeshComp->SetRelativeLocation(NewLocation);
 	}
 }
-void AObstacleMover::InterpolateRotator(float DeltaTime)
+void AObstacleMover::InterpolateRotation(float DeltaTime)
 {
 	if (RotationSlideCurve != nullptr)
 	{

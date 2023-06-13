@@ -36,7 +36,7 @@ protected:
 
 	// Update 'Static Mesh' Location
 	void InterpolateLocation(float DeltaTime);
-	void InterpolateRotator(float DeltaTime);
+	void InterpolateRotation(float DeltaTime);
 
 private:
 	UFUNCTION(Server, Reliable)
