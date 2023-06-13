@@ -23,14 +23,4 @@ protected:
 
 	UPROPERTY(EditAnywhere)
 	TObjectPtr<class UPhysicsConstraintComponent> PhysicsConstraintComp;
-
-
-	UPROPERTY(EditDefaultsOnly, Category = "Gimmick")
-	FName ConstraintComponentName = "None";
-
-	UPROPERTY(EditAnywhere, Category = "Gimmick")
-	float SwingLimitAngle;
-
-	UPROPERTY(EditAnywhere, Category = "Gimmick")
-	float AngularDriveStrength;
 };
