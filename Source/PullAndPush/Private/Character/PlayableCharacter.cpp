@@ -82,6 +82,17 @@ void APlayableCharacter::Tick(float DeltaTime)
 
 	UpdateAimPitch();
 }
+void APlayableCharacter::FellOutOfWorld(const UDamageType& dmgType)
+{
+	/** Notify GameMode that the player is dropped */
+	APlayableController* NewPlayableController = Cast<APlayableController>(GetController());
+	if (NewPlayableController)
+	{
+		NewPlayableController->PlayerFellOutOfWorld();
+	}
+
+	Super::FellOutOfWorld(dmgType);
+}
 void APlayableCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);

@@ -4,6 +4,7 @@
 #include "Player/PlayableController.h"
 #include "Blueprint/UserWidget.h"
 #include "Widget/MainHUD.h"
+#include "Game/InGameMode.h"
 
 APlayableController::APlayableController() {
 
@@ -12,7 +13,11 @@ void APlayableController::BeginPlay()
 {
 	Super::BeginPlay();
 
-	MainHUD = Cast<AMainHUD>(GetHUD());
+ 	MainHUD = Cast<AMainHUD>(GetHUD());
+	if (HasAuthority()) 
+	{
+		CurGameMode = Cast<AInGameMode>(GetWorld()->GetAuthGameMode());
+	}
 }
 void APlayableController::UpdateItemUI(UDataAsset* CurrentItem, const bool IsPassvieItem)
 {
@@ -34,5 +39,12 @@ void APlayableController::UpdateStatUI(const FString& StatName, UMaterialInterfa
 	if (MainHUD)
 	{
 		MainHUD->UpdateStatUI(StatName,Material);
+	}
+}
+void APlayableController::PlayerFellOutOfWorld()
+{
+	if (CurGameMode)
+	{
+		CurGameMode->PlayerFellOutOfWorld();
 	}
 }

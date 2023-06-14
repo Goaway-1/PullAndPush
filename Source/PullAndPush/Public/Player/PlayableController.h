@@ -6,9 +6,6 @@
 #include "GameFramework/PlayerController.h"
 #include "PlayableController.generated.h"
 
-/**
- * 
- */
 UCLASS()
 class PULLANDPUSH_API APlayableController : public APlayerController
 {
@@ -19,6 +16,7 @@ public:
 protected:
 	virtual void BeginPlay() override;
 
+#pragma region HUD
 public:
 	// For Item
 	UFUNCTION()
@@ -33,4 +31,15 @@ public:
 private:
 	UPROPERTY()
 	TObjectPtr<class AMainHUD> MainHUD;
+#pragma endregion
+
+#pragma region GAMEMODE
+public:
+	void PlayerFellOutOfWorld(); 
+
+private:
+	UPROPERTY(VisibleAnywhere)
+	TObjectPtr<class AInGameMode> CurGameMode;
+#pragma endregion
+
 };
