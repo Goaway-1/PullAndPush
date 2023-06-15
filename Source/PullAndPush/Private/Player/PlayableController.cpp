@@ -3,7 +3,7 @@
 
 #include "Player/PlayableController.h"
 #include "Blueprint/UserWidget.h"
-#include "Widget/MainHUD.h"
+#include "Widget/InGameHUD.h"
 #include "Game/InGameMode.h"
 
 APlayableController::APlayableController() {
@@ -13,7 +13,7 @@ void APlayableController::BeginPlay()
 {
 	Super::BeginPlay();
 
- 	MainHUD = Cast<AMainHUD>(GetHUD());
+ 	InGameHUD = Cast<AInGameHUD>(GetHUD());
 	if (HasAuthority()) 
 	{
 		CurGameMode = Cast<AInGameMode>(GetWorld()->GetAuthGameMode());
@@ -22,23 +22,23 @@ void APlayableController::BeginPlay()
 void APlayableController::UpdateItemUI(UDataAsset* CurrentItem, const bool IsPassvieItem)
 {
 	// Set Item Widget
-	if (MainHUD)
+	if (InGameHUD)
 	{
-		MainHUD->UpdateItemUI(CurrentItem, IsPassvieItem);
+		InGameHUD->UpdateItemUI(CurrentItem, IsPassvieItem);
 	}
 }
 void APlayableController::ChangeVisibleItemInfo(bool bVisibility)
 {
-	if (MainHUD)
+	if (InGameHUD)
 	{
-		MainHUD->ChangeVisibleItemInfo(bVisibility);
+		InGameHUD->ChangeVisibleItemInfo(bVisibility);
 	}
 }
 void APlayableController::UpdateStatUI(const FString& StatName, UMaterialInterface* Material)
 {
-	if (MainHUD)
+	if (InGameHUD)
 	{
-		MainHUD->UpdateStatUI(StatName,Material);
+		InGameHUD->UpdateStatUI(StatName,Material);
 	}
 }
 void APlayableController::PlayerFellOutOfWorld()

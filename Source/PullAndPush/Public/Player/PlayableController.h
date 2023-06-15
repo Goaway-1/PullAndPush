@@ -30,7 +30,7 @@ public:
 
 private:
 	UPROPERTY()
-	TObjectPtr<class AMainHUD> MainHUD;
+	TObjectPtr<class AInGameHUD> InGameHUD;
 #pragma endregion
 
 #pragma region GAMEMODE

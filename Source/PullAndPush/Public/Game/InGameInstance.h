@@ -23,7 +23,7 @@ public:
 	/** Whether the first round has begun */
 	bool IsFirstRoundStart();
 
-	void InitSetting(int InMaxRoundCount);
+	void InitSetting(const int InMaxRoundCount);
 
 	/** Whether the all rounds are over */
 	bool IsAllRoundsFinished();
