@@ -4,7 +4,7 @@
 
 AInGameMode::AInGameMode()
 	:
-	TotalPlayerCount(2), CurrentPlayerCount(0), MaxRoundCount(2), MaxLevelCount(0)
+	TotalPlayerCount(2), CurrentPlayerCount(0), MaxRoundCount(2), MaxLevelCount(0), CurrentScore(1)
 {
 	PrimaryActorTick.bStartWithTickEnabled = false;
 	PrimaryActorTick.bCanEverTick = false;
@@ -27,8 +27,7 @@ void AInGameMode::PostLogin(APlayerController* NewPlayer)
 {
 	Super::PostLogin(NewPlayer);
 
-	// @TODO : 참가한 캐릭터 Stat 데이터 초기화
-	
+	InitPlayersScore(NewPlayer);
 
 	/** Round start when all players enter */
 	if (++CurrentPlayerCount >= TotalPlayerCount)
@@ -36,9 +35,11 @@ void AInGameMode::PostLogin(APlayerController* NewPlayer)
 		RoundStart();
 	}
 }
-void AInGameMode::PlayerFellOutOfWorld()
+void AInGameMode::PlayerFellOutOfWorld(const FString& ControllerName)
 {
-	PPLOG(Warning, TEXT("Player Fell Out Of World!"));
+	SetPlayerScore(ControllerName);
+
+	// Check Round Is End?
 	if (--CurrentPlayerCount <= 1)
 	{
 		RoundEnd();
@@ -47,12 +48,10 @@ void AInGameMode::PlayerFellOutOfWorld()
 void AInGameMode::RoundStart()
 {
 	PPLOG(Warning, TEXT("RoundStart!"));
-
-	// @TODO : 영상을 뿌리고 3,2,1 게임 시작!
 }
 void AInGameMode::RoundEnd()
 {
-	PPLOG(Warning, TEXT("RoundEnd"));
+	CalculatePlayerScore();
 
 	// Access GameInstance and Switch Level
 	if(!InGameInstance->IsAllRoundsFinished())
@@ -72,6 +71,32 @@ void AInGameMode::SwitchToNextLevel()
 void AInGameMode::AllRoundsCompleted()
 {
 	GetWorld()->ServerTravel(ResultLevelName);
+}
+void AInGameMode::InitPlayersScore(APlayerController* NewPlayer)
+{
+	PlayersScore.Add(NewPlayer->GetName(), InitialScore);
+}
+void AInGameMode::SetPlayerScore(const FString& ControllerName)
+{
+	PlayersScore[ControllerName] = CurrentScore++;
+}
+void AInGameMode::CalculatePlayerScore()
+{
+	// Give score to the characters who survive to the end
+	for (auto& Controller : PlayersScore)
+	{
+		if (Controller.Value == InitialScore)
+		{
+			Controller.Value = CurrentScore;
+			break;
+		}
+	}
+
+	// Access GameInstance and set player score
+	if (InGameInstance)
+	{
+		InGameInstance->SetPlayersScore(PlayersScore);
+	}
 }
 FString AInGameMode::GetRandomLevelName()
 {

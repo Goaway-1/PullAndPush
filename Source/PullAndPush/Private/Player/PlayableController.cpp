@@ -45,6 +45,6 @@ void APlayableController::PlayerFellOutOfWorld()
 {
 	if (CurGameMode)
 	{
-		CurGameMode->PlayerFellOutOfWorld();
+		CurGameMode->PlayerFellOutOfWorld(GetName());
 	}
 }

@@ -17,6 +17,9 @@ class PULLANDPUSH_API UInGameInstance : public UGameInstance
 public:
 	UInGameInstance();
 
+/** Round Info */
+#pragma region ROUND
+public:
 	/** Whether the first round has begun */
 	bool IsFirstRoundStart();
 
@@ -30,4 +33,22 @@ protected:
 	uint8 bIsFirstRoundStart : 1;
 	int MaxRoundCount;
 	int CurrentRoundCount;
+#pragma endregion
+
+/** Player Score */
+#pragma region PLAYERSCORE
+public:
+	void SetPlayersScore(TMap<FString, int8>& Controllers);
+
+protected:
+	/**
+	* Save Controller's Score
+	* @param	FString			Controller Name
+	* @param	int8			Score
+	*/
+	UPROPERTY()
+	TMap<FString, int8> PlayersScore;
+
+#pragma endregion
+		
 };
