@@ -43,21 +43,21 @@ private:
 private:
 	// Player Count
 	UPROPERTY(VisibleAnywhere, Category = "Data")
-	int TotalPlayerCount;								// @TODO : 로비에서 파악 후 넘겨주어야 함.
+	int8 TotalPlayerCount;								// @TODO : 로비에서 파악 후 넘겨주어야 함.
 
 	UPROPERTY(VisibleAnywhere, Category = "Data")
-	int CurrentPlayerCount;
+	int8 CurrentPlayerCount;
 
 	// Round Count used in 'GameInstance'
 	UPROPERTY(EditDefaultsOnly, Category = "Level")
-	int MaxRoundCount;
+	int8 MaxRoundCount;
 
 	UPROPERTY(VisibleAnywhere, Category = "Level")
 	TObjectPtr<class UInGameInstance> InGameInstance;
 
 	// Get Random Level 
 	UPROPERTY(EditDefaultsOnly, Category = "Level")
-	int MaxLevelCount;
+	int8 MaxLevelCount;
 
 	const FString LevelDirectoryPath = "/Game/Maps/Level";
 	const FString ResultLevelName = "/Game/Maps/ResultLevel";

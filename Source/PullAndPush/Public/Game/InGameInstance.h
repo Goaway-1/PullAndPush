@@ -23,7 +23,7 @@ public:
 	/** Whether the first round has begun */
 	bool IsFirstRoundStart();
 
-	void InitSetting(const int InMaxRoundCount);
+	void InitSetting(const int8 InMaxRoundCount);
 
 	/** Whether the all rounds are over */
 	bool IsAllRoundsFinished();
@@ -31,8 +31,8 @@ public:
 protected:
 	/** Round Info */
 	uint8 bIsFirstRoundStart : 1;
-	int MaxRoundCount;
-	int CurrentRoundCount;
+	int8 MaxRoundCount;
+	int8 CurrentRoundCount;
 #pragma endregion
 
 /** Player Score */

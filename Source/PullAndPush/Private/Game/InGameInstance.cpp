@@ -13,7 +13,7 @@ bool UInGameInstance::IsFirstRoundStart()
 {
 	return bIsFirstRoundStart;
 }
-void UInGameInstance::InitSetting(const int InMaxRoundCount)
+void UInGameInstance::InitSetting(const int8 InMaxRoundCount)
 {
 	MaxRoundCount = InMaxRoundCount;
 	bIsFirstRoundStart = true;
