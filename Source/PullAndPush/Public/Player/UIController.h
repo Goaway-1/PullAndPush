@@ -18,6 +18,16 @@ public:
 protected:
 	virtual void BeginPlay() override;
 
+private:
+	UPROPERTY(EditDefaultsOnly, Category = "Setting")
+	uint8 bIsResultController:1;
+
+#pragma region MAIN/LOBBY
+
+
+#pragma endregion
+
+#pragma region RESULT
 public:
 	void ShowResult(TMap<FString, int8>& PlayersScore);
 
@@ -27,8 +37,6 @@ private:
 
 private:
 	UPROPERTY()
-	TObjectPtr<class AResultHUD> ResultHUD;
-
-	UPROPERTY(VisibleAnywhere)
-	TObjectPtr<class AResultGameMode> ResultGameMode;
+	TWeakObjectPtr<class AResultHUD> ResultHUD;
+#pragma endregion
 };

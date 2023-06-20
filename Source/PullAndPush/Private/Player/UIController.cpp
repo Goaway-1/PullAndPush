@@ -2,6 +2,8 @@
 #include "Widget/ResultHUD.h"
 
 AUIController::AUIController() 
+	:
+	bIsResultController(0)
 {
 	bShowMouseCursor = true;			
 	bEnableClickEvents = true;
@@ -11,7 +13,10 @@ void AUIController::BeginPlay()
 {
 	Super::BeginPlay();
 
-	ResultHUD = Cast<AResultHUD>(GetHUD());
+	if(bIsResultController)
+	{
+		ResultHUD = Cast<AResultHUD>(GetHUD());
+	}
 }
 void AUIController::ShowResult(TMap<FString, int8>& PlayersScore)
 {
@@ -33,7 +38,7 @@ void AUIController::ShowResult(TMap<FString, int8>& PlayersScore)
 }
 void AUIController::ClientShowResult_Implementation(const TArray<FString>& KeyArray, const TArray<int8>& ValueArray)
 {
-	if (!ResultHUD) return;
+	if (!ResultHUD.Get()) return;
 	
 	// TArray to TMap
 	TMap<FString, int8> ScoreInfo;
@@ -43,5 +48,5 @@ void AUIController::ClientShowResult_Implementation(const TArray<FString>& KeyAr
 	}
 
 	// Show Result Score Board
-	ResultHUD->ShowResult(ScoreInfo);
+	ResultHUD.Get()->ShowResult(ScoreInfo);
 }
