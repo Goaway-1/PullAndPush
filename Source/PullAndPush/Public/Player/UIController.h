@@ -17,4 +17,18 @@ public:
 
 protected:
 	virtual void BeginPlay() override;
+
+public:
+	void ShowResult(TMap<FString, int8>& PlayersScore);
+
+private:
+	UFUNCTION(Client, Reliable)
+	void ClientShowResult(const TArray<FString>& KeyArray, const TArray<int8>& ValueArray);
+
+private:
+	UPROPERTY()
+	TObjectPtr<class AResultHUD> ResultHUD;
+
+	UPROPERTY(VisibleAnywhere)
+	TObjectPtr<class AResultGameMode> ResultGameMode;
 };

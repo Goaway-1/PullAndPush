@@ -40,6 +40,8 @@ protected:
 public:
 	void SetPlayersScore(TMap<FString, int8>& Controllers);
 
+	TMap<FString, int8>& GetPlayersScore();
+
 protected:
 	/**
 	* Save Controller's Score

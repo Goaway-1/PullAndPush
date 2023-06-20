@@ -49,15 +49,15 @@ private:
 	int8 CurrentPlayerCount;
 
 	// Round Count used in 'GameInstance'
-	UPROPERTY(EditDefaultsOnly, Category = "Level")
+	UPROPERTY(EditDefaultsOnly, Category = "Data")
 	int8 MaxRoundCount;
 
-	UPROPERTY(VisibleAnywhere, Category = "Level")
-	TObjectPtr<class UInGameInstance> InGameInstance;
-
 	// Get Random Level 
-	UPROPERTY(EditDefaultsOnly, Category = "Level")
+	UPROPERTY(EditDefaultsOnly, Category = "Data")
 	int8 MaxLevelCount;
+
+	UPROPERTY()
+	TObjectPtr<class UInGameInstance> InGameInstance;
 
 	const FString LevelDirectoryPath = "/Game/Maps/Level";
 	const FString ResultLevelName = "/Game/Maps/ResultLevel";
@@ -80,7 +80,7 @@ private:
 	* @param	int8			Score
 	*/
 	UPROPERTY()
-	TMap<FString, int8> PlayersScore;
+	TMap<FString, int8> Controllers;
 
 	int8 CurrentScore;
 	const int8 InitialScore = -1;

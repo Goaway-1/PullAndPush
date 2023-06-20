@@ -20,12 +20,6 @@ void UInGameInstance::InitSetting(const int8 InMaxRoundCount)
 }
 bool UInGameInstance::IsAllRoundsFinished()
 {
-	// @DELETE : For Log
-	for (auto PlayerScore : PlayersScore)
-	{	
-		UE_LOG(LogTemp, Warning, TEXT("%s 's Score is %d"), *PlayerScore.Key, PlayerScore.Value);
-	}
-
 	return (CurrentRoundCount++ < MaxRoundCount) ? false : true;
 }
 void UInGameInstance::SetPlayersScore(TMap<FString, int8>& Controllers)
@@ -41,4 +35,9 @@ void UInGameInstance::SetPlayersScore(TMap<FString, int8>& Controllers)
 			PlayersScore.Add(Controller.Key, Controller.Value);
 		}
 	}
+}
+
+TMap<FString, int8>& UInGameInstance::GetPlayersScore()
+{
+	return PlayersScore;
 }

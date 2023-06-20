@@ -4,7 +4,7 @@
 
 AInGameMode::AInGameMode()
 	:
-	TotalPlayerCount(2), CurrentPlayerCount(0), MaxRoundCount(2), MaxLevelCount(0), CurrentScore(1)
+	TotalPlayerCount(3), CurrentPlayerCount(0), MaxRoundCount(2), MaxLevelCount(0), CurrentScore(1)
 {
 	PrimaryActorTick.bStartWithTickEnabled = false;
 	PrimaryActorTick.bCanEverTick = false;
@@ -74,16 +74,16 @@ void AInGameMode::AllRoundsCompleted()
 }
 void AInGameMode::InitPlayersScore(APlayerController* NewPlayer)
 {
-	PlayersScore.Add(NewPlayer->GetName(), InitialScore);
+	Controllers.Add(NewPlayer->GetName(), InitialScore);
 }
 void AInGameMode::SetPlayerScore(const FString& ControllerName)
 {
-	PlayersScore[ControllerName] = CurrentScore++;
+	Controllers[ControllerName] = CurrentScore++;
 }
 void AInGameMode::CalculatePlayerScore()
 {
 	// Give score to the characters who survive to the end
-	for (auto& Controller : PlayersScore)
+	for (auto& Controller : Controllers)
 	{
 		if (Controller.Value == InitialScore)
 		{
@@ -95,7 +95,7 @@ void AInGameMode::CalculatePlayerScore()
 	// Access GameInstance and set player score
 	if (InGameInstance)
 	{
-		InGameInstance->SetPlayersScore(PlayersScore);
+		InGameInstance->SetPlayersScore(Controllers);
 	}
 }
 FString AInGameMode::GetRandomLevelName()
