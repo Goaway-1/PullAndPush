@@ -53,4 +53,16 @@ protected:
 
 #pragma endregion
 		
+
+#pragma region PLAYERCOUNT
+public:
+	void InitTotalPlayerCount();
+	void AddTotalPlayerCount();
+	FORCEINLINE int8 GetTotalPlayerCount() { return TotalPlayerCount;}
+
+private:
+	int8 TotalPlayerCount;	
+
+#pragma endregion
+
 };

@@ -24,7 +24,6 @@ private:
 
 #pragma region MAIN/LOBBY
 
-
 #pragma endregion
 
 #pragma region RESULT

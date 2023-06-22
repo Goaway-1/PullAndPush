@@ -4,17 +4,21 @@
 
 AResultGameMode::AResultGameMode()
 	:
-	TotalPlayerCount(3), CurrentPlayerCount(0)
+	TotalPlayerCount(0), CurrentPlayerCount(0)
 {
 	PrimaryActorTick.bStartWithTickEnabled = false;
 	PrimaryActorTick.bCanEverTick = false;
 }
-void AResultGameMode::StartPlay()
+void AResultGameMode::InitGame(const FString& MapName, const FString& Options, FString& ErrorMessage)
 {
-	Super::StartPlay();
+	Super::InitGame(MapName, Options, ErrorMessage);
 
 	// Set GameInstance Value
 	InGameInstance = Cast<UInGameInstance>(GetGameInstance());
+	if (InGameInstance)
+	{
+		TotalPlayerCount = InGameInstance->GetTotalPlayerCount();
+	}
 }
 void AResultGameMode::PostLogin(APlayerController* NewPlayer)
 {

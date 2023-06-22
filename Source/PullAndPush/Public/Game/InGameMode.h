@@ -17,7 +17,7 @@ class PULLANDPUSH_API AInGameMode : public AGameModeBase
 public:
 	AInGameMode();
 
-	virtual void StartPlay() override;
+	virtual void InitGame(const FString& MapName, const FString& Options, FString& ErrorMessage) override;
 	virtual void PostLogin(APlayerController* NewPlayer) override;
 
 public:
@@ -42,10 +42,7 @@ private:
 
 private:
 	// Player Count
-	UPROPERTY(VisibleAnywhere, Category = "Data")
-	int8 TotalPlayerCount;								// @TODO : 로비에서 파악 후 넘겨주어야 함.
-
-	UPROPERTY(VisibleAnywhere, Category = "Data")
+	int8 TotalPlayerCount;
 	int8 CurrentPlayerCount;
 
 	// Round Count used in 'GameInstance'

@@ -5,7 +5,7 @@
 
 UInGameInstance::UInGameInstance()
 	:
-	bIsFirstRoundStart(0), MaxRoundCount(0), CurrentRoundCount(1)
+	bIsFirstRoundStart(0), MaxRoundCount(0), CurrentRoundCount(1), TotalPlayerCount(0)
 {
 
 }
@@ -36,8 +36,15 @@ void UInGameInstance::SetPlayersScore(TMap<FString, int8>& Controllers)
 		}
 	}
 }
-
 TMap<FString, int8>& UInGameInstance::GetPlayersScore()
 {
 	return PlayersScore;
+}
+void UInGameInstance::InitTotalPlayerCount()
+{
+	TotalPlayerCount = 0;
+}
+void UInGameInstance::AddTotalPlayerCount()
+{
+	++TotalPlayerCount;
 }

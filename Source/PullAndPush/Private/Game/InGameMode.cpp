@@ -4,14 +4,14 @@
 
 AInGameMode::AInGameMode()
 	:
-	TotalPlayerCount(3), CurrentPlayerCount(0), MaxRoundCount(2), MaxLevelCount(0), CurrentScore(1)
+	TotalPlayerCount(0), CurrentPlayerCount(0), MaxRoundCount(2), MaxLevelCount(0), CurrentScore(1)
 {
 	PrimaryActorTick.bStartWithTickEnabled = false;
 	PrimaryActorTick.bCanEverTick = false;
 }
-void AInGameMode::StartPlay()
+void AInGameMode::InitGame(const FString& MapName, const FString& Options, FString& ErrorMessage)
 {
-	Super::StartPlay();
+	Super::InitGame(MapName, Options, ErrorMessage);
 
 	// Set GameInstance Value
 	InGameInstance = Cast<UInGameInstance>(GetGameInstance());
@@ -21,6 +21,9 @@ void AInGameMode::StartPlay()
 		{
 			InGameInstance->InitSetting(MaxRoundCount);
 		}
+
+		// Set total player count
+		TotalPlayerCount = InGameInstance->GetTotalPlayerCount();
 	}
 }
 void AInGameMode::PostLogin(APlayerController* NewPlayer)

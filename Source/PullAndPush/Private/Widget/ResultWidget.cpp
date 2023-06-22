@@ -31,8 +31,6 @@ void UResultWidget::OnGotoMainClicked()
     APlayerController* PlayerController = GetOwningPlayer();
     if (PlayerController)
     {
-        // @ISSUE : 서버 이동시 클라이언트도 동시에 이동하는 이슈
-        PlayerController->ClientTravel("MainLevel", ETravelType::TRAVEL_Absolute);
-        //UGameplayStatics::OpenLevel(GetWorld(), "MainLevel");
+        UGameplayStatics::OpenLevel(this, "MainLevel");
     }
 }

@@ -1,5 +1,6 @@
 #include "Player/UIController.h"
 #include "Widget/ResultHUD.h"
+#include "Kismet/GameplayStatics.h"	
 
 AUIController::AUIController() 
 	:
