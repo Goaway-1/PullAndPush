@@ -1,8 +1,6 @@
-// Fill out your copyright notice in the Description page of Project Settings.
-
-
 #include "Widget/LobbyWidget.h"
 #include "Components/Button.h"
+#include "Game/InGameInstance.h"
 
 void ULobbyWidget::NativeConstruct()
 {
@@ -12,5 +10,6 @@ void ULobbyWidget::NativeConstruct()
 }
 void ULobbyWidget::StartGame()
 {
-    GetWorld()->ServerTravel("/Game/Maps/Level1");
+    UInGameInstance* GameInstance = Cast<UInGameInstance>(GetGameInstance());
+    GameInstance->TravelLevel(ELevelType::ELT_InGame);
 }

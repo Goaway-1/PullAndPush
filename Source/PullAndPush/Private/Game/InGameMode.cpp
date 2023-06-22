@@ -4,7 +4,7 @@
 
 AInGameMode::AInGameMode()
 	:
-	TotalPlayerCount(0), CurrentPlayerCount(0), MaxRoundCount(2), MaxLevelCount(0), CurrentScore(1)
+	TotalPlayerCount(0), CurrentPlayerCount(0), CurrentScore(1)
 {
 	PrimaryActorTick.bStartWithTickEnabled = false;
 	PrimaryActorTick.bCanEverTick = false;
@@ -13,16 +13,10 @@ void AInGameMode::InitGame(const FString& MapName, const FString& Options, FStri
 {
 	Super::InitGame(MapName, Options, ErrorMessage);
 
-	// Set GameInstance Value
+	// Set total player count
 	InGameInstance = Cast<UInGameInstance>(GetGameInstance());
 	if (InGameInstance)
 	{
-		if (!InGameInstance->IsFirstRoundStart())
-		{
-			InGameInstance->InitSetting(MaxRoundCount);
-		}
-
-		// Set total player count
 		TotalPlayerCount = InGameInstance->GetTotalPlayerCount();
 	}
 }
@@ -68,12 +62,11 @@ void AInGameMode::RoundEnd()
 }
 void AInGameMode::SwitchToNextLevel()
 {
-	FString NextLevelName = GetRandomLevelName();
-	GetWorld()->ServerTravel(NextLevelName);
+	InGameInstance->TravelLevel(ELevelType::ELT_InGame);
 }
 void AInGameMode::AllRoundsCompleted()
 {
-	GetWorld()->ServerTravel(ResultLevelName);
+	InGameInstance->TravelLevel(ELevelType::ELT_Result);
 }
 void AInGameMode::InitPlayersScore(APlayerController* NewPlayer)
 {
@@ -100,10 +93,4 @@ void AInGameMode::CalculatePlayerScore()
 	{
 		InGameInstance->SetPlayersScore(Controllers);
 	}
-}
-FString AInGameMode::GetRandomLevelName()
-{
-	int LevelIdx = FMath::RandRange(1, MaxLevelCount);
-	FString LevelName = LevelDirectoryPath + FString::FromInt(LevelIdx);
-	return LevelName;
 }

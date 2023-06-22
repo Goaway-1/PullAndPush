@@ -1,26 +1,20 @@
-// Fill out your copyright notice in the Description page of Project Settings.
-
-
 #include "Game/InGameInstance.h"
+#include "Kismet/GameplayStatics.h"
+#include "Engine/AssetManager.h"
 
 UInGameInstance::UInGameInstance()
-	:
-	bIsFirstRoundStart(0), MaxRoundCount(0), CurrentRoundCount(1), TotalPlayerCount(0)
 {
-
-}
-bool UInGameInstance::IsFirstRoundStart()
-{
-	return bIsFirstRoundStart;
-}
-void UInGameInstance::InitSetting(const int8 InMaxRoundCount)
-{
-	MaxRoundCount = InMaxRoundCount;
-	bIsFirstRoundStart = true;
+	ResetData();
 }
 bool UInGameInstance::IsAllRoundsFinished()
 {
 	return (CurrentRoundCount++ < MaxRoundCount) ? false : true;
+}
+void UInGameInstance::ResetData()
+{
+	MaxRoundCount = 0;
+	CurrentRoundCount = 1;
+	TotalPlayerCount = 0;
 }
 void UInGameInstance::SetPlayersScore(TMap<FString, int8>& Controllers)
 {
@@ -39,6 +33,49 @@ void UInGameInstance::SetPlayersScore(TMap<FString, int8>& Controllers)
 TMap<FString, int8>& UInGameInstance::GetPlayersScore()
 {
 	return PlayersScore;
+}
+void UInGameInstance::TravelLevel(ELevelType LevelType)
+{
+	if (LevelType != ELevelType::ELT_Main)
+	{
+		GetWorld()->ServerTravel(GetLevelPathOfEnum(LevelType));
+	}
+	else
+	{
+		ResetData();
+		UGameplayStatics::OpenLevel(this, MainLevelName);
+	}
+}
+FString UInGameInstance::GetRandomLevelName()
+{
+	// Get Random Level used by AssetManager
+	UAssetManager& Manager = UAssetManager::Get();
+	TArray<FPrimaryAssetId> Assets;
+	Manager.GetPrimaryAssetIdList(TEXT("Map"), Assets);
+	ensure(0 < Assets.Num());
+
+	FString AssetName;
+	if (Assets.Num() >= 1)
+	{
+		int32 RandomIndex = FMath::RandRange(0, Assets.Num() - 1);
+		FSoftObjectPtr AssetPtr(Manager.GetPrimaryAssetPath(Assets[RandomIndex]));
+		AssetName = LevelDirectoryPath + AssetPtr.GetAssetName();
+	}
+
+	return AssetName;
+}
+FString UInGameInstance::GetLevelPathOfEnum(ELevelType LevelType)
+{
+	switch (LevelType)
+	{
+	case ELevelType::ELT_Lobby:
+		return LobbyLevelName;
+	case ELevelType::ELT_InGame:
+		return GetRandomLevelName();
+	case ELevelType::ELT_Result:
+		return ResultLevelName;
+	}
+	return FString();
 }
 void UInGameInstance::InitTotalPlayerCount()
 {

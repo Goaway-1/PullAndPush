@@ -2,7 +2,7 @@
 #include "Widget/ScoreBoardWidget.h"
 #include "Components/VerticalBox.h"
 #include "Components/Button.h"
-#include "Kismet/GameplayStatics.h"
+#include "Game/InGameInstance.h"
 
 void UResultWidget::NativeConstruct()
 {
@@ -28,9 +28,6 @@ void UResultWidget::SetScoreBoard(TMap<FString, int8>& ScoreInfo)
 }
 void UResultWidget::OnGotoMainClicked()
 {
-    APlayerController* PlayerController = GetOwningPlayer();
-    if (PlayerController)
-    {
-        UGameplayStatics::OpenLevel(this, "MainLevel");
-    }
+    UInGameInstance* GameInstance = Cast<UInGameInstance>(GetGameInstance());
+    GameInstance->TravelLevel(ELevelType::ELT_Main);
 }

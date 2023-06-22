@@ -6,6 +6,16 @@
 #include "Engine/GameInstance.h"
 #include "InGameInstance.generated.h"
 
+UENUM(BlueprintType)
+enum class ELevelType : uint8
+{
+	None	= 0	UMETA(Hidden),
+	ELT_Main	UMETA(DisplayName = "Main"),
+	ELT_Lobby   UMETA(DisplayName = "Lobby"),
+	ELT_InGame	UMETA(DisplayName = "InGame"),
+	ELT_Result	UMETA(DisplayName = "Result")
+};
+
 /**
  * Store information that must be maintained when levels change
  */
@@ -17,32 +27,39 @@ class PULLANDPUSH_API UInGameInstance : public UGameInstance
 public:
 	UInGameInstance();
 
+
 /** Round Info */
 #pragma region ROUND
 public:
-	/** Whether the first round has begun */
-	bool IsFirstRoundStart();
-
-	void InitSetting(const int8 InMaxRoundCount);
-
 	/** Whether the all rounds are over */
 	bool IsAllRoundsFinished();
 
-protected:
+private:
+	void ResetData();
+
+private:
 	/** Round Info */
-	uint8 bIsFirstRoundStart : 1;
+	UPROPERTY(EditDefaultsOnly, Category = "Game | Round")
 	int8 MaxRoundCount;
+
 	int8 CurrentRoundCount;
 #pragma endregion
 
-/** Player Score */
-#pragma region PLAYERSCORE
+/** Player Count & Score */
+#pragma region PLAYER
 public:
-	void SetPlayersScore(TMap<FString, int8>& Controllers);
+	// Count
+	void InitTotalPlayerCount();
+	void AddTotalPlayerCount();
+	FORCEINLINE int8 GetTotalPlayerCount() { return TotalPlayerCount; }
 
+	// Score
+	void SetPlayersScore(TMap<FString, int8>& Controllers);
 	TMap<FString, int8>& GetPlayersScore();
 
-protected:
+private:
+	int8 TotalPlayerCount;
+
 	/**
 	* Save Controller's Score
 	* @param	FString			Controller Name
@@ -52,17 +69,22 @@ protected:
 	TMap<FString, int8> PlayersScore;
 
 #pragma endregion
-		
 
-#pragma region PLAYERCOUNT
+#pragma region LEVEL
 public:
-	void InitTotalPlayerCount();
-	void AddTotalPlayerCount();
-	FORCEINLINE int8 GetTotalPlayerCount() { return TotalPlayerCount;}
+	void TravelLevel(ELevelType LevelType);
 
 private:
-	int8 TotalPlayerCount;	
+	/** Randomly gets names among InGame's levels */
+	FString GetRandomLevelName();
 
+	/** Get correct level path of an enum */
+	FString GetLevelPathOfEnum(ELevelType LevelType);
+private:
+	const FString LevelDirectoryPath = "/Game/Maps/InGame/";
+	FName MainLevelName = "MainLevel";
+	const FString LobbyLevelName = "/Game/Maps/LobbyLevel";
+	const FString ResultLevelName = "/Game/Maps/ResultLevel";
 #pragma endregion
 
 };
