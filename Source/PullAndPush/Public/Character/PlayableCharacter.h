@@ -32,6 +32,8 @@ public:
 protected:
 	virtual void BeginPlay() override;
 
+	virtual void FellOutOfWorld(const class UDamageType& dmgType) override;
+
 	UPROPERTY(EditDefaultsOnly, Category = "Components")
 	TObjectPtr<USpringArmComponent> SpringArmComp;
 
@@ -68,6 +70,7 @@ private:
 	UFUNCTION(Server, Reliable)
 	void ServerActiveMovementSpeed(const float InSpeed, const float InJump);
 
+	UPROPERTY()
 	TObjectPtr<class APlayableController> PlayableController;
 
 private:
@@ -213,5 +216,4 @@ protected:
 	bool IsCanMove();
 	bool IsCanAttack();
 #pragma endregion
-
 };
