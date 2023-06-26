@@ -5,6 +5,7 @@
 #include "PullAndPush.h"
 #include "GameFramework/Actor.h"
 #include "GameFramework/ProjectileMovementComponent.h"
+#include "Components/SphereComponent.h"
 #include "DeployableItem.generated.h"
 
 UCLASS()
@@ -23,7 +24,7 @@ protected:
 
 protected:
 	UPROPERTY(VisibleAnywhere, Category = "DeployableItem")
-	TObjectPtr<class UStaticMeshComponent> MeshComp;
+	TObjectPtr<class USphereComponent> CollisionComp;
 
 	const FName CollisionName = "PhysicsActor";
 

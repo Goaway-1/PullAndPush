@@ -4,12 +4,12 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
-#include "Item/DeployableItem/DeployableItem.h"
+#include "Item/DeployableItem/DeployableStaticMeshItem.h"
 #include "GameData/CharacterStat.h"
 #include "BombDeployableItem.generated.h"
 
 UCLASS()
-class PULLANDPUSH_API ABombDeployableItem : public ADeployableItem
+class PULLANDPUSH_API ABombDeployableItem : public ADeployableStaticMeshItem
 {
 	GENERATED_BODY()
 	

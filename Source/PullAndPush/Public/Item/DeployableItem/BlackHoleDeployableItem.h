@@ -3,14 +3,14 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "Item/DeployableItem/DeployableItem.h"
+#include "Item/DeployableItem/DeployableStaticMeshItem.h"
 #include "BlackHoleDeployableItem.generated.h"
 
 /**
  * 
  */
 UCLASS()
-class PULLANDPUSH_API ABlackHoleDeployableItem : public ADeployableItem
+class PULLANDPUSH_API ABlackHoleDeployableItem : public ADeployableStaticMeshItem
 {
 	GENERATED_BODY()
 
@@ -37,7 +37,7 @@ protected:
 
 protected:
 	UPROPERTY(EditAnywhere, Category="DeployableItem | BlackHole")
-	TObjectPtr<class USphereComponent> CollisionComp;
+	TObjectPtr<class USphereComponent> EventCollisionComp;
 
 	UPROPERTY(VisibleAnywhere, Category = "DeployableItem | BlackHole")
 	TArray<TWeakObjectPtr<UPrimitiveComponent>> OverlapComponent;

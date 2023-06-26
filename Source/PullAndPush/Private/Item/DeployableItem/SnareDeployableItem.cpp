@@ -9,11 +9,11 @@ ASnareDeployableItem::ASnareDeployableItem()
 	:
 	bIsCollision(0)
 {
-	CollisionComp = CreateDefaultSubobject<UBoxComponent>(TEXT("CollisionComp"));
-	CollisionComp->SetBoxExtent(FVector(40.f, 40.f, 40.f));
-	CollisionComp->SetupAttachment(GetRootComponent());
-	CollisionComp->SetSimulatePhysics(false);
-	CollisionComp->SetGenerateOverlapEvents(false);
+	EventCollisionComp = CreateDefaultSubobject<UBoxComponent>(TEXT("EventCollisionComp"));
+	EventCollisionComp->SetBoxExtent(FVector(40.f, 40.f, 40.f));
+	EventCollisionComp->SetupAttachment(GetRootComponent());
+	EventCollisionComp->SetSimulatePhysics(false);
+	EventCollisionComp->SetGenerateOverlapEvents(false);
 
 	CharacterStatModifier.Stat = ECharacterStat::Snare;
 	CharacterStatModifier.ChangeDuration = 3.f;
@@ -23,14 +23,14 @@ void ASnareDeployableItem::BeginPlay()
 {
 	Super::BeginPlay();
 
-	CollisionComp->OnComponentBeginOverlap.AddDynamic(this, &ASnareDeployableItem::AddOverlapActors);
+	EventCollisionComp->OnComponentBeginOverlap.AddDynamic(this, &ASnareDeployableItem::AddOverlapActors);
 }
 void ASnareDeployableItem::ActiveDeployableItem()
 {
 	Super::ActiveDeployableItem();
 
-	MeshComp->SetSimulatePhysics(false);
-	CollisionComp->SetGenerateOverlapEvents(true);
+	CollisionComp->SetSimulatePhysics(false);
+	EventCollisionComp->SetGenerateOverlapEvents(true);
 	ProjectileMovementComponent->Velocity = FVector::Zero();
 }
 void ASnareDeployableItem::AddOverlapActors(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
@@ -43,8 +43,8 @@ void ASnareDeployableItem::AddOverlapActors(UPrimitiveComponent* OverlappedCompo
 	{
 		ActionHandler->EnableStatFlag(CharacterStatModifier.Stat, CharacterStatModifier.ChangeDuration);
 
-		MeshComp->SetSimulatePhysics(false);
-		MeshComp->SetEnableGravity(false);
+		CollisionComp->SetSimulatePhysics(false);
+		CollisionComp->SetEnableGravity(false);
 		ProjectileMovementComponent->ProjectileGravityScale = 0;
 		ProjectileMovementComponent->Velocity = FVector::Zero();
 		bIsCollision = true;

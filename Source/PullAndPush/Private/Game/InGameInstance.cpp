@@ -36,7 +36,7 @@ TMap<FString, int8>& UInGameInstance::GetPlayersScore()
 }
 void UInGameInstance::TravelLevel(ELevelType LevelType)
 {
-	if (LevelType != ELevelType::ELT_Main)
+	/*if (LevelType != ELevelType::ELT_Main)
 	{
 		GetWorld()->ServerTravel(GetLevelPathOfEnum(LevelType));
 	}
@@ -44,6 +44,22 @@ void UInGameInstance::TravelLevel(ELevelType LevelType)
 	{
 		ResetData();
 		UGameplayStatics::OpenLevel(this, MainLevelName);
+	}*/
+
+	switch (LevelType)
+	{
+	case ELevelType::ELT_Main:
+		UGameplayStatics::OpenLevel(this, MainLevelName);
+		break;
+	case ELevelType::ELT_Lobby:
+		GetWorld()->ServerTravel(LobbyLevelName);
+		break;
+	case ELevelType::ELT_InGame:
+		GetWorld()->ServerTravel(GetRandomLevelName());
+		break;
+	case ELevelType::ELT_Result:
+		GetWorld()->ServerTravel(ResultLevelName);
+		break;
 	}
 }
 FString UInGameInstance::GetRandomLevelName()
@@ -61,6 +77,8 @@ FString UInGameInstance::GetRandomLevelName()
 		FSoftObjectPtr AssetPtr(Manager.GetPrimaryAssetPath(Assets[RandomIndex]));
 		AssetName = LevelDirectoryPath + AssetPtr.GetAssetName();
 	}
+	// @TODO : 이슈.. 실제로 플레이 하면 안됌
+	AssetName = LevelDirectoryPath + "Level1";
 
 	return AssetName;
 }
@@ -75,6 +93,7 @@ FString UInGameInstance::GetLevelPathOfEnum(ELevelType LevelType)
 	case ELevelType::ELT_Result:
 		return ResultLevelName;
 	}
+
 	return FString();
 }
 void UInGameInstance::InitTotalPlayerCount()

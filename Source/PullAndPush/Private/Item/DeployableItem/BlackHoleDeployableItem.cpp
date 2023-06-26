@@ -2,17 +2,13 @@
 #include "Components/SphereComponent.h"
 #include "Interface/ItemPickupHandler.h"
 
-
-#include "GameFramework/Character.h"
-#include "GameFramework/CharacterMovementComponent.h"
-
 ABlackHoleDeployableItem::ABlackHoleDeployableItem()
 	: 
 	ForceStength(10000.f),bIsBlackHoleActived(0)
 {
-	CollisionComp = CreateDefaultSubobject<USphereComponent>(TEXT("SphereComp"));
-	CollisionComp->SetupAttachment(GetRootComponent());
-	CollisionComp->SetSphereRadius(1500.f);
+	EventCollisionComp = CreateDefaultSubobject<USphereComponent>(TEXT("EventCollisionComp"));
+	EventCollisionComp->SetupAttachment(GetRootComponent());
+	EventCollisionComp->SetSphereRadius(1500.f);
 
 	ProjectileMovementComponent->bRotationFollowsVelocity = true;
 }
@@ -20,8 +16,8 @@ void ABlackHoleDeployableItem::BeginPlay()
 {
 	Super::BeginPlay();
 
-	CollisionComp->OnComponentBeginOverlap.AddDynamic(this,&ABlackHoleDeployableItem::AddOverlapActors);
-	CollisionComp->OnComponentEndOverlap.AddDynamic(this, &ABlackHoleDeployableItem::DeleteOverlapActors);
+	EventCollisionComp->OnComponentBeginOverlap.AddDynamic(this,&ABlackHoleDeployableItem::AddOverlapActors);
+	EventCollisionComp->OnComponentEndOverlap.AddDynamic(this, &ABlackHoleDeployableItem::DeleteOverlapActors);
 }
 void ABlackHoleDeployableItem::Tick(float DeltaTime)
 {
@@ -38,8 +34,8 @@ void ABlackHoleDeployableItem::ActiveDeployableItem()
 	Super::ActiveDeployableItem();
 
 	bIsBlackHoleActived = true;
-	MeshComp->SetSimulatePhysics(false);
-	MeshComp->SetEnableGravity(false);
+	CollisionComp->SetSimulatePhysics(false);
+	CollisionComp->SetEnableGravity(false);
 	ProjectileMovementComponent->ProjectileGravityScale = 0;
 	ProjectileMovementComponent->Velocity = FVector::Zero();
 }

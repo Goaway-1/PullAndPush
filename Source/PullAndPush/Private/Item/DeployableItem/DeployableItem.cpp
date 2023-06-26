@@ -8,14 +8,14 @@ ADeployableItem::ADeployableItem()
 	bReplicates = true;
 	SetReplicateMovement(true);
 
-	MeshComp = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("MeshComp"));
-	MeshComp->SetSimulatePhysics(false);
-	MeshComp->SetEnableGravity(true);
-	MeshComp->SetCollisionProfileName(CollisionName);
-	SetRootComponent(MeshComp);
+	CollisionComp = CreateDefaultSubobject<USphereComponent>(TEXT("CollisionComp"));
+	CollisionComp->SetSimulatePhysics(false);
+	CollisionComp->SetEnableGravity(true);
+	CollisionComp->SetCollisionProfileName(CollisionName);
+	SetRootComponent(CollisionComp);
 
 	ProjectileMovementComponent = CreateDefaultSubobject<UProjectileMovementComponent>(TEXT("ProjectileMovementComponent"));
-	ProjectileMovementComponent->SetUpdatedComponent(MeshComp);
+	ProjectileMovementComponent->SetUpdatedComponent(CollisionComp);
 	ProjectileMovementComponent->InitialSpeed = 1300.f;
 	ProjectileMovementComponent->bShouldBounce = true;
 }

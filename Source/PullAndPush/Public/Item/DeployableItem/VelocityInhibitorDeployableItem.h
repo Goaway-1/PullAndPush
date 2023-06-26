@@ -3,7 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "Item/DeployableItem/DeployableItem.h"
+#include "Item/DeployableItem/DeployableStaticMeshItem.h"
 #include "GameData/CharacterStat.h"
 #include "VelocityInhibitorDeployableItem.generated.h"
 
@@ -11,7 +11,7 @@
  * 
  */
 UCLASS()
-class PULLANDPUSH_API AVelocityInhibitorDeployableItem : public ADeployableItem
+class PULLANDPUSH_API AVelocityInhibitorDeployableItem : public ADeployableStaticMeshItem
 {
 	GENERATED_BODY()
 public:
@@ -30,7 +30,7 @@ protected:
 
 protected:
 	UPROPERTY(EditDefaultsOnly, Category = "DeployableItem | VelocityInhibitor")
-	TObjectPtr<class UBoxComponent> CollisionComp;
+	TObjectPtr<class UBoxComponent> EventCollisionComp;
 
 	UPROPERTY(EditDefaultsOnly, Category = "DeployableItem | Stat")
 	FCharacterStatModifier CharacterStatModifier;

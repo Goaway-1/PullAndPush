@@ -20,6 +20,7 @@ public:
 	virtual void InitGame(const FString& MapName, const FString& Options, FString& ErrorMessage) override;
 	virtual void PostLogin(APlayerController* NewPlayer) override;
 
+#pragma region ROUND
 public:
 	/** Decrease player count if character is fell out of world */
 	void PlayerFellOutOfWorld(const FString& ControllerName);
@@ -42,13 +43,9 @@ private:
 	int8 TotalPlayerCount;
 	int8 CurrentPlayerCount;
 
-	//@@TODO : ¼öÁ¤
-	// Round Count used in 'GameInstance'
-	//UPROPERTY(EditDefaultsOnly, Category = "Data")
-	//int8 MaxRoundCount;
-
 	UPROPERTY()
 	TObjectPtr<class UInGameInstance> InGameInstance;
+#pragma endregion
 
 #pragma region SCORE
 private:
