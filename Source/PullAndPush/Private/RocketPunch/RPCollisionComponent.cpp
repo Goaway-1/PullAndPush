@@ -24,47 +24,34 @@ void URPCollisionComponent::OnHit(UPrimitiveComponent* HitComponent, AActor* Oth
 
 	// Event of Push or Pull 
 	const FName OtherCompCollsionName = OtherComponent->GetCollisionProfileName();
-	if (IsPush) {	
-		// KnockBack
-		float LerpForce = FMath::Lerp(MinKnockBackForce, MaxKnockBackForce, ForceAlpha);
-		if (OtherCompCollsionName == "BlockAll" || OtherCompCollsionName == "Pawn") {
-			if (OtherCompCollsionName == "BlockAll")
-			{	
-				KnockBackActor(HitComponent, CasterActor, -LerpForce);
-			}
-			else 
-			{
-				KnockBackActor(HitComponent, OtherActor, LerpForce);
-			}
+	float LerpForce = FMath::Lerp(MinKnockBackForce, MaxKnockBackForce, ForceAlpha);
+	AActor* TargetActor;
+	if (OtherCompCollsionName == "BlockAll" || OtherCompCollsionName == "Pawn")
+	{
+		if (OtherCompCollsionName == "BlockAll")
+		{
+			LerpForce *= (IsPush) ? -1 : 1;
+			TargetActor = CasterActor;
 		}
-		else if (OtherCompCollsionName == "PhysicsActor" || OtherCompCollsionName == "Item") {
+		else
+		{
+			LerpForce *= (IsPush) ? 1 : -1;
+			TargetActor = OtherActor;
+		}
+		KnockBackActor(HitComponent, TargetActor, LerpForce);
+	}
+	else if (OtherCompCollsionName == "PhysicsActor" || OtherCompCollsionName == "Item")
+	{
+		if (IsPush)
+		{
 			KnockBackPrimitiveComponent(OtherComponent, Hit, LerpForce);
 		}
-
-		OnForceReturn.Execute(true);
-	}
-	else {
-		// Grap
-		if (OtherCompCollsionName == "BlockAll") {			
-			// CasterActor move to hit location
-			GrapMoveToLocation(CasterActor,Hit.Location);
+		else
+		{
+			GrapActorToOwner(OtherActor, OtherComponent);
 		}
-		else if (!GrapActor.IsValid() && OtherCompCollsionName == "PhysicsActor" || OtherCompCollsionName == "Pawn" || OtherCompCollsionName == "Item") {
-			// Hit object follow the RP
-			// @TODO : 도중에 방해요소 존재 시 오브젝트 부착 해제
-
-			if (OtherCompCollsionName == "PhysicsActor" || OtherCompCollsionName == "Item")
-			{
-				GrapActorToOwner(OtherActor, OtherComponent);
-			}
-			else 
-			{
-				GrapActorToOwner(OtherActor);
-			}
-		}
-
-		OnForceReturn.Execute(true);
 	}
+	OnForceReturn.Execute(true);
 
 	// Set Value
 	bIsAlreadyOverlapped = true;

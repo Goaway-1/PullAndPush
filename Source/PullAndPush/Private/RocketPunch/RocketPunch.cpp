@@ -75,6 +75,7 @@ void ARocketPunch::ReadyToLaunch(const float& InForceAlpha, AActor* InCasterActo
 
 		// Setting Static mesh of RP
 		CurrentMesh = (bIsPush) ? PushMesh : PullMesh;
+		OnRep_ChangeMesh();
 	}
 }
 void ARocketPunch::ServerReadyToLaunch_Implementation(const float& InForceAlpha, AActor* InCasterActor, const bool IsPush, const FVector& InVec, const FRotator& InRot, const float& DeltaSpeed, const float& DeltaRange, const float& DeltaScale)
