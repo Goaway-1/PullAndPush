@@ -135,13 +135,21 @@ private:
 	void UpdateMoveToLocation(float DeltaTime);
 	void UpdateMoveToActor();
 
+	UFUNCTION()
+	void ResetMovementMode();
+
 private:
 	uint8 bIsMoveToLocation : 1;
 	FVector TargetLocation;
 	FVector StartLocation;
 	const float StopToMoveDistance = 100.f;
+	FTimerHandle MovementModeHandle;
 
-	UPROPERTY(EditAnywhere, Category = "Speed", Meta = (AllowPrivateAccess = true))
+	// Time the character stays in 'MOVE_Flying'
+	UPROPERTY(EditAnywhere, Category = "Hited")
+	float DurationInFlyMode;
+
+	UPROPERTY(EditAnywhere, Category = "Hited | Speed")
 	float MoveToLocationSpeed;
 
 	/** Event of Collision Hit */

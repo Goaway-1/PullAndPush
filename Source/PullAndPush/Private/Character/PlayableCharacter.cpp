@@ -15,7 +15,7 @@
 
 APlayableCharacter::APlayableCharacter()
 	:
-	bIsMoveToLocation(false), TargetLocation(FVector(0.f)), StartLocation(FVector(0.f)), MoveToLocationSpeed(5000.f), bIsMoveToActor(false), MoveTargetActor(nullptr)
+	bIsMoveToLocation(false), TargetLocation(FVector(0.f)), StartLocation(FVector(0.f)), DurationInFlyMode(0.3f), MoveToLocationSpeed(5000.f), bIsMoveToActor(false), MoveTargetActor(nullptr)
 {
 	PrimaryActorTick.bCanEverTick = true;
 
@@ -265,7 +265,11 @@ void APlayableCharacter::UpdateSpringArmLength(const float NewArmLength)
 }
 void APlayableCharacter::KnockBackActor(const FVector& DirVec)
 {
+	GetCharacterMovement()->SetMovementMode(EMovementMode::MOVE_Flying);
 	GetCharacterMovement()->AddImpulse(DirVec);
+
+	GetWorld()->GetTimerManager().ClearTimer(MovementModeHandle);
+	GetWorld()->GetTimerManager().SetTimer(MovementModeHandle, this, &APlayableCharacter::ResetMovementMode, DurationInFlyMode,false);
 }
 void APlayableCharacter::SetMoveToLocation(const FVector& HitVector)
 {
@@ -306,6 +310,10 @@ void APlayableCharacter::UpdateMoveToActor()
 	if (bIsMoveToActor && MoveTargetActor.IsValid()) {
 		SetActorLocation(MoveTargetActor.Get()->GetActorLocation());
 	}
+}
+void APlayableCharacter::ResetMovementMode()
+{
+	GetCharacterMovement()->SetMovementMode(EMovementMode::MOVE_Falling);
 }
 void APlayableCharacter::PickUpItem(UItemData* ItemData)
 {
