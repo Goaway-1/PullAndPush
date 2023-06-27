@@ -4,4 +4,5 @@ ADeployableStaticMeshItem::ADeployableStaticMeshItem()
 {
 	MeshComp = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("MeshComp"));
 	MeshComp->SetupAttachment(GetRootComponent());
+	MeshComp->SetCollisionProfileName(MeshCollisionName);
 }

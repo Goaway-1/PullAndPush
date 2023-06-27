@@ -1,5 +1,6 @@
 #include "Item/DeployableItem/VelocityInhibitorDeployableItem.h"
 #include "Components/BoxComponent.h"
+#include "NiagaraFunctionLibrary.h"
 #include "Interface/CharacterStatHandler.h"
 
 AVelocityInhibitorDeployableItem::AVelocityInhibitorDeployableItem()
@@ -29,6 +30,10 @@ void AVelocityInhibitorDeployableItem::ActiveDeployableItem()
 	CollisionComp->SetSimulatePhysics(false);
 	EventCollisionComp->SetGenerateOverlapEvents(true);
 	ProjectileMovementComponent->Velocity = FVector::Zero();
+
+	// Effect
+	ensure(Effect);
+	UNiagaraFunctionLibrary::SpawnSystemAtLocation(GetWorld(), Effect, GetActorLocation(), FRotator::ZeroRotator, FVector(0.5f));
 }
 void AVelocityInhibitorDeployableItem::AddOverlapActors(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {

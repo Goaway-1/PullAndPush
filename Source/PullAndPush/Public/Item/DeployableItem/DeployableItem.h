@@ -27,6 +27,7 @@ protected:
 	TObjectPtr<class USphereComponent> CollisionComp;
 
 	const FName CollisionName = "PhysicsActor";
+	const FName MeshCollisionName = "NoCollision";
 
 /** Timer */
 protected:

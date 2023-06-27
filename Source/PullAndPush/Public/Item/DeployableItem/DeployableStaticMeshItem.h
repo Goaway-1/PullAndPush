@@ -16,7 +16,7 @@ class PULLANDPUSH_API ADeployableStaticMeshItem : public ADeployableItem
 public:
 	ADeployableStaticMeshItem();
 
-private:
+protected:
 	UPROPERTY(VisibleAnywhere, Category = "DeployableItem")
 	TObjectPtr<class UStaticMeshComponent> MeshComp;	
 };

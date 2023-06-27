@@ -10,7 +10,7 @@ public class PullAndPush : ModuleRules
 
         PublicIncludePaths.AddRange(new string[] { "PullAndPush" });
 
-        PublicDependencyModuleNames.AddRange(new string[] { "Core", "CoreUObject", "Engine", "InputCore", "EnhancedInput","UMG", "OnlineSubsystem", "OnlineSubsystemUtils", "EOSSDK" });
+        PublicDependencyModuleNames.AddRange(new string[] { "Core", "CoreUObject", "Engine", "InputCore", "EnhancedInput","UMG", "OnlineSubsystem", "OnlineSubsystemUtils", "EOSSDK", "Niagara" });
 
 		PrivateDependencyModuleNames.AddRange(new string[] {  });
 

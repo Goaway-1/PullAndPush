@@ -19,7 +19,6 @@ public:
 
 protected:
 	virtual void BeginPlay() override;
-
 	virtual void ActiveDeployableItem() override;
 
 	UFUNCTION()
@@ -29,9 +28,12 @@ protected:
 	void DeleteOverlapActors(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex);
 
 protected:
-	UPROPERTY(EditDefaultsOnly, Category = "DeployableItem | VelocityInhibitor")
+	UPROPERTY(EditDefaultsOnly, Category = "DeployableItem")
 	TObjectPtr<class UBoxComponent> EventCollisionComp;
 
 	UPROPERTY(EditDefaultsOnly, Category = "DeployableItem | Stat")
 	FCharacterStatModifier CharacterStatModifier;
+
+	UPROPERTY(EditDefaultsOnly, Category = "DeployableItem | FX")
+	TObjectPtr<class UNiagaraSystem> Effect;
 };

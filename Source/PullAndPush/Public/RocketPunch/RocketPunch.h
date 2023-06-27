@@ -77,7 +77,7 @@ private:
 	void OnRep_ChangeMeshVisibility();
 
 	UFUNCTION()
-	void OnRep_ChangeMaterial();
+	void OnRep_ChangeMesh();
 
 	UFUNCTION()
 	void OnRep_ChangeScale();
@@ -85,18 +85,16 @@ private:
 	UPROPERTY(Replicated, ReplicatedUsing = OnRep_ChangeMeshVisibility)
 	bool bStaticMeshVisibility;
 
-	UPROPERTY(Replicated, ReplicatedUsing = OnRep_ChangeMaterial)
-	TWeakObjectPtr<class UMaterial> CurrentMaterial;
+	UPROPERTY(Replicated, ReplicatedUsing = OnRep_ChangeMesh)
+	TWeakObjectPtr<class UStaticMesh> CurrentMesh;
 	
 	UPROPERTY(Replicated, ReplicatedUsing = OnRep_ChangeScale)
 	FVector CurrentScale;
+	
+	// StaticMesh of RP
+	UPROPERTY(EditDefaultsOnly, Category = "Punch | Mesh")
+	TObjectPtr<class UStaticMesh> PushMesh;
 
-
-	// @TODO : 추후 색상이 아닌 메시로 변경해야 함.
-	UPROPERTY(EditDefaultsOnly, Category = "Materials")
-	TObjectPtr<class UMaterial> PushMaterial;
-
-	UPROPERTY(EditDefaultsOnly, Category = "Materials")
-	TObjectPtr<class UMaterial> PullMaterial;
-
+	UPROPERTY(EditDefaultsOnly, Category = "Punch | Mesh")
+	TObjectPtr<class UStaticMesh> PullMesh;
 };

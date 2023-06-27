@@ -28,6 +28,7 @@ ARocketPunch::ARocketPunch()
 	
 	StaticMeshComp = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("StaticMeshComp"));
 	StaticMeshComp->SetupAttachment(GetRootComponent());
+	StaticMeshComp->SetIsReplicated(true);
 
 	RPMovementComponent = CreateDefaultSubobject<URPMovementComponent>(TEXT("RPMovementComponent"));
 	RPCollisionComponent = CreateDefaultSubobject<URPCollisionComponent>(TEXT("RPCollisionComponent"));
@@ -35,6 +36,9 @@ ARocketPunch::ARocketPunch()
 void ARocketPunch::BeginPlay()
 {
 	Super::BeginPlay();
+
+	ensure(PushMesh);
+	ensure(PullMesh);
 
 	// Set Overlap Collision
 	CollisionComp->OnComponentHit.AddDynamic(this, &ARocketPunch::OnHit);
@@ -69,15 +73,8 @@ void ARocketPunch::ReadyToLaunch(const float& InForceAlpha, AActor* InCasterActo
 		RPMovementComponent->Launch(ForceAlpha, CasterActor.Get(), InVec, InRot, DeltaSpeed, DeltaRange);
 		PPLOG(Log, TEXT("AlphaSpeed : %f, AlphaRange : %f, AlphaSize : %s"), DeltaSpeed, DeltaRange, *CurrentScale.ToString());
 
-		// Setting Color of RP
-		// @TODO : 추후 색의 차이가 아닌, 새로운 매시로 구분하고 함수로 제작
-		if (!PushMaterial || !PullMaterial) {
-			UE_LOG(LogTemp, Warning, TEXT("[RocketPunch] Materials ared not exsit"));
-			return;
-		}
-
-		CurrentMaterial = (bIsPush) ? PushMaterial : PullMaterial;
-		StaticMeshComp->SetMaterial(0, CurrentMaterial.Get());
+		// Setting Static mesh of RP
+		CurrentMesh = (bIsPush) ? PushMesh : PullMesh;
 	}
 }
 void ARocketPunch::ServerReadyToLaunch_Implementation(const float& InForceAlpha, AActor* InCasterActor, const bool IsPush, const FVector& InVec, const FRotator& InRot, const float& DeltaSpeed, const float& DeltaRange, const float& DeltaScale)
@@ -104,14 +101,17 @@ void ARocketPunch::OnRep_ChangeMeshVisibility()
 {
 	StaticMeshComp->SetVisibility(bStaticMeshVisibility);
 }
-void ARocketPunch::OnRep_ChangeMaterial()
-{
-	StaticMeshComp->SetMaterial(0, CurrentMaterial.Get());	
-}
 void ARocketPunch::OnRep_ChangeScale()
 {
 	CollisionComp->SetWorldScale3D(CurrentScale);
 	StaticMeshComp->SetWorldScale3D(CurrentScale);
+}
+void ARocketPunch::OnRep_ChangeMesh()
+{
+	if (CurrentMesh.IsValid())
+	{
+		StaticMeshComp->SetStaticMesh(CurrentMesh.Get());
+	}
 }
 void ARocketPunch::OnHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComponent, FVector NormalImpulse, const FHitResult& Hit)
 {
@@ -123,7 +123,7 @@ void ARocketPunch::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLife
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
-	DOREPLIFETIME(ARocketPunch, bStaticMeshVisibility);
-	DOREPLIFETIME(ARocketPunch, CurrentMaterial);
+	DOREPLIFETIME(ARocketPunch, bStaticMeshVisibility);	
+	DOREPLIFETIME_CONDITION(ARocketPunch, CurrentMesh, COND_SimulatedOnly);
 	DOREPLIFETIME(ARocketPunch, CurrentScale);
 }

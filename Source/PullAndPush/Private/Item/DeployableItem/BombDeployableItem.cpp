@@ -23,10 +23,10 @@ void ABombDeployableItem::Explosion()
 
 	// Excute Explosion My Self
 	const FVector BoostIntensity = FVector::UpVector * SelfExplosionImpulse;
-	//CollisionComp->AddImpulse(BoostIntensity, NAME_None, true);
+	CollisionComp->AddImpulse(BoostIntensity, NAME_None, true);
 
 	UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), ExplosionEffect, GetActorLocation());
-	//CollisionComp->SetMaterial(0, ExplodedMaterial);
+	MeshComp->SetMaterial(0, ExplodedMaterial);
 
 	// Excute Explosion for Another Actors
 	RadialForceComp->FireImpulse();

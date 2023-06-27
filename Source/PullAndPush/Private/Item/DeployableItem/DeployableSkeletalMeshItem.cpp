@@ -4,4 +4,5 @@ ADeployableSkeletalMeshItem::ADeployableSkeletalMeshItem()
 {
 	MeshComp = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("MeshComp"));
 	MeshComp->SetupAttachment(GetRootComponent());
+	MeshComp->SetCollisionProfileName(MeshCollisionName);
 }
