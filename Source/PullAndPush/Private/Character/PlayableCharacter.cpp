@@ -265,11 +265,15 @@ void APlayableCharacter::UpdateSpringArmLength(const float NewArmLength)
 }
 void APlayableCharacter::KnockBackActor(const FVector& DirVec)
 {
-	GetCharacterMovement()->SetMovementMode(EMovementMode::MOVE_Flying);
-	GetCharacterMovement()->AddImpulse(DirVec);
+	// If the character is on the ground
+	if (GetCharacterMovement()->MovementMode == EMovementMode::MOVE_Walking)
+	{
+		GetCharacterMovement()->SetMovementMode(EMovementMode::MOVE_Flying);
+		GetWorld()->GetTimerManager().ClearTimer(MovementModeHandle);
+		GetWorld()->GetTimerManager().SetTimer(MovementModeHandle, this, &APlayableCharacter::ResetMovementMode, DurationInFlyMode, false);
+	}
 
-	GetWorld()->GetTimerManager().ClearTimer(MovementModeHandle);
-	GetWorld()->GetTimerManager().SetTimer(MovementModeHandle, this, &APlayableCharacter::ResetMovementMode, DurationInFlyMode,false);
+	GetCharacterMovement()->AddImpulse(DirVec);
 }
 void APlayableCharacter::SetMoveToLocation(const FVector& HitVector)
 {
