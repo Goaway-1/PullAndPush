@@ -66,7 +66,7 @@ void AInteractiveObstacleMover::CheckHit()
 				TScriptInterface<class ICharacterInterActionHandler> ActionHandler = ComponentOwner;
 				if (ActionHandler.GetInterface()) {
 					FVector ImpulseDirection = OriginRot.Vector() * ForceStrength;
-					ActionHandler->KnockBackActor(ImpulseDirection);
+					ActionHandler->ApplyObstacleImpulse(ImpulseDirection);
 				}
 			}
 		}

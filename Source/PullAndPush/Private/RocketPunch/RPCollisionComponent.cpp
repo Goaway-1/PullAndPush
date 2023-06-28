@@ -38,13 +38,13 @@ void URPCollisionComponent::OnHit(UPrimitiveComponent* HitComponent, AActor* Oth
 			LerpForce *= (IsPush) ? 1 : -1;
 			TargetActor = OtherActor;
 		}
-		KnockBackActor(HitComponent, TargetActor, LerpForce);
+		ApplyPunchImpulseCharacter(HitComponent, TargetActor, LerpForce, IsPush);
 	}
 	else if (OtherCompCollsionName == "PhysicsActor" || OtherCompCollsionName == "Item")
 	{
 		if (IsPush)
 		{
-			KnockBackPrimitiveComponent(OtherComponent, Hit, LerpForce);
+			ApplyPunchImpulsePrimitiveComponent(OtherComponent, Hit, LerpForce);
 		}
 		else
 		{
@@ -61,14 +61,6 @@ void URPCollisionComponent::OnHit(UPrimitiveComponent* HitComponent, AActor* Oth
 void URPCollisionComponent::ResetOverlapActors()
 {
 	/** Reset Grap Object */
-	// Item, Character of Pull
-	TScriptInterface<class ICharacterInterActionHandler> ActionHandler = GrapActor.Get();
-	if (ActionHandler.GetInterface()) {
-		ActionHandler->SetMoveToActor(nullptr);
-		GrapActor = nullptr;
-	}
-
-	// PhysicsActor of Pull
 	if (GrapActor.IsValid() && GrapUPrimitiveComponent.IsValid()) {
 		GrapUPrimitiveComponent.Get()->SetSimulatePhysics(true);
 		GrapUPrimitiveComponent.Get()->SetAllPhysicsLinearVelocity(FVector::ZeroVector);
@@ -80,25 +72,18 @@ void URPCollisionComponent::ResetOverlapActors()
 	bIsAlreadyOverlapped = false;
 	OverlapActors.Reset();
 }
-void URPCollisionComponent::KnockBackActor(UPrimitiveComponent* HitComponent, AActor* TargetActor, float ImpulseForce)
+void URPCollisionComponent::ApplyPunchImpulseCharacter(UPrimitiveComponent* HitComponent, AActor* TargetActor, float ImpulseForce, bool IsPush)
 {
 	TScriptInterface<class ICharacterInterActionHandler> ActionHandler = TargetActor;
 	if (ActionHandler.GetInterface()) {
 		FVector ImpulseDirection = HitComponent->GetForwardVector() * ImpulseForce;
-		ActionHandler->KnockBackActor(ImpulseDirection);
+		ActionHandler->ApplyPunchImpulse(ImpulseDirection, IsPush);
 	}
 }
-void URPCollisionComponent::KnockBackPrimitiveComponent(UPrimitiveComponent* OtherComponent, const FHitResult& Hit, float ImpulseForce)
+void URPCollisionComponent::ApplyPunchImpulsePrimitiveComponent(UPrimitiveComponent* OtherComponent, const FHitResult& Hit, float ImpulseForce)
 {
 	FVector ImpulseDirection = -Hit.Normal * (ImpulseForce / 50);
 	OtherComponent->AddImpulse(ImpulseDirection, NAME_None, true);
-}
-void URPCollisionComponent::GrapMoveToLocation(AActor* TargetActor, FVector Location)
-{
-	TScriptInterface<class ICharacterInterActionHandler> ActionHandler = TargetActor;
-	if (ActionHandler.GetInterface()) {
-		ActionHandler->SetMoveToLocation(Location);
-	}
 }
 void URPCollisionComponent::GrapActorToOwner(AActor* TargetActor, UPrimitiveComponent* OtherComponent)
 {
@@ -108,11 +93,5 @@ void URPCollisionComponent::GrapActorToOwner(AActor* TargetActor, UPrimitiveComp
 	if (GrapUPrimitiveComponent.IsValid()) {
 		GrapUPrimitiveComponent.Get()->SetSimulatePhysics(false);
 		GrapActor.Get()->AttachToActor(GetOwner(), FAttachmentTransformRules::KeepWorldTransform);
-	}
-	else{
-		TScriptInterface<class ICharacterInterActionHandler> ActionHandler = GrapActor.Get();
-		if (ActionHandler.GetInterface()) {
-			ActionHandler->SetMoveToActor(GetOwner());
-		}
 	}
 }

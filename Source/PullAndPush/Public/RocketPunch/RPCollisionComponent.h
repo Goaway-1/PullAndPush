@@ -45,8 +45,8 @@ private:
 	UPROPERTY(EditAnyWhere, Category = "Push Force", meta = (AllowPrivateAccess = "true"))
 	float MinKnockBackForce;
 
-	void KnockBackActor(class UPrimitiveComponent* HitComponent, AActor* TargetActor, float ImpulseForce);
-	void KnockBackPrimitiveComponent(class UPrimitiveComponent* OtherComponent, const FHitResult& Hit, float ImpulseForce);
+	void ApplyPunchImpulseCharacter(class UPrimitiveComponent* HitComponent, AActor* TargetActor, float ImpulseForce, bool IsPush);
+	void ApplyPunchImpulsePrimitiveComponent(class UPrimitiveComponent* OtherComponent, const FHitResult& Hit, float ImpulseForce);
 	
 /** Pull Event */
 private:
@@ -55,9 +55,6 @@ private:
 
 	UPROPERTY(VisibleAnywhere)
 	TWeakObjectPtr<UPrimitiveComponent> GrapUPrimitiveComponent;
-
-	/** Owner Character move to location */
-	void GrapMoveToLocation(class AActor* TargetActor, FVector Location);
 
 	/** if PhysicsActor plz set OtherComponent */
 	void GrapActorToOwner(class AActor* TargetActor , class UPrimitiveComponent* OtherComponent = nullptr);
