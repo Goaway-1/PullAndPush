@@ -75,7 +75,7 @@ void ARocketPunch::ReadyToLaunch(const float& InForceAlpha, AActor* InCasterActo
 
 		// Setting Static mesh of RP
 		CurrentMesh = (bIsPush) ? PushMesh : PullMesh;
-		//if(HasAuthority()) OnRep_ChangeMesh();
+		OnRep_ChangeMesh();
 	}
 }
 void ARocketPunch::ServerReadyToLaunch_Implementation(const float& InForceAlpha, AActor* InCasterActor, const bool IsPush, const FVector& InVec, const FRotator& InRot, const float& DeltaSpeed, const float& DeltaRange, const float& DeltaScale)
@@ -125,6 +125,6 @@ void ARocketPunch::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLife
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
 	DOREPLIFETIME(ARocketPunch, bStaticMeshVisibility);	
-	DOREPLIFETIME_CONDITION(ARocketPunch, CurrentMesh, COND_SimulatedOnly);
+	DOREPLIFETIME(ARocketPunch, CurrentMesh);
 	DOREPLIFETIME(ARocketPunch, CurrentScale);
 }

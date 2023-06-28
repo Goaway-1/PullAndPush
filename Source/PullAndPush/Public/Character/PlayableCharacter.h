@@ -209,6 +209,7 @@ public:
 	virtual void DisableStatFlag(ECharacterStat InFlag) override;
 	virtual bool IsStatFlagSet(ECharacterStat InFlag) override;
 
+private:
 	UFUNCTION(Server, Reliable)
 	void ServerEnableStatFlag(ECharacterStat InFlag, float ChangeDuration);
 

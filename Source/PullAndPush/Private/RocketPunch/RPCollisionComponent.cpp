@@ -1,7 +1,6 @@
-// Fill out your copyright notice in the Description page of Project Settings.
-
 #include "RocketPunch/RPCollisionComponent.h"
 #include "Interface/CharacterInterActionHandler.h"
+#include "Net/UnrealNetwork.h"
 
 URPCollisionComponent::URPCollisionComponent()
 	:
@@ -94,4 +93,18 @@ void URPCollisionComponent::GrapActorToOwner(AActor* TargetActor, UPrimitiveComp
 		GrapUPrimitiveComponent.Get()->SetSimulatePhysics(false);
 		GrapActor.Get()->AttachToActor(GetOwner(), FAttachmentTransformRules::KeepWorldTransform);
 	}
+}
+void URPCollisionComponent::OnRep_ChangeGrapActor()
+{
+	if (GrapActor.IsValid() && GrapUPrimitiveComponent.IsValid()) {
+		GrapUPrimitiveComponent.Get()->SetSimulatePhysics(false);
+		GrapActor.Get()->AttachToActor(GetOwner(), FAttachmentTransformRules::KeepWorldTransform);
+	}
+}
+void URPCollisionComponent::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+	DOREPLIFETIME(URPCollisionComponent, GrapActor);
+	DOREPLIFETIME(URPCollisionComponent, GrapUPrimitiveComponent);
 }

@@ -39,10 +39,10 @@ private:
 
 /** Push Event */
 private:
-	UPROPERTY(EditAnyWhere, Category = "Push Force", meta = (AllowPrivateAccess = "true"))
+	UPROPERTY(EditAnyWhere, Category = "Push | Force", meta = (AllowPrivateAccess = "true"))
 	float MaxKnockBackForce;
 
-	UPROPERTY(EditAnyWhere, Category = "Push Force", meta = (AllowPrivateAccess = "true"))
+	UPROPERTY(EditAnyWhere, Category = "Push | Force", meta = (AllowPrivateAccess = "true"))
 	float MinKnockBackForce;
 
 	void ApplyPunchImpulseCharacter(class UPrimitiveComponent* HitComponent, AActor* TargetActor, float ImpulseForce, bool IsPush);
@@ -50,12 +50,15 @@ private:
 	
 /** Pull Event */
 private:
-	UPROPERTY(VisibleAnywhere)
+	UPROPERTY(Replicated, ReplicatedUsing = OnRep_ChangeGrapActor, VisibleAnywhere)
 	TWeakObjectPtr<AActor> GrapActor;
 
-	UPROPERTY(VisibleAnywhere)
+	UPROPERTY(Replicated, VisibleAnywhere)
 	TWeakObjectPtr<UPrimitiveComponent> GrapUPrimitiveComponent;
 
 	/** if PhysicsActor plz set OtherComponent */
 	void GrapActorToOwner(class AActor* TargetActor , class UPrimitiveComponent* OtherComponent = nullptr);
+
+	UFUNCTION()
+	void OnRep_ChangeGrapActor();
 };
