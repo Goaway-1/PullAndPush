@@ -9,7 +9,10 @@ AItemSpawner::AItemSpawner()
 {
     bReplicates = true;
     SetReplicateMovement(true);
+
 	StaticMeshComp = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("StaticMeshComp"));
+    StaticMeshComp->SetCollisionProfileName(CollisionName,false);
+
     ItemSpawnType = EItemSpawnType::Normal;
 }
 void AItemSpawner::BeginPlay()

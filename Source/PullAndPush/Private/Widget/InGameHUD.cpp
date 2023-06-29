@@ -28,3 +28,11 @@ void AInGameHUD::UpdateStatUI(const FString& StatName, UMaterialInterface* Mater
 {
 	InGameWidget->UpdateStatUI(StatName, Material);
 }
+void AInGameHUD::InitPlayerCount(int8 InTotalPlayerCount)
+{
+	InGameWidget->InitPlayerCount(InTotalPlayerCount);
+}
+void AInGameHUD::SetCurrentPlayerCount(int8 InCount)
+{
+	InGameWidget->SetCurrentPlayerCount(InCount);
+}

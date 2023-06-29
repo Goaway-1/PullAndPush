@@ -30,6 +30,7 @@ protected:
 private:
 	void InitSetting();
 
+private:
 	UPROPERTY(EditDefaultsOnly)
 	TObjectPtr<class UStaticMeshComponent> StaticMeshComp;
 
@@ -43,14 +44,17 @@ private:
 	EItemSpawnType ItemSpawnType;
 
 	FVector SpawnLocation;
+	const FName CollisionName = "NoCollision";
 
-	/** Respawn */
+/** Respawn */
+private:
 	UFUNCTION()
 	void TryRespawnItem();
 
 	UFUNCTION()
 	void RespawnItem();
 
+private:
 	UPROPERTY(EditAnywhere, Category = "Item | Spawn Time")
 	float MaxRespawnDelay;
 
@@ -60,7 +64,8 @@ private:
 	UPROPERTY()
 	FTimerHandle RespawnHandle;
 
-	/** Item Data*/
+/** Item Data*/
+private:
 	UFUNCTION()
 	class UItemData* SetRandomItemDataAsset();
 };

@@ -15,7 +15,7 @@
 
 APlayableCharacter::APlayableCharacter()
 	:
-	bIsKnockBack(0), DurationInFlyMode(0.3f)
+	DurationInFlyMode(0.3f), bIsKnockBack(0)
 {
 	PrimaryActorTick.bCanEverTick = true;
 

@@ -48,4 +48,5 @@ private:
 	uint8 bIsSpawn:1;
 
 	const FName CollisionName = TEXT("Item");
+	const FName MeshCollisionName = "NoCollision";
 };

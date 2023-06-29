@@ -4,10 +4,11 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/PlayerController.h"
+#include "Interface/PlayableControllerHandler.h"
 #include "PlayableController.generated.h"
 
 UCLASS()
-class PULLANDPUSH_API APlayableController : public APlayerController
+class PULLANDPUSH_API APlayableController : public APlayerController, public IPlayableControllerHandler
 {
 	GENERATED_BODY()
 public:
@@ -28,9 +29,18 @@ public:
 	UFUNCTION()
 	void UpdateStatUI(const FString& StatName, UMaterialInterface* Material);
 
+	UFUNCTION(Client, Reliable)
+	void InitPlayerCount(int8 InTotalPlayerCount);
+
+	UFUNCTION(Client, Reliable)
+	void SetCurrentPlayerCount(int8 InCount);
+
+	virtual void SetPlayerCount() override;
 private:
 	UPROPERTY()
 	TObjectPtr<class AInGameHUD> InGameHUD;
+
+	int8 TotalPlayerCount;
 #pragma endregion
 
 #pragma region GAMEMODE
@@ -41,5 +51,4 @@ private:
 	UPROPERTY(VisibleAnywhere)
 	TObjectPtr<class AInGameMode> CurGameMode;
 #pragma endregion
-
 };

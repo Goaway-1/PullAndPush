@@ -5,6 +5,7 @@
 #include "Blueprint/UserWidget.h"
 #include "Widget/InGameHUD.h"
 #include "Game/InGameMode.h"
+#include "Game/InGameInstance.h"
 
 APlayableController::APlayableController() {
 
@@ -45,6 +46,25 @@ void APlayableController::PlayerFellOutOfWorld()
 {
 	if (CurGameMode)
 	{
-		CurGameMode->PlayerFellOutOfWorld(GetName());
+		CurGameMode->PlayerFellOutOfWorld(this);
+	}
+}
+void APlayableController::InitPlayerCount_Implementation(int8 InTotalPlayerCount)
+{
+	TotalPlayerCount = InTotalPlayerCount;
+	SetPlayerCount();
+}
+void APlayableController::SetPlayerCount()
+{
+	if (InGameHUD)
+	{
+		InGameHUD->InitPlayerCount(TotalPlayerCount);
+	}
+}
+void APlayableController::SetCurrentPlayerCount_Implementation(int8 InCount)
+{
+	if (InGameHUD)
+	{
+		InGameHUD->SetCurrentPlayerCount(InCount);
 	}
 }

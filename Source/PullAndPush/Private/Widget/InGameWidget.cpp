@@ -8,7 +8,10 @@
 #include "Components/CanvasPanel.h"
 #include "Components/CanvasPanelSlot.h"
 #include "Components/HorizontalBox.h"
+#include "Components/TextBlock.h"
+#include "Game/InGameInstance.h"
 #include "Interface/ItemDataHandler.h"
+#include "Interface/PlayableControllerHandler.h"
 
 void UInGameWidget::NativeConstruct()
 {
@@ -26,6 +29,13 @@ void UInGameWidget::NativeConstruct()
 
         // Bind Delegate : Visible Active Item
         OnChangeVisibleItemWidget.BindUObject(ActiveItemWidget, &UActiveItemWidget::ChangeVisibleItemInfo);
+    }
+
+    // Notify the controller that edit widget is possible
+    TScriptInterface<class IPlayableControllerHandler> ActionHandler = GetOwningPlayer();
+    if (ActionHandler.GetInterface())
+    {
+        ActionHandler->SetPlayerCount();
     }
 }
 void UInGameWidget::UpdateItemUI(UDataAsset* CurrentItem, const bool& IsPassvieItem)
@@ -100,5 +110,14 @@ void UInGameWidget::UpdateStatUI(const FString& StatName, UMaterialInterface* Ma
             StatWidgetMap.Add(StatName, StatWidget);
         }
     }
+}
+void UInGameWidget::InitPlayerCount(int8 InTotalPlayerCount)
+{
+    TotalCount->SetText(FText::AsNumber(InTotalPlayerCount));
+    CurrentCount->SetText(FText::AsNumber(InTotalPlayerCount));
+}
+void UInGameWidget::SetCurrentPlayerCount(int8 InCount)
+{
+    CurrentCount->SetText(FText::AsNumber(InCount));
 }
  

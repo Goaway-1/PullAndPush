@@ -6,9 +6,7 @@
 #include "GameFramework/HUD.h"
 #include "InGameHUD.generated.h"
 
-/**
- * 
- */
+
 UCLASS()
 class PULLANDPUSH_API AInGameHUD : public AHUD
 {
@@ -27,11 +25,14 @@ private:
 	UPROPERTY()
 	TObjectPtr<class UInGameWidget> InGameWidget;
 
-/** Funtion */
+/** InGame Widget */
 public:
 	void UpdateItemUI(UDataAsset* CurrentItem, const bool IsPassvieItem);
-
 	void ChangeVisibleItemInfo(bool bVisibility);
-
 	void UpdateStatUI(const FString& StatName, UMaterialInterface* Material);
+
+/** Player Count Widget */
+public:
+	void InitPlayerCount(int8 InTotalPlayerCount);
+	void SetCurrentPlayerCount(int8 InCount);
 };
