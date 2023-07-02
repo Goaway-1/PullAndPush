@@ -42,7 +42,6 @@ APlayableCharacter::~APlayableCharacter()
 void APlayableCharacter::PossessedBy(AController* NewController)
 {
 	Super::PossessedBy(NewController);
-
 }
 void APlayableCharacter::UnPossessed()
 {
@@ -59,16 +58,11 @@ void APlayableCharacter::BeginPlay()
 	/** Bind if MoveSpeed is Changed */
 	StatComp->OnMoveSpeedChanged.BindUObject(this, &APlayableCharacter::ActiveMovementSpeed);
 
-	/** Binding Create Item Widget */
+	/** Binding Create Item & Stat Widget */
 	PlayableController = Cast<APlayableController>(GetController());
-	if (PlayableController && ItemUsageComp)
+	if (PlayableController && ItemUsageComp && StatComp)
 	{
 		ItemUsageComp->GetItemWidgetUpdateDelegate().BindUObject(PlayableController, &APlayableController::UpdateItemUI);
-	}
-
-	/** Binding Create Stat Widget */
-	if (PlayableController && StatComp)
-	{
 		StatComp->OnUpdateStatWidget.BindUObject(PlayableController, &APlayableController::UpdateStatUI);
 	}
 }
@@ -88,6 +82,8 @@ void APlayableCharacter::FellOutOfWorld(const UDamageType& dmgType)
 		NewPlayableController->PlayerFellOutOfWorld();
 	}
 
+	// Disable Character..
+	ClearAllTimer();
 	Super::FellOutOfWorld(dmgType);
 }
 void APlayableCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
@@ -361,6 +357,12 @@ bool APlayableCharacter::IsCanMove()
 bool APlayableCharacter::IsCanAttack()
 {
 	return (StatComp->IsStatFlagSet(ECharacterStat::Stun)) ? false : true;
+}
+void APlayableCharacter::ClearAllTimer()
+{
+	GetWorld()->GetTimerManager().ClearAllTimersForObject(this);
+	GetWorld()->GetTimerManager().ClearAllTimersForObject(ItemUsageComp);
+	GetWorld()->GetTimerManager().ClearAllTimersForObject(StatComp);
 }
 void APlayableCharacter::SetRocketPunchSpeed(const float& DeltaSpeed)
 { 

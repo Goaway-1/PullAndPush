@@ -197,7 +197,7 @@ FTimerHandle UItemUsageComponent::AddTimer(class UItemData* PassiveItem, bool& b
 	const float Duration = PassiveItem->GetDurationTime();
 	if (TimerHandles.Contains(TimerName))
 	{
-		RemoveTimer(TimerName);
+		RemoveTimer(PassiveItem);
 		PPLOG(Log, TEXT("%s Item Time is already exists!"),*TimerName.ToString());
 		bIsItemActivated = true;
 	}
@@ -209,28 +209,25 @@ FTimerHandle UItemUsageComponent::AddTimer(class UItemData* PassiveItem, bool& b
 
 	// Set Timer & Handler
 	FTimerHandle Handle;
-	FTimerDelegate CallbackDelegate;
-	CallbackDelegate.BindLambda([=]() {
-		PassiveItem->EndPassiveItem();
-		RemoveTimer(TimerName);
-		});
-	GetWorld()->GetTimerManager().SetTimer(Handle, CallbackDelegate, Duration, false);
+	GetWorld()->GetTimerManager().SetTimer(Handle, FTimerDelegate::CreateUObject(this, &UItemUsageComponent::RemoveTimer, PassiveItem), Duration, false);
 	
 	// Add the timer handle to the array
 	TimerHandles.Add(TimerName, Handle);
 
 	return Handle;
 }
-void UItemUsageComponent::RemoveTimer(FName TimerName)
+void UItemUsageComponent::RemoveTimer(class UItemData* PassiveItem)
 {
+	const FName TimerName = FName(PassiveItem->GetItemName());
 	FTimerHandle* Handle = TimerHandles.Find(TimerName);
-
 	if (Handle->IsValid()) {
 		GetWorld()->GetTimerManager().ClearTimer(*Handle);
 		TimerHandles.Remove(TimerName);
 
 		PPLOG(Log, TEXT("Remove Item Handle : %s"), *TimerName.ToString());
 	}
+
+	PassiveItem->EndPassiveItem();
 }
 void UItemUsageComponent::OnRep_ChangeItemStaticMesh()
 {

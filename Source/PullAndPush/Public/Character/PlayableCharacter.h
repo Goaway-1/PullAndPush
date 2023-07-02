@@ -12,6 +12,7 @@
 class USpringArmComponent;
 class UCameraComponent;
 
+
 UCLASS()
 class PULLANDPUSH_API APlayableCharacter : public ACharacter, public ICharacterInterActionHandler, public ICharacterPickupHandler, public ICharacterStatHandler
 {
@@ -208,6 +209,9 @@ public:
 	virtual void EnableStatFlag(ECharacterStat InFlag, float ChangeDuration) override;
 	virtual void DisableStatFlag(ECharacterStat InFlag) override;
 	virtual bool IsStatFlagSet(ECharacterStat InFlag) override;
+
+	/** Clear All Timer */
+	void ClearAllTimer();
 
 private:
 	UFUNCTION(Server, Reliable)

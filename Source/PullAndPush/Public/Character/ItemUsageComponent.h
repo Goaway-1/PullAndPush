@@ -104,7 +104,7 @@ private:
 /** Timer */
 protected:
 	FTimerHandle AddTimer(class UItemData* PassiveItem, bool& bIsItemActivated);
-	void RemoveTimer(FName TimerName);
+	void RemoveTimer(class UItemData* PassiveItem);
 
 	UPROPERTY(VisibleAnywhere, Category = "Widget")
 	TMap<FName, FTimerHandle> TimerHandles;

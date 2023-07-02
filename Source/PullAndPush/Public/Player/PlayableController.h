@@ -1,5 +1,3 @@
-// Fill out your copyright notice in the Description page of Project Settings.
-
 #pragma once
 
 #include "CoreMinimal.h"
@@ -47,8 +45,27 @@ private:
 public:
 	void PlayerFellOutOfWorld(); 
 
+	/** Clear All Timer of Character */
+	void ClearAllTimer();
+
 private:
 	UPROPERTY(VisibleAnywhere)
 	TObjectPtr<class AInGameMode> CurGameMode;
+#pragma endregion
+
+#pragma region SPECTATE
+private:
+	/** Set Player to spectate. Should be called only on server */
+	UFUNCTION()
+	void SetPlayerSpectate();
+
+	/** Notify HUD of a state change so it shows suitable widgets accordingly */
+	UFUNCTION(Client, Reliable)
+	void ClientHUDStateChanged(EHUDState NewState);
+
+	/** @TODO : 임시 방패용도 (관찰자모드 강제 변경) */
+	UFUNCTION()
+	void SetState();
+
 #pragma endregion
 };

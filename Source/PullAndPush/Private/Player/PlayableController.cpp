@@ -1,11 +1,9 @@
-// Fill out your copyright notice in the Description page of Project Settings.
-
-
 #include "Player/PlayableController.h"
 #include "Blueprint/UserWidget.h"
 #include "Widget/InGameHUD.h"
 #include "Game/InGameMode.h"
 #include "Game/InGameInstance.h"
+#include "Character/PlayableCharacter.h"
 
 APlayableController::APlayableController() {
 
@@ -48,6 +46,8 @@ void APlayableController::PlayerFellOutOfWorld()
 	{
 		CurGameMode->PlayerFellOutOfWorld(this);
 	}
+
+	SetPlayerSpectate();
 }
 void APlayableController::InitPlayerCount_Implementation(int8 InTotalPlayerCount)
 {
@@ -66,5 +66,37 @@ void APlayableController::SetCurrentPlayerCount_Implementation(int8 InCount)
 	if (InGameHUD)
 	{
 		InGameHUD->SetCurrentPlayerCount(InCount);
+	}
+}
+void APlayableController::ClearAllTimer()
+{
+	APlayableCharacter* PlayableCharacter = Cast<APlayableCharacter>(GetCharacter());
+	if (PlayableCharacter)
+	{
+		PlayableCharacter->ClearAllTimer();
+	}
+}
+void APlayableController::SetPlayerSpectate()
+{
+	// Only proceed if we're on the server
+	if (!HasAuthority()) return;
+
+	// Update the HUD & state
+	StartSpectatingOnly();
+	ClientHUDStateChanged(EHUDState::Spectating);
+
+	// @TODO : ÀÓ½Ã¹æÆÐ
+	FTimerHandle Handle;
+	GetWorld()->GetTimerManager().SetTimer(Handle, this, &APlayableController::SetState,1.f,false);
+}
+void APlayableController::SetState()
+{
+	ClientGotoState(NAME_Spectating);
+}
+void APlayableController::ClientHUDStateChanged_Implementation(EHUDState NewState)
+{
+	if (InGameHUD = Cast<AInGameHUD>(GetHUD()))
+	{
+		InGameHUD->OnStateChanged(NewState);
 	}
 }
