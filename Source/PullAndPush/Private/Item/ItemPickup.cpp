@@ -13,6 +13,7 @@ AItemPickup::AItemPickup()
 	CollisionComp = CreateDefaultSubobject<USphereComponent>(TEXT("CollisionComp"));
 	CollisionComp->SetCollisionProfileName(CollisionName);
 	StaticMeshComp = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("StaticMeshComp"));
+	StaticMeshComp->SetCollisionProfileName(MeshCollisionName);
 
 	SetRootComponent(CollisionComp);
 	StaticMeshComp->SetupAttachment(RootComponent);

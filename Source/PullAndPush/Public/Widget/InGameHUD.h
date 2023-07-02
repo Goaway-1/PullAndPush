@@ -6,11 +6,7 @@
 #include "GameFramework/HUD.h"
 #include "InGameHUD.generated.h"
 
-<<<<<<< Updated upstream
-/**
- * 
- */
-=======
+
 UENUM(BlueprintType)
 enum class EHUDState : uint8
 {
@@ -19,7 +15,6 @@ enum class EHUDState : uint8
 	Inactive
 };
 
->>>>>>> Stashed changes
 UCLASS()
 class PULLANDPUSH_API AInGameHUD : public AHUD
 {
@@ -41,28 +36,26 @@ private:
 	UPROPERTY()
 	TObjectPtr<class UInGameWidget> InGameWidget;
 
-<<<<<<< Updated upstream
+/** InGame Widget */
+public:
+	void UpdateItemUI(UDataAsset* CurrentItem, const bool IsPassvieItem);
+  
 /** Funtion */
-=======
 	UPROPERTY()
 	TObjectPtr<class USpectatorWidget> SpectatorWidget;
 
 /** InGame Widget */
->>>>>>> Stashed changes
 public:
 	void UpdateItemUI(UDataAsset* CurrentItem, const bool IsPassvieItem);
 
-<<<<<<< Updated upstream
 	void ChangeVisibleItemInfo(bool bVisibility);
-
 	void UpdateStatUI(const FString& StatName, UMaterialInterface* Material);
-=======
+
 /** Player Count Widget */
 public:
 	void InitPlayerCount(int8 InTotalPlayerCount);
 	void SetCurrentPlayerCount(int8 InCount);
 
-	// @TEST
 private:
 	/* Current HUD state */
 	EHUDState CurrentState;
@@ -74,5 +67,4 @@ public:
 	/* Event hook to update HUD state (eg. to determine visibility of widgets) */
 	UFUNCTION()
 	void OnStateChanged(EHUDState NewState);
->>>>>>> Stashed changes
 };

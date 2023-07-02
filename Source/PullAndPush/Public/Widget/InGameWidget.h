@@ -13,6 +13,7 @@ class PULLANDPUSH_API UInGameWidget : public UUserWidget
 {
 	GENERATED_BODY()
 
+#pragma region DEFAULT
 public:
 	void UpdateItemUI(class UDataAsset* CurrentItem, const bool& IsPassvieItem);
 
@@ -62,4 +63,19 @@ private:
 public:
 	// Change Active Item Visible
 	FOnChangeVisibleItemWidget OnChangeVisibleItemWidget;
+#pragma endregion
+
+#pragma region SCORE
+public:
+	void InitPlayerCount(int8 InTotalPlayerCount);
+	void SetCurrentPlayerCount(int8 InCount);
+
+private:
+	UPROPERTY(meta = (BindWidget))
+	TObjectPtr<class UTextBlock> TotalCount;
+
+	UPROPERTY(meta = (BindWidget))
+	TObjectPtr<class UTextBlock> CurrentCount;
+#pragma endregion
+
 };

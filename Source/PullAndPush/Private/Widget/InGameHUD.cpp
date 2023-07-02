@@ -33,9 +33,6 @@ void AInGameHUD::ChangeVisibleItemInfo(bool bVisibility)
 void AInGameHUD::UpdateStatUI(const FString& StatName, UMaterialInterface* Material)
 {
 	InGameWidget->UpdateStatUI(StatName, Material);
-<<<<<<< Updated upstream
-}
-=======
 }
 void AInGameHUD::InitPlayerCount(int8 InTotalPlayerCount)
 {
@@ -62,4 +59,3 @@ void AInGameHUD::OnStateChanged(EHUDState NewState)
 		SpectatorWidget->SetVisibility(ESlateVisibility::Visible);
 	}
 }
->>>>>>> Stashed changes

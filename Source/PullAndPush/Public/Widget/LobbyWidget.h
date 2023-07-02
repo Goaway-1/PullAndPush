@@ -6,9 +6,6 @@
 #include "Blueprint/UserWidget.h"
 #include "LobbyWidget.generated.h"
 
-/**
- * 
- */
 UCLASS()
 class PULLANDPUSH_API ULobbyWidget : public UUserWidget
 {
@@ -21,7 +18,14 @@ public:
 	UFUNCTION()
 	void StartGame();
 
+	void SetLobbyWidgetData(int8 InMaxPlayerCount, int8 InTotalPlayerCount);
 private:
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<class UButton> StartButton;
+
+	UPROPERTY(meta = (BindWidget))
+	TObjectPtr<class UTextBlock> MaxPlayerCount;
+
+	UPROPERTY(meta = (BindWidget))
+	TObjectPtr<class UTextBlock> TotalPlayerCount;
 };

@@ -128,29 +128,26 @@ protected:
 /** Collision Hit Event Of Another Actor */
 #pragma region COLLISION_HIT
 public:
-	virtual void KnockBackActor(const FVector& DirVec) override;
-	virtual void SetMoveToLocation(const FVector& HitVector) override;
-	virtual void SetMoveToActor(AActor* TargetActor) override;
+	virtual void ApplyPunchImpulse(const FVector& DirVec, bool IsPush = true) override;
+	virtual void ApplyObstacleImpulse(const FVector& DirVec) override;
 
 private:
-	void UpdateMoveToLocation(float DeltaTime);
-	void UpdateMoveToActor();
+	UFUNCTION()
+	void ResetMovementMode();
+
+	void CheckCollisionWithWall();
 
 private:
-	uint8 bIsMoveToLocation : 1;
-	FVector TargetLocation;
-	FVector StartLocation;
-	const float StopToMoveDistance = 100.f;
+	FTimerHandle MovementModeHandle;
 
-	UPROPERTY(EditAnywhere, Category = "Speed", Meta = (AllowPrivateAccess = true))
-	float MoveToLocationSpeed;
+	// Time the character stays in 'MOVE_Flying'
+	UPROPERTY(EditAnywhere, Category = "Hited")
+	float DurationInFlyMode;
 
-	/** Event of Collision Hit */
-	UPROPERTY(VisibleAnywhere)
-	uint8 bIsMoveToActor : 1;
-
-	UPROPERTY(VisibleAnywhere)
-	TWeakObjectPtr<AActor> MoveTargetActor;
+	uint8 bIsKnockBack : 1;
+	FVector HitedVector;
+	const float HitedCheckPos = 50.f;
+	const float KnockBackStunDuration = 2.f;
 #pragma endregion
 
 /** Enhanced Input */
@@ -213,8 +210,6 @@ public:
 	virtual void DisableStatFlag(ECharacterStat InFlag) override;
 	virtual bool IsStatFlagSet(ECharacterStat InFlag) override;
 
-<<<<<<< Updated upstream
-=======
 	/** Clear All Timer */
 	void ClearAllTimer();
 
@@ -225,7 +220,6 @@ private:
 	UFUNCTION(NetMulticast, Reliable)
 	void MultiEnableStatFlag(ECharacterStat InFlag, float ChangeDuration);
 
->>>>>>> Stashed changes
 protected:
 	bool IsCanMove();
 	bool IsCanAttack();

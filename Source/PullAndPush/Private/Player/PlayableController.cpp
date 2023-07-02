@@ -2,11 +2,8 @@
 #include "Blueprint/UserWidget.h"
 #include "Widget/InGameHUD.h"
 #include "Game/InGameMode.h"
-<<<<<<< Updated upstream
-=======
 #include "Game/InGameInstance.h"
 #include "Character/PlayableCharacter.h"
->>>>>>> Stashed changes
 
 APlayableController::APlayableController() {
 
@@ -47,10 +44,8 @@ void APlayableController::PlayerFellOutOfWorld()
 {
 	if (CurGameMode)
 	{
-		CurGameMode->PlayerFellOutOfWorld(GetName());
+		CurGameMode->PlayerFellOutOfWorld(this);
 	}
-<<<<<<< Updated upstream
-=======
 
 	SetPlayerSpectate();
 }
@@ -90,7 +85,7 @@ void APlayableController::SetPlayerSpectate()
 	StartSpectatingOnly();
 	ClientHUDStateChanged(EHUDState::Spectating);
 
-	// @TODO : �ӽù���
+	// @TODO : ÀÓ½Ã¹æÆÐ
 	FTimerHandle Handle;
 	GetWorld()->GetTimerManager().SetTimer(Handle, this, &APlayableController::SetState,1.f,false);
 }
@@ -104,5 +99,4 @@ void APlayableController::ClientHUDStateChanged_Implementation(EHUDState NewStat
 	{
 		InGameHUD->OnStateChanged(NewState);
 	}
->>>>>>> Stashed changes
 }

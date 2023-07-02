@@ -15,7 +15,7 @@
 
 APlayableCharacter::APlayableCharacter()
 	:
-	bIsMoveToLocation(false), TargetLocation(FVector(0.f)), StartLocation(FVector(0.f)), MoveToLocationSpeed(5000.f), bIsMoveToActor(false), MoveTargetActor(nullptr)
+	DurationInFlyMode(0.3f), bIsKnockBack(0)
 {
 	PrimaryActorTick.bCanEverTick = true;
 
@@ -70,11 +70,8 @@ void APlayableCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	// If Hit Event is Called.
-	UpdateMoveToLocation(DeltaTime);
-	UpdateMoveToActor();
-
 	UpdateAimPitch();
+	CheckCollisionWithWall();
 }
 void APlayableCharacter::FellOutOfWorld(const UDamageType& dmgType)
 {
@@ -259,48 +256,57 @@ void APlayableCharacter::UpdateSpringArmLength(const float NewArmLength)
 {
 	SpringArmComp->TargetArmLength = NewArmLength;
 }
-void APlayableCharacter::KnockBackActor(const FVector& DirVec)
+void APlayableCharacter::ApplyPunchImpulse(const FVector& DirVec, bool IsPush)
+{
+	// If the character is on the ground
+	if (GetCharacterMovement()->MovementMode == EMovementMode::MOVE_Walking)
+	{
+		GetCharacterMovement()->SetMovementMode(EMovementMode::MOVE_Flying);
+	}
+
+	bIsKnockBack = IsPush;
+	HitedVector = DirVec;
+	GetCharacterMovement()->AddImpulse(DirVec);
+	GetWorld()->GetTimerManager().ClearTimer(MovementModeHandle);
+	GetWorld()->GetTimerManager().SetTimer(MovementModeHandle, this, &APlayableCharacter::ResetMovementMode, DurationInFlyMode, false);
+}
+void APlayableCharacter::ApplyObstacleImpulse(const FVector& DirVec)
 {
 	GetCharacterMovement()->AddImpulse(DirVec);
 }
-void APlayableCharacter::SetMoveToLocation(const FVector& HitVector)
+void APlayableCharacter::ResetMovementMode()
 {
-	bIsMoveToLocation = true;
-	TargetLocation = HitVector;
-	StartLocation = GetActorLocation();
+	if (GetCharacterMovement()->MovementMode != EMovementMode::MOVE_Falling)
+	{
+		GetCharacterMovement()->SetMovementMode(EMovementMode::MOVE_Falling);
+	}
+	bIsKnockBack = false;
 }
-void APlayableCharacter::UpdateMoveToLocation(float DeltaTime)
+void APlayableCharacter::CheckCollisionWithWall()
 {
-	if (bIsMoveToLocation) {
-		const FVector Direction = (TargetLocation - StartLocation).GetSafeNormal();	
-		const FVector NewLocation = StartLocation + (Direction * MoveToLocationSpeed * DeltaTime);
-		
-		DrawDebugLine(GetWorld(), StartLocation, NewLocation, FColor::Green, false, 10.f);
-		DrawDebugSphere(GetWorld(),NewLocation, 12.f, 25,FColor::Red,false, 10.f);
-		StartLocation = NewLocation;
-		SetActorLocation(NewLocation);
+	if (bIsKnockBack)
+	{
+		// Find objects within the sphere
+		FHitResult OutHit;
+		FCollisionObjectQueryParams CollisionObjectQueryParams;
+		FCollisionQueryParams Params(SCENE_QUERY_STAT(RocketPunch), false, this);
+		CollisionObjectQueryParams.AddObjectTypesToQuery(ECollisionChannel::ECC_WorldStatic);
+		Params.AddIgnoredActor(this);
 
-		// Stop Moving if close to TargetLocation
-		if (FVector::Distance(NewLocation, TargetLocation) < StopToMoveDistance) {
-			bIsMoveToLocation = false;
+		// Check Hited
+		const FVector OriginPos = GetActorLocation() + (HitedVector.GetSafeNormal() * HitedCheckPos);
+		const float CapsuleRadius = GetCapsuleComponent()->GetScaledCapsuleRadius();
+		const float CapsuleHeight = GetCapsuleComponent()->GetScaledCapsuleHalfHeight() - 15.f;
+		bool HitDetected = GetWorld()->SweepSingleByObjectType(OutHit, OriginPos, OriginPos, FQuat::Identity, CollisionObjectQueryParams, FCollisionShape::MakeCapsule(CapsuleRadius, CapsuleHeight), Params);
+		if (HitDetected)
+		{
+			EnableStatFlag(ECharacterStat::Stun, KnockBackStunDuration);
+			bIsKnockBack = false;
 		}
-	}
-}
-void APlayableCharacter::SetMoveToActor(AActor* TargetActor)
-{
-	if (IsValid(TargetActor)) {
-		bIsMoveToActor = true;
-		MoveTargetActor = TargetActor;
-	}
-	else {
-		bIsMoveToActor = false;
-		MoveTargetActor = nullptr;
-	}
-}
-void APlayableCharacter::UpdateMoveToActor()
-{
-	if (bIsMoveToActor && MoveTargetActor.IsValid()) {
-		SetActorLocation(MoveTargetActor.Get()->GetActorLocation());
+
+		// For log
+		FColor DrawColor = HitDetected ? FColor::Green : FColor::Red; 
+		DrawDebugCapsule(GetWorld(), OriginPos, CapsuleHeight, CapsuleRadius, FQuat::Identity, DrawColor, false, 0.1f);
 	}
 }
 void APlayableCharacter::PickUpItem(UItemData* ItemData)
@@ -324,7 +330,7 @@ void APlayableCharacter::ChangeVisibleItemInfo(const FInputActionValue& Value)
 }
 void APlayableCharacter::EnableStatFlag(ECharacterStat InFlag, float ChangeDuration)
 {
-	StatComp->EnableStatFlag(InFlag, ChangeDuration);
+	ServerEnableStatFlag(InFlag, ChangeDuration);
 }
 void APlayableCharacter::DisableStatFlag(ECharacterStat InFlag)
 {
@@ -333,6 +339,16 @@ void APlayableCharacter::DisableStatFlag(ECharacterStat InFlag)
 bool APlayableCharacter::IsStatFlagSet(ECharacterStat InFlag)
 {
 	return (StatComp) ? StatComp->IsStatFlagSet(InFlag) : false;
+}
+void APlayableCharacter::ServerEnableStatFlag_Implementation(ECharacterStat InFlag, float ChangeDuration)
+{
+	StatComp->EnableStatFlag(InFlag, ChangeDuration);
+
+	MultiEnableStatFlag(InFlag, ChangeDuration);
+}
+void APlayableCharacter::MultiEnableStatFlag_Implementation(ECharacterStat InFlag, float ChangeDuration)
+{
+	StatComp->EnableStatFlag(InFlag, ChangeDuration);
 }
 bool APlayableCharacter::IsCanMove()
 {

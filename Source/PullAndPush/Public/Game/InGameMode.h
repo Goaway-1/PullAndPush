@@ -21,7 +21,7 @@ public:
 #pragma region ROUND
 public:
 	/** Decrease player count if character is fell out of world */
-	void PlayerFellOutOfWorld(const FString& ControllerName);
+	void PlayerFellOutOfWorld(APlayerController* Player);
 
 private:
 	/** Start round if all players are logged in to the level */
@@ -40,6 +40,7 @@ private:
 	// Player Count
 	int8 TotalPlayerCount;
 	int8 CurrentPlayerCount;
+	const float RoundStartTime = 3.f;
 
 	UPROPERTY()
 	TObjectPtr<class UInGameInstance> InGameInstance;
@@ -62,7 +63,10 @@ private:
 	* @param	int8			Score
 	*/
 	UPROPERTY()
-	TMap<FString, int8> Controllers;
+	TMap<FString, int8> ControllersScore;
+
+	UPROPERTY()
+	TArray<class APlayableController*> Controllers;
 
 	int8 CurrentScore;
 	const int8 InitialScore = -1;

@@ -127,6 +127,6 @@ UMaterialInterface* UStatComponent::GetMaterialForCharacterStat(FString StatName
 		}
 
 	}
-	PPLOG(Warning, TEXT("No valid MaterialUI found in StatMartialTable"));
+	PPLOG(Warning, TEXT("No valid MaterialUI found in StatMartialTable : %s"),*StatName);
 	return nullptr; 
 }

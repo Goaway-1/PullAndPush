@@ -1,6 +1,7 @@
 #include "Game/InGameMode.h"
 #include "Game/InGameInstance.h"
 #include "Kismet/GameplayStatics.h"
+#include "Player/PlayableController.h"
 
 AInGameMode::AInGameMode()
 	:
@@ -32,14 +33,21 @@ void AInGameMode::PostLogin(APlayerController* NewPlayer)
 		RoundStart();
 	}
 }
-void AInGameMode::PlayerFellOutOfWorld(const FString& ControllerName)
+void AInGameMode::PlayerFellOutOfWorld(APlayerController* Player)
 {
+	const FString ControllerName = Player->GetName();
 	SetPlayerScore(ControllerName);
 
 	// Check Round Is End?
 	if (--CurrentPlayerCount <= 1)
 	{
 		RoundEnd();
+	}
+
+	// Set Current Player Count for Widget
+	for (auto Controller : Controllers)
+	{
+		Controller->SetCurrentPlayerCount(CurrentPlayerCount);
 	}
 }
 void AInGameMode::RoundStart()
@@ -76,16 +84,24 @@ void AInGameMode::AllRoundsCompleted()
 }
 void AInGameMode::InitPlayersScore(APlayerController* NewPlayer)
 {
-	Controllers.Add(NewPlayer->GetName(), InitialScore);
+	ControllersScore.Add(NewPlayer->GetName(), InitialScore);
+
+	// Init Player Count
+	APlayableController* PlayableController = Cast<APlayableController>(NewPlayer);
+	if (PlayableController)
+	{
+		Controllers.Add(PlayableController);
+		PlayableController->InitPlayerCount(TotalPlayerCount);
+	}
 }
 void AInGameMode::SetPlayerScore(const FString& ControllerName)
 {
-	Controllers[ControllerName] = CurrentScore++;
+	ControllersScore[ControllerName] = CurrentScore++;
 }
 void AInGameMode::CalculatePlayerScore()
 {
 	// Give score to the characters who survive to the end
-	for (auto& Controller : Controllers)
+	for (auto& Controller : ControllersScore)
 	{
 		if (Controller.Value == InitialScore)
 		{
@@ -97,6 +113,6 @@ void AInGameMode::CalculatePlayerScore()
 	// Access GameInstance and set player score
 	if (InGameInstance)
 	{
-		InGameInstance->SetPlayersScore(Controllers);
+		InGameInstance->SetPlayersScore(ControllersScore);
 	}
 }

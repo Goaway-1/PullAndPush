@@ -7,7 +7,7 @@
 URPMovementComponent::URPMovementComponent()
 	:
 	bIsReturn(false), bIsLaunch(false), bIsForceReturn(false),
-	ReturnMoveSpeed(30.f), MaxMoveSpeed(25.f), MinMoveSpeed(15.f), MaxDistance(2000.f), MinDistance(1000.f)
+	ReturnMoveSpeed(35.f), MaxMoveSpeed(25.f), MinMoveSpeed(15.f), MaxDistance(1000.f), MinDistance(500.f)
 {
 	PrimaryComponentTick.bCanEverTick = true;
 	SetIsReplicatedByDefault(true);
@@ -87,7 +87,7 @@ void URPMovementComponent::UpdateLocation()
 			bIsForceReturn = false;
 			Owner->SetActorEnableCollision(false);
 			Owner->SetCollisionSimulatePhysics(false);
-			SetCurMoveSpeed(MaxMoveSpeed);
+			SetCurMoveSpeed(ReturnMoveSpeed);
 		}
 		else {
 			bIsLaunch = false;

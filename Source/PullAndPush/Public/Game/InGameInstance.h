@@ -52,13 +52,15 @@ public:
 	void InitTotalPlayerCount();
 	void AddTotalPlayerCount();
 	FORCEINLINE int8 GetTotalPlayerCount() { return TotalPlayerCount; }
+	FORCEINLINE int8 GetMaxPlayerCount() { return MaxPlayerCount; }
 
 	// Score
 	void SetPlayersScore(TMap<FString, int8>& Controllers);
 	TMap<FString, int8>& GetPlayersScore();
 
 private:
-	int8 TotalPlayerCount;
+	int8 TotalPlayerCount;					// 참가한 인원
+	const int8 MaxPlayerCount = 8;			// 참가가 가능한 인원
 
 	/**
 	* Save Controller's Score

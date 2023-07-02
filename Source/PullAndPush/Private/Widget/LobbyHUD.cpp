@@ -1,5 +1,6 @@
 #include "Widget/LobbyHUD.h"
 #include "Widget/LobbyWidget.h"
+#include "Game/InGameInstance.h"
 
 void ALobbyHUD::BeginPlay()
 {
@@ -16,4 +17,9 @@ void ALobbyHUD::BeginPlay()
 void ALobbyHUD::DrawHUD()
 {
 	Super::DrawHUD();
+}
+
+void ALobbyHUD::SetLobbyWidgetData(int8 InMaxPlayerCount, int8 InTotalPlayerCount)
+{
+	LobbyWidget->SetLobbyWidgetData(InMaxPlayerCount, InTotalPlayerCount);
 }

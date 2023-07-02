@@ -1,4 +1,5 @@
 #include "Game/LobbyGameMode.h"
+#include "Player/UIController.h"
 #include "Game/InGameInstance.h"
 
 void ALobbyGameMode::InitGame(const FString& MapName, const FString& Options, FString& ErrorMessage)
@@ -20,5 +21,20 @@ void ALobbyGameMode::PostLogin(APlayerController* NewPlayer)
 	if (InGameInstance)
 	{
 		InGameInstance->AddTotalPlayerCount();
+	}
+
+	SetLobbyWidgetData(NewPlayer);
+}
+void ALobbyGameMode::SetLobbyWidgetData(APlayerController* NewPlayer)
+{
+	// Add Controllers
+	if (!InGameInstance) return;
+	AUIController* NewUIController = Cast<AUIController>(NewPlayer);
+	Controllers.Add(NewUIController);
+
+	// Try to set Lobby Data to widget
+	for (auto Controller : Controllers)
+	{
+		Controller->SetLobbyWidgetData(InGameInstance->GetMaxPlayerCount(), InGameInstance->GetTotalPlayerCount());
 	}
 }

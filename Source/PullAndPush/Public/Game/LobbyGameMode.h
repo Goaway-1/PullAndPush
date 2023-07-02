@@ -19,6 +19,12 @@ public:
 	virtual void PostLogin(APlayerController* NewPlayer) override;
 
 private:
+	void SetLobbyWidgetData(APlayerController* NewPlayer);
+
+private:
 	UPROPERTY()
 	TObjectPtr<class UInGameInstance> InGameInstance;
+
+	UPROPERTY()
+	TArray<class AUIController*> Controllers;
 };

@@ -21,12 +21,11 @@ class PULLANDPUSH_API ICharacterInterActionHandler
 	GENERATED_BODY()
 
 public:
+	/** Hit by RocketPunch */
 	UFUNCTION()
-	virtual void KnockBackActor(const FVector& DirVec) = 0;
+	virtual void ApplyPunchImpulse(const FVector& DirVec, bool IsPush = true) = 0;
 
+	/** Hit by Obstacle */
 	UFUNCTION()
-	virtual void SetMoveToLocation(const FVector& HitVector) = 0;
-
-	UFUNCTION()
-	virtual void SetMoveToActor(AActor* TargetActor) = 0;
+	virtual void ApplyObstacleImpulse(const FVector& DirVec) = 0;
 };

@@ -2,10 +2,11 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/PlayerController.h"
+#include "Interface/PlayableControllerHandler.h"
 #include "PlayableController.generated.h"
 
 UCLASS()
-class PULLANDPUSH_API APlayableController : public APlayerController
+class PULLANDPUSH_API APlayableController : public APlayerController, public IPlayableControllerHandler
 {
 	GENERATED_BODY()
 public:
@@ -26,9 +27,18 @@ public:
 	UFUNCTION()
 	void UpdateStatUI(const FString& StatName, UMaterialInterface* Material);
 
+	UFUNCTION(Client, Reliable)
+	void InitPlayerCount(int8 InTotalPlayerCount);
+
+	UFUNCTION(Client, Reliable)
+	void SetCurrentPlayerCount(int8 InCount);
+
+	virtual void SetPlayerCount() override;
 private:
 	UPROPERTY()
 	TObjectPtr<class AInGameHUD> InGameHUD;
+
+	int8 TotalPlayerCount;
 #pragma endregion
 
 #pragma region GAMEMODE
@@ -43,8 +53,6 @@ private:
 	TObjectPtr<class AInGameMode> CurGameMode;
 #pragma endregion
 
-<<<<<<< Updated upstream
-=======
 #pragma region SPECTATE
 private:
 	/** Set Player to spectate. Should be called only on server */
@@ -55,10 +63,9 @@ private:
 	UFUNCTION(Client, Reliable)
 	void ClientHUDStateChanged(EHUDState NewState);
 
-	/** @TODO : ÀÓ½Ã ¹æÆÐ¿ëµµ (°üÂûÀÚ¸ðµå °­Á¦ º¯°æ) */
+	/** @TODO : ìž„ì‹œ ë°©íŒ¨ìš©ë„ (ê´€ì°°ìžëª¨ë“œ ê°•ì œ ë³€ê²½) */
 	UFUNCTION()
 	void SetState();
 
 #pragma endregion
->>>>>>> Stashed changes
 };
