@@ -7,7 +7,7 @@ void UPassiveItemDataRPSizeUp::UsePassiveItem(AActor* TargetActor, FTimerHandle 
     Super::UsePassiveItem(TargetActor, Handler, InPassiveItemAlreadyActivated);
 
     // Try Rocket Punch Size Up
-    if (!bIsItemActivated) {
+    if (CharacterPropertyHandler.GetInterface() && !bIsItemActivated) {
         CharacterPropertyHandler->SetRocketPunchScale(WeightValue);
     }
 }
@@ -17,5 +17,8 @@ void UPassiveItemDataRPSizeUp::EndPassiveItem()
     Super::EndPassiveItem();
 
     // Try Rocket Punch Size Down
-    CharacterPropertyHandler->SetRocketPunchScale(1.f);
+    if (CharacterPropertyHandler.GetInterface())
+    {
+        CharacterPropertyHandler->SetRocketPunchScale(1.f);
+    }
 }

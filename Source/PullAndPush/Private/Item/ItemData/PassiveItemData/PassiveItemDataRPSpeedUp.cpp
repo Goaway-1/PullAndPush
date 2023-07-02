@@ -8,7 +8,7 @@ void UPassiveItemDataRPSpeedUp::UsePassiveItem(AActor* TargetActor, FTimerHandle
     Super::UsePassiveItem(TargetActor, Handler, InPassiveItemAlreadyActivated);
 
     // Try Rocket Punch Speed Up
-    if (!bIsItemActivated) {
+    if (CharacterPropertyHandler.GetInterface() && !bIsItemActivated) {
         CharacterPropertyHandler->SetRocketPunchSpeed(WeightValue);
     }
 }
@@ -18,5 +18,8 @@ void UPassiveItemDataRPSpeedUp::EndPassiveItem()
     Super::EndPassiveItem();
 
     // Try Rocket Punch Speed Down
-    CharacterPropertyHandler->SetRocketPunchSpeed(1.f);
+    if (CharacterPropertyHandler.GetInterface())
+    {
+        CharacterPropertyHandler->SetRocketPunchSpeed(1.f);
+    }
 }

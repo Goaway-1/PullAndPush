@@ -50,6 +50,12 @@ void AInGameMode::RoundEnd()
 {
 	CalculatePlayerScore();
 
+	// Clear all timer of characters..
+	for (auto Controller : Controllers)
+	{
+		Controller->ClearAllTimer();
+	}
+
 	// Access GameInstance and Switch Level
 	if(!InGameInstance->IsAllRoundsFinished())
 	{
