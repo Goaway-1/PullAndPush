@@ -1,6 +1,7 @@
 #include "RocketPunch/RPMovementComponent.h"
 #include "Kismet/KismetMathLibrary.h"
-#include "RocketPunch/RocketPunch.h"
+//#include "RocketPunch/RocketPunch.h"
+#include "RocketPunch/ClientRocketPunch.h"
 #include "DrawDebugHelpers.h"
 #include "Net/UnrealNetwork.h"
 
@@ -28,7 +29,7 @@ void URPMovementComponent::TickComponent(float DeltaTime, ELevelTick TickType, F
 }
 void URPMovementComponent::InitSetting()
 {
-	Owner = Cast<ARocketPunch>(GetOwner());
+	Owner = Cast<AClientRocketPunch>(GetOwner());
 	Owner->SetActorEnableCollision(false);
 	Owner->SetMeshVisibility(false);
 	Owner->SetActorTickEnabled(false);
@@ -46,14 +47,14 @@ void URPMovementComponent::CheckMovement()
 		UpdateLocation();
 	}
 }
-void URPMovementComponent::Launch(const float& ForceAlpha, AActor* InCasterActor, const FVector& InVec, const FRotator& InRot, const float& AlphaSpeed, const float& AlphaRange)
+void URPMovementComponent::Launch(const float& ForceAlpha, AActor* InCasterActor, const bool InForceVisibility, const FVector& InVec, const FRotator& InRot, const float& AlphaSpeed, const float& AlphaRange)
 {
 	if (CasterActor == nullptr) CasterActor = InCasterActor;
 
 	// Rocket Punch Setting
 	Owner->SetActorLocationAndRotation(InVec, InRot);
 	Owner->SetActorEnableCollision(true);
-	Owner->SetMeshVisibility(true);
+	Owner->SetMeshVisibility(!InForceVisibility);
 	Owner->SetActorTickEnabled(true);
 	Owner->SetCollisionSimulatePhysics(true);
 
@@ -92,7 +93,7 @@ void URPMovementComponent::UpdateLocation()
 		else {
 			bIsLaunch = false;
 			SetCanLaunch(true);
-			Owner->SetActorLocation(FVector(999.f));		// Set Location Safe Place
+			Owner->SetActorLocation(FVector(999.f));		// @TODO : юс╫ц (Set Location Safe Place)
 			Owner->SetMeshVisibility(false);
 			Owner->SetActorTickEnabled(false);
 		}
@@ -116,9 +117,9 @@ void URPMovementComponent::OnRep_ChangeRotation()
 void URPMovementComponent::SetCanLaunch(const bool& Val)
 {
 	UE_LOG(LogTemp, Log, TEXT("[RPMovementComponent] OnReturn Delegate is called!"));
-	OnReturn.Execute(Val);
+	OnReturn.ExecuteIfBound(Val);
 }
-void URPMovementComponent::SetIsForceReturn(const bool& Val)
+void URPMovementComponent::SetIsForceReturn(bool Val)
 {
 	bIsForceReturn = Val;
 }

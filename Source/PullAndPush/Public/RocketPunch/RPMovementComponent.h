@@ -22,13 +22,13 @@ protected:
 public:	
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
-	void Launch(const float& ForceAlpha, AActor* InCasterActor, const FVector& InVec, const FRotator& InRot, const float& AlphaSpeed, const float& AlphaRange);
+	void Launch(const float& ForceAlpha, AActor* InCasterActor, const bool InForceVisibility,const FVector& InVec, const FRotator& InRot, const float& AlphaSpeed, const float& AlphaRange);
 
 	// Make it possible to attack again
 	FRPMovementComponentOnReturn OnReturn;
 
 	UFUNCTION()
-	void SetIsForceReturn(const bool& Val);
+	void SetIsForceReturn(bool Val);
 
 private:
 	// Is RocketPunch is return to Player? Or Launched?
@@ -69,7 +69,7 @@ private:
 	float CurMoveSpeed;
 
 	UPROPERTY()
-	TObjectPtr<class ARocketPunch> Owner;			// RocketPunch
+	TObjectPtr<class AClientRocketPunch> Owner;			// RocketPunch
 
 	UPROPERTY()
 	TObjectPtr<class AActor> CasterActor;			// RocketPunch의 소유자

@@ -36,10 +36,6 @@ private:
 	UPROPERTY()
 	TObjectPtr<class UInGameWidget> InGameWidget;
 
-/** InGame Widget */
-public:
-	void UpdateItemUI(UDataAsset* CurrentItem, const bool IsPassvieItem);
-  
 /** Funtion */
 	UPROPERTY()
 	TObjectPtr<class USpectatorWidget> SpectatorWidget;

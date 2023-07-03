@@ -12,7 +12,6 @@
 class USpringArmComponent;
 class UCameraComponent;
 
-
 UCLASS()
 class PULLANDPUSH_API APlayableCharacter : public ACharacter, public ICharacterInterActionHandler, public ICharacterPickupHandler, public ICharacterStatHandler
 {

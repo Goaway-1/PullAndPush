@@ -1,5 +1,6 @@
 #include "Character/AttackComponent.h"
 #include "RocketPunch/RocketPunch.h"
+#include "RocketPunch/ClientRocketPunch.h"
 #include "GameFramework/Character.h"
 #include "Engine/SkeletalMeshSocket.h"
 #include "Math/Quat.h"
@@ -10,7 +11,7 @@
 UAttackComponent::UAttackComponent() 
 	:
 	ChargingTime(0.f), bIsCharging(false), bIsChangeValue(false),
-	bIsCanLaunch(true), RocketPunch(nullptr)
+	bIsCanLaunch(true), RocketPunch(nullptr), ClientRocketPunch(nullptr)
 {
 	PrimaryComponentTick.bCanEverTick = true;
 
@@ -83,7 +84,13 @@ void UAttackComponent::EndLaunch(bool bIsPush)
 			const float RPAlphaSpeed = OwnerHandler->GetRocketPunchSpeed();
 			const float RPAlphaRange = OwnerHandler->GetRocketPunchRange();
 			const float RPAlphaSize = OwnerHandler->GetRocketPunchScale();
-			RocketPunch->ReadyToLaunch(ChargingAlpha, GetOwner(), bIsPush, LaunchLocation, LaunchRotation, RPAlphaSpeed, RPAlphaRange, RPAlphaSize);
+			
+			// @TEST : 클라인 경우.. 서버는 삭제..!
+			if (ClientRocketPunch)	
+			{
+				ClientRocketPunch->ReadyToLaunch(ChargingAlpha, GetOwner(), bIsPush, false,LaunchLocation, LaunchRotation, RPAlphaSpeed, RPAlphaRange, RPAlphaSize);
+			}
+			RocketPunch->ReadyToLaunch(ChargingAlpha, GetOwner(), bIsPush, false, LaunchLocation, LaunchRotation, RPAlphaSpeed, RPAlphaRange, RPAlphaSize);
 		}
 	}
 	else bIsCanLaunch = true;
@@ -93,6 +100,17 @@ void UAttackComponent::SpawnRocketPunch()
 	if (GetOwnerRole() == ROLE_AutonomousProxy)
 	{
 		ServerSpawnRocketPunch();
+
+		if (ClientRocketPunchClass)
+		{
+			FActorSpawnParameters SpawnParams;
+			SpawnParams.Owner = GetOwner();
+			SpawnParams.Instigator = GetOwner()->GetInstigator();
+
+			ClientRocketPunch = GetWorld()->SpawnActor<AClientRocketPunch>(ClientRocketPunchClass, SpawnParams);
+			ensure(ClientRocketPunch != nullptr);
+			ClientRocketPunch->SetActorLocation(GetOwner()->GetActorLocation());
+		}
 	}
 	else if (!RocketPunch && RocketPunchClass)
 	{
@@ -104,6 +122,7 @@ void UAttackComponent::SpawnRocketPunch()
 		ensure(RocketPunch != nullptr);
 		RocketPunch->SetActorLocation(GetOwner()->GetActorLocation());
 		RocketPunch->OutOfUse.BindUObject(this, &UAttackComponent::ClientSetCanLaunch);
+		RocketPunch->OnRocketPunchCallBack.BindUObject(this, &UAttackComponent::ClientSetClientRP);
 	}
 }
 void UAttackComponent::ServerSpawnRocketPunch_Implementation()
@@ -120,6 +139,13 @@ void UAttackComponent::ChangeMovementSpeed(const bool& IsCharging)
 	{
 		// Set Character AttackCondition & MovementSpeed
 		CharacterPropertyHandler->SetPlayerAttackCondition(IsCharging);
+	}
+}
+void UAttackComponent::SetRPForceReturn_Implementation()
+{
+	if (ClientRocketPunch)
+	{
+		ClientRocketPunch->SetForceReturn();
 	}
 }
 void UAttackComponent::ClientSetCanLaunch_Implementation(const bool Val)

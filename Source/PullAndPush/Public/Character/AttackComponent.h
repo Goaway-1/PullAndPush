@@ -61,4 +61,13 @@ protected:
 
 	UPROPERTY(Replicated, VisibleAnywhere, Category = "RocketPunch")
 	TObjectPtr<class ARocketPunch> RocketPunch;
+
+	UPROPERTY(EditAnywhere, Category = "RocketPunch")
+	TSubclassOf<class AClientRocketPunch> ClientRocketPunchClass;
+
+	UPROPERTY(VisibleAnywhere, Category = "RocketPunch")
+	TObjectPtr<class AClientRocketPunch> ClientRocketPunch;
+
+	UFUNCTION(Client, Reliable)
+	void SetRPForceReturn();
 };

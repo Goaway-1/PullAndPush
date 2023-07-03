@@ -7,7 +7,7 @@
 #include "RPCollisionComponent.generated.h"
 
 DECLARE_DELEGATE(FRPCollisionComponentReset)
-DECLARE_DELEGATE_OneParam(FRPCollisionComponentForceReturn, const bool&)
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FRPCollisionComponentForceReturn, bool, bIsForceReturn);
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class PULLANDPUSH_API URPCollisionComponent : public UActorComponent

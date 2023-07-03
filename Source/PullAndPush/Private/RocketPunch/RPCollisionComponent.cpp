@@ -50,7 +50,7 @@ void URPCollisionComponent::OnHit(UPrimitiveComponent* HitComponent, AActor* Oth
 			GrapActorToOwner(OtherActor, OtherComponent);
 		}
 	}
-	OnForceReturn.Execute(true);
+	OnForceReturn.Broadcast(true);
 
 	// Set Value
 	bIsAlreadyOverlapped = true;
