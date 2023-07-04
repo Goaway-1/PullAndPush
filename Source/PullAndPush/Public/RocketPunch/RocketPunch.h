@@ -45,4 +45,22 @@ public:
 
 	UFUNCTION()
 	void SetRocketPunchCallBack(bool InValue /*Nothing*/);
+
+public:
+	virtual void SetMeshVisibility(bool InVisibility) override;
+
+	virtual void SetMeshChange(bool IsPush) override;
+
+private:
+	UPROPERTY(Replicated, ReplicatedUsing = OnRep_ChangeMeshVisibility)
+	bool bStaticMeshVisibility;
+
+	UFUNCTION()
+	void OnRep_ChangeMeshVisibility();
+
+	UFUNCTION()
+	void OnRep_ChangeMesh();
+
+	UPROPERTY(Replicated, ReplicatedUsing = OnRep_ChangeMesh)
+	TObjectPtr<class UStaticMesh> CurrentMesh;
 };

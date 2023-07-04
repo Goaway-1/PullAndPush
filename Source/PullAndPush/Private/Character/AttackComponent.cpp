@@ -84,13 +84,12 @@ void UAttackComponent::EndLaunch(bool bIsPush)
 			const float RPAlphaSpeed = OwnerHandler->GetRocketPunchSpeed();
 			const float RPAlphaRange = OwnerHandler->GetRocketPunchRange();
 			const float RPAlphaSize = OwnerHandler->GetRocketPunchScale();
-			
-			// @TEST : 클라인 경우.. 서버는 삭제..!
+
+			RocketPunch->ReadyToLaunch(ChargingAlpha, GetOwner(), bIsPush, LaunchLocation, LaunchRotation, RPAlphaSpeed, RPAlphaRange, RPAlphaSize);
 			if (ClientRocketPunch)	
 			{
-				ClientRocketPunch->ReadyToLaunch(ChargingAlpha, GetOwner(), bIsPush, false,LaunchLocation, LaunchRotation, RPAlphaSpeed, RPAlphaRange, RPAlphaSize);
+				ClientRocketPunch->ReadyToLaunch(ChargingAlpha, GetOwner(), bIsPush, LaunchLocation, LaunchRotation, RPAlphaSpeed, RPAlphaRange, RPAlphaSize);
 			}
-			RocketPunch->ReadyToLaunch(ChargingAlpha, GetOwner(), bIsPush, false, LaunchLocation, LaunchRotation, RPAlphaSpeed, RPAlphaRange, RPAlphaSize);
 		}
 	}
 	else bIsCanLaunch = true;
@@ -109,7 +108,7 @@ void UAttackComponent::SpawnRocketPunch()
 
 			ClientRocketPunch = GetWorld()->SpawnActor<AClientRocketPunch>(ClientRocketPunchClass, SpawnParams);
 			ensure(ClientRocketPunch != nullptr);
-			ClientRocketPunch->SetActorLocation(GetOwner()->GetActorLocation());
+			ClientRocketPunch->SetActorLocation(FVector(900.f));
 		}
 	}
 	else if (!RocketPunch && RocketPunchClass)
@@ -120,9 +119,9 @@ void UAttackComponent::SpawnRocketPunch()
 
 		RocketPunch = GetWorld()->SpawnActor<ARocketPunch>(RocketPunchClass, SpawnParams);
 		ensure(RocketPunch != nullptr);
-		RocketPunch->SetActorLocation(GetOwner()->GetActorLocation());
+		RocketPunch->SetActorLocation(FVector(900.f));
 		RocketPunch->OutOfUse.BindUObject(this, &UAttackComponent::ClientSetCanLaunch);
-		RocketPunch->OnRocketPunchCallBack.BindUObject(this, &UAttackComponent::ClientSetClientRP);
+		RocketPunch->OnRocketPunchCallBack.BindUObject(this, &UAttackComponent::SetRPForceReturn);
 	}
 }
 void UAttackComponent::ServerSpawnRocketPunch_Implementation()

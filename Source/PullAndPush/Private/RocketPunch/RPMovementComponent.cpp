@@ -1,6 +1,5 @@
 #include "RocketPunch/RPMovementComponent.h"
 #include "Kismet/KismetMathLibrary.h"
-//#include "RocketPunch/RocketPunch.h"
 #include "RocketPunch/ClientRocketPunch.h"
 #include "DrawDebugHelpers.h"
 #include "Net/UnrealNetwork.h"
@@ -47,14 +46,14 @@ void URPMovementComponent::CheckMovement()
 		UpdateLocation();
 	}
 }
-void URPMovementComponent::Launch(const float& ForceAlpha, AActor* InCasterActor, const bool InForceVisibility, const FVector& InVec, const FRotator& InRot, const float& AlphaSpeed, const float& AlphaRange)
+void URPMovementComponent::Launch(const float& ForceAlpha, AActor* InCasterActor, const FVector& InVec, const FRotator& InRot, const float& AlphaSpeed, const float& AlphaRange)
 {
 	if (CasterActor == nullptr) CasterActor = InCasterActor;
 
 	// Rocket Punch Setting
 	Owner->SetActorLocationAndRotation(InVec, InRot);
 	Owner->SetActorEnableCollision(true);
-	Owner->SetMeshVisibility(!InForceVisibility);
+	Owner->SetMeshVisibility(true);
 	Owner->SetActorTickEnabled(true);
 	Owner->SetCollisionSimulatePhysics(true);
 

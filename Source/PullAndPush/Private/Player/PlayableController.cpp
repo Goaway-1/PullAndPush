@@ -85,7 +85,7 @@ void APlayableController::SetPlayerSpectate()
 	StartSpectatingOnly();
 	ClientHUDStateChanged(EHUDState::Spectating);
 
-	// @TODO : ÀÓ½Ã¹æÆÐ
+	// @TODO : 임시 방패용도
 	FTimerHandle Handle;
 	GetWorld()->GetTimerManager().SetTimer(Handle, this, &APlayableController::SetState,1.f,false);
 }

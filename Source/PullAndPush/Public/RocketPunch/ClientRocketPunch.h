@@ -48,39 +48,32 @@ protected:
 #pragma region LAUNCH
 	/** Launch */
 public:
-	void ReadyToLaunch(const float& InForceAlpha, AActor* InCasterActor, const bool IsPush, const bool InForceVisibility, const FVector& InVec, const FRotator& InRot, const float& DeltaSpeed, const float& DeltaRange, const float& DeltaScale);
+	virtual void ReadyToLaunch(const float& InForceAlpha, AActor* InCasterActor, const bool IsPush, const FVector& InVec, const FRotator& InRot, const float& DeltaSpeed, const float& DeltaRange, const float& DeltaScale);
 
+	UFUNCTION()
+	void SetForceReturn();
 protected:
 	UFUNCTION(Server, Reliable)
-	void ServerReadyToLaunch(const float& InForceAlpha, AActor* InCasterActor, const bool IsPush, const bool InForceVisibility, const FVector& InVec, const FRotator& InRot, const float& DeltaSpeed, const float& DeltaRange, const float& DeltaScale);
+	void ServerReadyToLaunch(const float& InForceAlpha, AActor* InCasterActor, const bool IsPush, const FVector& InVec, const FRotator& InRot, const float& DeltaSpeed, const float& DeltaRange, const float& DeltaScale);
 
 	UPROPERTY(Transient)
 	float ForceAlpha;
 
 	uint8 bIsPush : 1;
 	const FName CollisionName = TEXT("RocketPunch");
+	const FName NoCollisionName = TEXT("NoCollision");
 #pragma endregion
 
 #pragma region VISIBILITY
 /** Visibility */
 public:
-	void SetMeshVisibility(bool InVisibility);
+	virtual void SetMeshVisibility(bool InVisibility);
+
+	virtual void SetMeshChange(bool IsPush);
 
 protected:
 	UFUNCTION()
-	void OnRep_ChangeMeshVisibility();
-
-	UFUNCTION()
-	void OnRep_ChangeMesh();
-
-	UFUNCTION()
 	void OnRep_ChangeScale();
-
-	UPROPERTY(Replicated, ReplicatedUsing = OnRep_ChangeMeshVisibility)
-	bool bStaticMeshVisibility;
-
-	UPROPERTY(Replicated, ReplicatedUsing = OnRep_ChangeMesh)
-	TWeakObjectPtr<class UStaticMesh> CurrentMesh;
 
 	UPROPERTY(Replicated, ReplicatedUsing = OnRep_ChangeScale)
 	FVector CurrentScale;
@@ -93,8 +86,4 @@ protected:
 	TObjectPtr<class UStaticMesh> PullMesh;
 
 #pragma endregion
-
-public:
-	UFUNCTION()
-	void SetForceReturn();
 };

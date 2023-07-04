@@ -17,15 +17,16 @@ AClientRocketPunch::AClientRocketPunch()
 	SetReplicateMovement(true);
 
 	CollisionComp = CreateDefaultSubobject<USphereComponent>(TEXT("SphereComp"));
-	CollisionComp->InitSphereRadius(35.0f);
+	CollisionComp->InitSphereRadius(0.f);
 	CollisionComp->SetSimulatePhysics(true);
 	CollisionComp->SetEnableGravity(false);
 	CollisionComp->SetNotifyRigidBodyCollision(true);
 	CollisionComp->SetGenerateOverlapEvents(false);
-	CollisionComp->SetCollisionProfileName(CollisionName);
 	SetRootComponent(CollisionComp);
 
 	StaticMeshComp = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("StaticMeshComp"));
+	StaticMeshComp->SetWorldScale3D(FVector(0.3f));
+	StaticMeshComp->SetCollisionProfileName(NoCollisionName);
 	StaticMeshComp->SetupAttachment(GetRootComponent());
 	StaticMeshComp->SetIsReplicated(true);
 
@@ -37,12 +38,14 @@ void AClientRocketPunch::BeginPlay()
 
 	ensure(PushMesh);
 	ensure(PullMesh);
+
+	SetMeshVisibility(false);
 }
-void AClientRocketPunch::ReadyToLaunch(const float& InForceAlpha, AActor* InCasterActor, const bool IsPush, const bool InForceVisibility, const FVector& InVec, const FRotator& InRot, const float& DeltaSpeed, const float& DeltaRange, const float& DeltaScale)
+void AClientRocketPunch::ReadyToLaunch(const float& InForceAlpha, AActor* InCasterActor, const bool IsPush, const FVector& InVec, const FRotator& InRot, const float& DeltaSpeed, const float& DeltaRange, const float& DeltaScale)
 {
 	if (!HasAuthority())
 	{
-		ServerReadyToLaunch(InForceAlpha, InCasterActor, IsPush, InForceVisibility, InVec, InRot, DeltaSpeed, DeltaRange, DeltaScale);
+		ServerReadyToLaunch(InForceAlpha, InCasterActor, IsPush, InVec, InRot, DeltaSpeed, DeltaRange, DeltaScale);
 	}
 	else
 	{
@@ -55,17 +58,20 @@ void AClientRocketPunch::ReadyToLaunch(const float& InForceAlpha, AActor* InCast
 
 		bIsPush = IsPush;
 		ForceAlpha = InForceAlpha;
-		RPMovementComponent->Launch(ForceAlpha, CasterActor.Get(), InForceVisibility, InVec, InRot, DeltaSpeed, DeltaRange);
+		RPMovementComponent->Launch(ForceAlpha, CasterActor.Get(), InVec, InRot, DeltaSpeed, DeltaRange);
 		PPLOG(Log, TEXT("AlphaSpeed : %f, AlphaRange : %f, AlphaSize : %s"), DeltaSpeed, DeltaRange, *CurrentScale.ToString());
 
 		// @TODO : ÀÌ½´ Á¸Àç : Setting Static mesh of RP
-		CurrentMesh = (bIsPush) ? PushMesh : PullMesh;
-		//OnRep_ChangeMesh();
+		SetMeshChange(bIsPush);
 	}
 }
-void AClientRocketPunch::ServerReadyToLaunch_Implementation(const float& InForceAlpha, AActor* InCasterActor, const bool IsPush, const bool InForceVisibility, const FVector& InVec, const FRotator& InRot, const float& DeltaSpeed, const float& DeltaRange, const float& DeltaScale)
+void AClientRocketPunch::ServerReadyToLaunch_Implementation(const float& InForceAlpha, AActor* InCasterActor, const bool IsPush, const FVector& InVec, const FRotator& InRot, const float& DeltaSpeed, const float& DeltaRange, const float& DeltaScale)
 {
-	ReadyToLaunch(InForceAlpha, InCasterActor, IsPush, InForceVisibility, InVec, InRot, DeltaSpeed, DeltaRange, DeltaScale);
+	ReadyToLaunch(InForceAlpha, InCasterActor, IsPush, InVec, InRot, DeltaSpeed, DeltaRange, DeltaScale);
+}
+void AClientRocketPunch::SetForceReturn()
+{
+	RPMovementComponent->SetIsForceReturn(true);
 }
 void AClientRocketPunch::SetCollisionSimulatePhysics(bool Val)
 {
@@ -73,35 +79,22 @@ void AClientRocketPunch::SetCollisionSimulatePhysics(bool Val)
 }
 void AClientRocketPunch::SetMeshVisibility(bool InVisibility)
 {
-	bStaticMeshVisibility = InVisibility;
 	StaticMeshComp->SetVisibility(InVisibility);
 }
-void AClientRocketPunch::OnRep_ChangeMeshVisibility()
+void AClientRocketPunch::SetMeshChange(bool IsPush)
 {
-	StaticMeshComp->SetVisibility(bStaticMeshVisibility);
+	UStaticMesh* NewMesh = (IsPush) ? PushMesh : PullMesh;
+	StaticMeshComp->SetStaticMesh(NewMesh);
 }
 void AClientRocketPunch::OnRep_ChangeScale()
 {
 	CollisionComp->SetWorldScale3D(CurrentScale);
 	StaticMeshComp->SetWorldScale3D(CurrentScale);
 }
-void AClientRocketPunch::SetForceReturn()
-{
-	PPLOG(Warning, TEXT("OnForceReturn"));
-	RPMovementComponent->SetIsForceReturn(true);
-}
-void AClientRocketPunch::OnRep_ChangeMesh()
-{
-	if (CurrentMesh.IsValid())
-	{
-		StaticMeshComp->SetStaticMesh(CurrentMesh.Get());
-	}
-}
+
 void AClientRocketPunch::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
-	DOREPLIFETIME(AClientRocketPunch, bStaticMeshVisibility);
-	DOREPLIFETIME(AClientRocketPunch, CurrentMesh);
 	DOREPLIFETIME(AClientRocketPunch, CurrentScale);
 }
