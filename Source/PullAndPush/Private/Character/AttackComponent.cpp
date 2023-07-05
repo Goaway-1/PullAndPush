@@ -81,14 +81,12 @@ void UAttackComponent::EndLaunch(bool bIsPush)
 		TScriptInterface<class ICharacterStatHandler> OwnerHandler = OwnerCharacter.Get();
 		if (OwnerHandler.GetInterface())
 		{
-			const float RPAlphaSpeed = OwnerHandler->GetRocketPunchSpeed();
-			const float RPAlphaRange = OwnerHandler->GetRocketPunchRange();
-			const float RPAlphaSize = OwnerHandler->GetRocketPunchScale();
+			OwnerHandler->GetPassiveStat();
 
-			RocketPunch->ReadyToLaunch(ChargingAlpha, GetOwner(), bIsPush, LaunchLocation, LaunchRotation, RPAlphaSpeed, RPAlphaRange, RPAlphaSize);
+			RocketPunch->ReadyToLaunch(ChargingAlpha, GetOwner(), bIsPush, LaunchLocation, LaunchRotation, OwnerHandler->GetPassiveStat());
 			if (ClientRocketPunch)	
 			{
-				ClientRocketPunch->ReadyToLaunch(ChargingAlpha, GetOwner(), bIsPush, LaunchLocation, LaunchRotation, RPAlphaSpeed, RPAlphaRange, RPAlphaSize);
+				ClientRocketPunch->ReadyToLaunch(ChargingAlpha, GetOwner(), bIsPush, LaunchLocation, LaunchRotation, OwnerHandler->GetPassiveStat());
 			}
 		}
 	}

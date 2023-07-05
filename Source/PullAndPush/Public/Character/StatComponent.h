@@ -5,6 +5,7 @@
 #include "PullAndPush.h"
 #include "Components/ActorComponent.h"
 #include "GameData/CharacterStat.h"
+#include "Interface/CharacterStatHandler.h"
 #include "StatComponent.generated.h"
 
 DECLARE_DELEGATE(FMoveSpeedChanged)
@@ -73,7 +74,11 @@ private:
 	float RocketPunchScale;
 
 /** Stat System */
+#pragma region STATSYSTEM
 public:
+	void SetPassiveStat(FPassiveStat InPassiveStat);
+	FPassiveStat GetPassiveStat();
+
 	UFUNCTION()
 	void EnableStatFlag(ECharacterStat InFlag, float ChangeDuration);
 
@@ -89,13 +94,18 @@ protected:
 	void RemoveStatFlagTimer(ECharacterStat InFlag);
 
 protected:
+	UPROPERTY(VisibleAnywhere, Category = "Stat")
+	FPassiveStat DefaultPassiveStat;
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Stat | Flag", meta = (Bitmask, BitmaskEnum = "/Script/PullAndPush.ECharacterStat"))
 	uint8 StatFlags;
 
 	UPROPERTY(VisibleAnywhere, Category = "Stat | Flag")
 	TMap<FString, FTimerHandle> StatFlagHandles;
+#pragma endregion
 
 /** Stat Widget */
+#pragma region WIDGET
 public:
 	FOnUpdateStatWidget OnUpdateStatWidget;
 
@@ -108,4 +118,5 @@ protected:
 protected:
 	UPROPERTY(EditDefaultsOnly, Category = "Stat | Flag")
 	TObjectPtr<class UDataTable> StatMartialTable;
+#pragma endregion
 };

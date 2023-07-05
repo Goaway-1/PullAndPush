@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Interface/AttackWeapon.h"
+#include "Interface/CharacterStatHandler.h"
 #include "GameFramework/Actor.h"
 #include "ClientRocketPunch.generated.h"
 
@@ -48,13 +49,16 @@ protected:
 #pragma region LAUNCH
 	/** Launch */
 public:
-	virtual void ReadyToLaunch(const float& InForceAlpha, AActor* InCasterActor, const bool IsPush, const FVector& InVec, const FRotator& InRot, const float& DeltaSpeed, const float& DeltaRange, const float& DeltaScale);
+	virtual void ReadyToLaunch(const float& InForceAlpha, AActor* InCasterActor, const bool IsPush, const FVector& InVec, const FRotator& InRot, FPassiveStat InPassiveStat);
 
 	UFUNCTION()
 	void SetForceReturn();
 protected:
 	UFUNCTION(Server, Reliable)
-	void ServerReadyToLaunch(const float& InForceAlpha, AActor* InCasterActor, const bool IsPush, const FVector& InVec, const FRotator& InRot, const float& DeltaSpeed, const float& DeltaRange, const float& DeltaScale);
+	void ServerReadyToLaunch(const float& InForceAlpha, AActor* InCasterActor, const bool IsPush, const FVector& InVec, const FRotator& InRot, FPassiveStat InPassiveStat);
+	
+	UPROPERTY()
+	FPassiveStat CurrentPassiveStat;
 
 	UPROPERTY(Transient)
 	float ForceAlpha;

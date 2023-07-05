@@ -46,7 +46,7 @@ void URPMovementComponent::CheckMovement()
 		UpdateLocation();
 	}
 }
-void URPMovementComponent::Launch(const float& ForceAlpha, AActor* InCasterActor, const FVector& InVec, const FRotator& InRot, const float& AlphaSpeed, const float& AlphaRange)
+void URPMovementComponent::Launch(const float& ForceAlpha, AActor* InCasterActor, const FVector& InVec, const FRotator& InRot, FPassiveStat InPassiveStat)
 {
 	if (CasterActor == nullptr) CasterActor = InCasterActor;
 
@@ -63,8 +63,11 @@ void URPMovementComponent::Launch(const float& ForceAlpha, AActor* InCasterActor
 	bIsForceReturn = false;
 
 	// Target Distance & Speed by Lerp + Plus Alpha Value...
-	const float LerpDistance = FMath::Lerp(MinDistance, MaxDistance, ForceAlpha) * AlphaRange;
-	const float LerpMoveSpeed = FMath::Lerp(MinMoveSpeed, MaxMoveSpeed, ForceAlpha) * AlphaSpeed;
+	float LerpDistance = FMath::Lerp(MinDistance, MaxDistance, ForceAlpha);
+	float LerpMoveSpeed = FMath::Lerp(MinMoveSpeed, MaxMoveSpeed, ForceAlpha);
+
+	if(InPassiveStat.RPRange > KINDA_SMALL_NUMBER) LerpDistance = LerpDistance * InPassiveStat.RPRange;
+	if(InPassiveStat.RPSpeed > KINDA_SMALL_NUMBER) LerpMoveSpeed = LerpMoveSpeed * InPassiveStat.RPSpeed;
 
 	SetPreDistance(false, LerpDistance);
 	SetCurMoveSpeed(LerpMoveSpeed);

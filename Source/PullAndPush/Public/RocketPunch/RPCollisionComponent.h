@@ -22,7 +22,8 @@ protected:
 
 public:
 	UFUNCTION()
-	void OnHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComponent, FVector NormalImpulse, const FHitResult& Hit, AActor* CasterActor, const bool IsPush, const float& ForceAlpha);
+	void OnHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComponent, FVector NormalImpulse,
+				const FHitResult& Hit, AActor* CasterActor, const bool IsPush, const float& ForceAlpha, FPassiveStat InPassiveStat);
 
 	UFUNCTION()
 	void ResetOverlapActors();

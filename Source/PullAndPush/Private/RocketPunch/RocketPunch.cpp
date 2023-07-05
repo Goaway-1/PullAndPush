@@ -36,7 +36,7 @@ void ARocketPunch::IsOutOfUse(const bool& Val)
 void ARocketPunch::OnHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComponent, FVector NormalImpulse, const FHitResult& Hit)
 {
 	if (OtherActor != CasterActor) {
-		RPCollisionComponent->OnHit(HitComponent,OtherActor,OtherComponent, NormalImpulse, Hit, GetCasterActor(), bIsPush, ForceAlpha);
+		RPCollisionComponent->OnHit(HitComponent,OtherActor,OtherComponent, NormalImpulse, Hit, GetCasterActor(), bIsPush, ForceAlpha, CurrentPassiveStat);
 	}
 }
 void ARocketPunch::SetRocketPunchCallBack(bool InValue)

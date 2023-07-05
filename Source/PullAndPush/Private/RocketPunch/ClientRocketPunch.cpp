@@ -1,6 +1,5 @@
 #include "RocketPunch/RocketPunch.h"
 #include "RocketPunch/RPMovementComponent.h"
-#include "Interface/CharacterStatHandler.h"
 #include "Components/SphereComponent.h"
 #include "Components/StaticMeshComponent.h"
 #include "Kismet/KismetMathLibrary.h"
@@ -41,33 +40,34 @@ void AClientRocketPunch::BeginPlay()
 
 	SetMeshVisibility(false);
 }
-void AClientRocketPunch::ReadyToLaunch(const float& InForceAlpha, AActor* InCasterActor, const bool IsPush, const FVector& InVec, const FRotator& InRot, const float& DeltaSpeed, const float& DeltaRange, const float& DeltaScale)
+void AClientRocketPunch::ReadyToLaunch(const float& InForceAlpha, AActor* InCasterActor, const bool IsPush, const FVector& InVec, const FRotator& InRot, FPassiveStat InPassiveStat)
 {
 	if (!HasAuthority())
 	{
-		ServerReadyToLaunch(InForceAlpha, InCasterActor, IsPush, InVec, InRot, DeltaSpeed, DeltaRange, DeltaScale);
+		ServerReadyToLaunch(InForceAlpha, InCasterActor, IsPush, InVec, InRot, InPassiveStat);
 	}
 	else
 	{
 		if (!CasterActor.IsValid()) CasterActor = InCasterActor;
 
 		// Set Scale of Visual & Collision
-		CurrentScale = FVector(DeltaScale);
+		CurrentPassiveStat = InPassiveStat;
+		CurrentScale = (InPassiveStat.RPScale < KINDA_SMALL_NUMBER) ? FVector(1.f) : FVector(InPassiveStat.RPScale);
 		CollisionComp->SetWorldScale3D(CurrentScale);
 		StaticMeshComp->SetWorldScale3D(CurrentScale);
 
 		bIsPush = IsPush;
 		ForceAlpha = InForceAlpha;
-		RPMovementComponent->Launch(ForceAlpha, CasterActor.Get(), InVec, InRot, DeltaSpeed, DeltaRange);
-		PPLOG(Log, TEXT("AlphaSpeed : %f, AlphaRange : %f, AlphaSize : %s"), DeltaSpeed, DeltaRange, *CurrentScale.ToString());
+		RPMovementComponent->Launch(ForceAlpha, CasterActor.Get(), InVec, InRot, InPassiveStat);
+		PPLOG(Log, TEXT("AlphaSpeed : %f, AlphaRange : %f, AlphaSize : %s"), InPassiveStat.RPSpeed, InPassiveStat.RPRange, *CurrentScale.ToString());
 
 		// @TODO : ÀÌ½´ Á¸Àç : Setting Static mesh of RP
 		SetMeshChange(bIsPush);
 	}
 }
-void AClientRocketPunch::ServerReadyToLaunch_Implementation(const float& InForceAlpha, AActor* InCasterActor, const bool IsPush, const FVector& InVec, const FRotator& InRot, const float& DeltaSpeed, const float& DeltaRange, const float& DeltaScale)
+void AClientRocketPunch::ServerReadyToLaunch_Implementation(const float& InForceAlpha, AActor* InCasterActor, const bool IsPush, const FVector& InVec, const FRotator& InRot, FPassiveStat InPassiveStat)
 {
-	ReadyToLaunch(InForceAlpha, InCasterActor, IsPush, InVec, InRot, DeltaSpeed, DeltaRange, DeltaScale);
+	ReadyToLaunch(InForceAlpha, InCasterActor, IsPush, InVec, InRot, InPassiveStat);
 }
 void AClientRocketPunch::SetForceReturn()
 {
@@ -91,7 +91,6 @@ void AClientRocketPunch::OnRep_ChangeScale()
 	CollisionComp->SetWorldScale3D(CurrentScale);
 	StaticMeshComp->SetWorldScale3D(CurrentScale);
 }
-
 void AClientRocketPunch::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);

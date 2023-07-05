@@ -1,5 +1,6 @@
 #include "RocketPunch/RPCollisionComponent.h"
 #include "Interface/CharacterInterActionHandler.h"
+#include "GameData/CharacterStat.h"
 #include "Net/UnrealNetwork.h"
 
 URPCollisionComponent::URPCollisionComponent()
@@ -16,14 +17,14 @@ void URPCollisionComponent::BeginPlay()
 	Super::BeginPlay();
 	
 }
-void URPCollisionComponent::OnHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComponent, FVector NormalImpulse, const FHitResult& Hit, AActor* CasterActor, const bool IsPush,const float& ForceAlpha)
+void URPCollisionComponent::OnHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComponent, FVector NormalImpulse, const FHitResult& Hit, AActor* CasterActor, const bool IsPush, const float& ForceAlpha, FPassiveStat InPassiveStat)
 {
 	// Check if the object is already processed
 	if (OverlapActors.Find(OtherActor) || bIsAlreadyOverlapped) return;
 
 	// Event of Push or Pull 
 	const FName OtherCompCollsionName = OtherComponent->GetCollisionProfileName();
-	float LerpForce = FMath::Lerp(MinKnockBackForce, MaxKnockBackForce, ForceAlpha);
+	float LerpForce = FMath::Lerp(MinKnockBackForce, MaxKnockBackForce + InPassiveStat.RPForce, ForceAlpha);
 	AActor* TargetActor;
 	if (OtherCompCollsionName == "BlockAll" || OtherCompCollsionName == "Pawn")
 	{
@@ -55,7 +56,7 @@ void URPCollisionComponent::OnHit(UPrimitiveComponent* HitComponent, AActor* Oth
 	// Set Value
 	bIsAlreadyOverlapped = true;
 	OverlapActors.Add(OtherActor);
-	UE_LOG(LogTemp, Warning, TEXT("[URPCollisionComponent] Overrlap Type is '%s', Name is '%s'"), *OtherComponent->GetCollisionProfileName().ToString(), *OtherActor->GetName());
+	UE_LOG(LogTemp, Warning, TEXT("[URPCollisionComponent] Overrlap Type is '%s', Name is '%s', Force is '%f'"), *OtherComponent->GetCollisionProfileName().ToString(), *OtherActor->GetName(), LerpForce);
 }
 void URPCollisionComponent::ResetOverlapActors()
 {

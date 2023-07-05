@@ -358,35 +358,19 @@ bool APlayableCharacter::IsCanAttack()
 {
 	return (StatComp->IsStatFlagSet(ECharacterStat::Stun)) ? false : true;
 }
+void APlayableCharacter::SetPassiveStat(FPassiveStat InPassiveStat)
+{
+	StatComp->SetPassiveStat(InPassiveStat);
+}
+FPassiveStat APlayableCharacter::GetPassiveStat()
+{
+	return StatComp->GetPassiveStat();
+}
 void APlayableCharacter::ClearAllTimer()
 {
 	GetWorld()->GetTimerManager().ClearAllTimersForObject(this);
 	GetWorld()->GetTimerManager().ClearAllTimersForObject(ItemUsageComp);
 	GetWorld()->GetTimerManager().ClearAllTimersForObject(StatComp);
-}
-void APlayableCharacter::SetRocketPunchSpeed(const float& DeltaSpeed)
-{ 
-	StatComp->SetRocketPunchSpeed(DeltaSpeed); 
-}
-void APlayableCharacter::SetRocketPunchRange(const float& DeltaRange)
-{ 
-	StatComp->SetRocketPunchRange(DeltaRange); 
-}
-void APlayableCharacter::SetRocketPunchScale(const float& DeltaSize)
-{ 
-	StatComp->SetRocketPunchScale(DeltaSize); 
-}
-float APlayableCharacter::GetRocketPunchSpeed()
-{ 
-	return StatComp->GetRocketPunchSpeed(); 
-}
-float APlayableCharacter::GetRocketPunchRange()
-{ 
-	return StatComp->GetRocketPunchRange(); 
-}
-float APlayableCharacter::GetRocketPunchScale()
-{ 
-	return StatComp->GetRocketPunchScale(); 
 }
 void APlayableCharacter::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const
 {

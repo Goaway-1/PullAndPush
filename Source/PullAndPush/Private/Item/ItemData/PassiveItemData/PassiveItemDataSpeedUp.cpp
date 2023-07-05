@@ -5,11 +5,10 @@ void UPassiveItemDataSpeedUp::UsePassiveItem(AActor* TargetActor, FTimerHandle H
     Super::UsePassiveItem(TargetActor, Handler, InPassiveItemAlreadyActivated);
 
     // Try Character Movement Speed Up
-    if (CharacterPropertyHandler.GetInterface() && !bIsItemActivated) {
+    if (CharacterPropertyHandler.GetInterface()) {
         CharacterPropertyHandler->SetMovementSpeed(WeightValue);
     }
 }
-
 void UPassiveItemDataSpeedUp::EndPassiveItem()
 {
     Super::EndPassiveItem();

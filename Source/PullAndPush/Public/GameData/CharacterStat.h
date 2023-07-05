@@ -3,6 +3,59 @@
 #include "CoreMinimal.h"
 #include "CharacterStat.generated.h"
 
+USTRUCT(BlueprintType)
+struct FPassiveStat
+{
+	GENERATED_BODY()
+
+public:
+	FPassiveStat() : RPSpeed(0.f), RPScale(0.f), RPRange(0.f), RPForce(0.f){}
+
+	UPROPERTY(EditDefaultsOnly)
+	float RPSpeed;
+
+	UPROPERTY(EditDefaultsOnly)
+	float RPScale;
+
+	UPROPERTY(EditDefaultsOnly)
+	float RPRange;
+
+	UPROPERTY(EditDefaultsOnly)
+	float RPForce;
+
+	FPassiveStat operator+(const FPassiveStat& Other) const
+	{
+		const float* const ThisPtr = reinterpret_cast<const float* const>(this);
+		const float* const OtherPtr = reinterpret_cast<const float* const>(&Other);
+
+		FPassiveStat Result;
+		float* ResultPtr = reinterpret_cast<float*>(&Result);
+		int32 StatNum = sizeof(FPassiveStat) / sizeof(float);
+		for (int32 i = 0; i < StatNum; i++)
+		{
+			ResultPtr[i] = ThisPtr[i] + OtherPtr[i];
+		}
+
+		return Result;
+	}
+
+	FPassiveStat operator*(const float Other) const
+	{
+		const float* const ThisPtr = reinterpret_cast<const float* const>(this);
+		const float* const OtherPtr = reinterpret_cast<const float* const>(&Other);
+
+		FPassiveStat Result;
+		float* ResultPtr = reinterpret_cast<float*>(&Result);
+		int32 StatNum = sizeof(FPassiveStat) / sizeof(float);
+		for (int32 i = 0; i < StatNum; i++)
+		{
+			ResultPtr[i] = ThisPtr[i] * Other;
+		}
+
+		return Result;
+	}
+};
+
 UENUM(BlueprintType, meta = (Bitflags, UseEnumValuesAsMaskValuesInEditor = "true"))
 enum class ECharacterStat : uint8
 {
