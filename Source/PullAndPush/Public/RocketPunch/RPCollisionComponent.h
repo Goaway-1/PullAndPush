@@ -7,7 +7,7 @@
 #include "RPCollisionComponent.generated.h"
 
 DECLARE_DELEGATE(FRPCollisionComponentReset)
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FRPCollisionComponentForceReturn, bool, bIsForceReturn);
+DECLARE_DELEGATE_OneParam(FRPCollisionComponentForceReturn, bool);
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class PULLANDPUSH_API URPCollisionComponent : public UActorComponent
@@ -23,7 +23,7 @@ protected:
 public:
 	UFUNCTION()
 	void OnHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComponent, FVector NormalImpulse,
-				const FHitResult& Hit, AActor* CasterActor, const bool IsPush, const float& ForceAlpha, FPassiveStat InPassiveStat);
+				const FHitResult& Hit, AActor* CasterActor, const bool IsPush, const bool IsServerRP, const float& ForceAlpha, FPassiveStat InPassiveStat);
 
 	UFUNCTION()
 	void ResetOverlapActors();

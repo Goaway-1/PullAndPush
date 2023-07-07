@@ -1,6 +1,6 @@
 #include "RocketPunch/RPMovementComponent.h"
 #include "Kismet/KismetMathLibrary.h"
-#include "RocketPunch/ClientRocketPunch.h"
+#include "RocketPunch/RocketPunch.h"
 #include "DrawDebugHelpers.h"
 #include "Net/UnrealNetwork.h"
 
@@ -28,7 +28,7 @@ void URPMovementComponent::TickComponent(float DeltaTime, ELevelTick TickType, F
 }
 void URPMovementComponent::InitSetting()
 {
-	Owner = Cast<AClientRocketPunch>(GetOwner());
+	Owner = Cast<ARocketPunch>(GetOwner());
 	Owner->SetActorEnableCollision(false);
 	Owner->SetMeshVisibility(false);
 	Owner->SetActorTickEnabled(false);
@@ -66,8 +66,8 @@ void URPMovementComponent::Launch(const float& ForceAlpha, AActor* InCasterActor
 	float LerpDistance = FMath::Lerp(MinDistance, MaxDistance, ForceAlpha);
 	float LerpMoveSpeed = FMath::Lerp(MinMoveSpeed, MaxMoveSpeed, ForceAlpha);
 
-	if(InPassiveStat.RPRange > KINDA_SMALL_NUMBER) LerpDistance = LerpDistance * InPassiveStat.RPRange;
-	if(InPassiveStat.RPSpeed > KINDA_SMALL_NUMBER) LerpMoveSpeed = LerpMoveSpeed * InPassiveStat.RPSpeed;
+	if(InPassiveStat.RPRange > KINDA_SMALL_NUMBER) LerpDistance = LerpDistance + InPassiveStat.RPRange;
+	if(InPassiveStat.RPSpeed > KINDA_SMALL_NUMBER) LerpMoveSpeed = LerpMoveSpeed + InPassiveStat.RPSpeed;
 
 	SetPreDistance(false, LerpDistance);
 	SetCurMoveSpeed(LerpMoveSpeed);

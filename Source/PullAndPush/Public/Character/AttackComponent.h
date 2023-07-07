@@ -63,11 +63,16 @@ protected:
 	TObjectPtr<class ARocketPunch> RocketPunch;
 
 	UPROPERTY(EditAnywhere, Category = "RocketPunch")
-	TSubclassOf<class AClientRocketPunch> ClientRocketPunchClass;
+	TSubclassOf<class ARocketPunch> ClientRocketPunchClass;
 
-	UPROPERTY(VisibleAnywhere, Category = "RocketPunch")
-	TObjectPtr<class AClientRocketPunch> ClientRocketPunch;
+	UPROPERTY(Replicated, VisibleAnywhere, Category = "RocketPunch")
+	TObjectPtr<class ARocketPunch> ClientRocketPunch;
 
-	UFUNCTION(Client, Reliable)
-	void SetRPForceReturn();
+
+	// @TEST
+	UFUNCTION(Server, Reliable)
+	void ServerReadyToLaunch(const float& InForceAlpha, AActor* InCasterActor, const bool IsPush, const FVector& InVec, const FRotator& InRot, FPassiveStat InPassiveStat);
+
+	UFUNCTION(NetMulticast, Reliable)
+	void MultiReadyToLaunch(const float& InForceAlpha, AActor* InCasterActor, const bool IsPush, const FVector& InVec, const FRotator& InRot, FPassiveStat InPassiveStat);
 };

@@ -17,46 +17,47 @@ void URPCollisionComponent::BeginPlay()
 	Super::BeginPlay();
 	
 }
-void URPCollisionComponent::OnHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComponent, FVector NormalImpulse, const FHitResult& Hit, AActor* CasterActor, const bool IsPush, const float& ForceAlpha, FPassiveStat InPassiveStat)
+void URPCollisionComponent::OnHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComponent, FVector NormalImpulse, const FHitResult& Hit, AActor* CasterActor, const bool IsPush, const bool IsServerRP, const float& ForceAlpha, FPassiveStat InPassiveStat)
 {
 	// Check if the object is already processed
 	if (OverlapActors.Find(OtherActor) || bIsAlreadyOverlapped) return;
 
 	// Event of Push or Pull 
-	const FName OtherCompCollsionName = OtherComponent->GetCollisionProfileName();
-	float LerpForce = FMath::Lerp(MinKnockBackForce, MaxKnockBackForce + InPassiveStat.RPForce, ForceAlpha);
-	AActor* TargetActor;
-	if (OtherCompCollsionName == "BlockAll" || OtherCompCollsionName == "Pawn")
+	if (IsServerRP)
 	{
-		if (OtherCompCollsionName == "BlockAll")
+		const FName OtherCompCollsionName = OtherComponent->GetCollisionProfileName();
+		float LerpForce = FMath::Lerp(MinKnockBackForce, MaxKnockBackForce + InPassiveStat.RPForce, ForceAlpha);
+		AActor* TargetActor;
+		if (OtherCompCollsionName == "BlockAll" || OtherCompCollsionName == "Pawn")
 		{
-			LerpForce *= (IsPush) ? -1 : 1;
-			TargetActor = CasterActor;
+			if (OtherCompCollsionName == "BlockAll")
+			{
+				LerpForce *= (IsPush) ? -1 : 1;
+				TargetActor = CasterActor;
+			}
+			else
+			{
+				LerpForce *= (IsPush) ? 1 : -1;
+				TargetActor = OtherActor;
+			}
+			ApplyPunchImpulseCharacter(HitComponent, TargetActor, LerpForce, IsPush);
 		}
-		else
+		else if (OtherCompCollsionName == "PhysicsActor" || OtherCompCollsionName == "Item")
 		{
-			LerpForce *= (IsPush) ? 1 : -1;
-			TargetActor = OtherActor;
+			if (IsPush)
+			{
+				ApplyPunchImpulsePrimitiveComponent(OtherComponent, Hit, LerpForce);
+			}
+			else
+			{
+				GrapActorToOwner(OtherActor, OtherComponent);
+			}
 		}
-		ApplyPunchImpulseCharacter(HitComponent, TargetActor, LerpForce, IsPush);
+		OverlapActors.Add(OtherActor);
+		UE_LOG(LogTemp, Warning, TEXT("[URPCollisionComponent] Overrlap Type is '%s', Name is '%s', Force is '%f'"), *OtherComponent->GetCollisionProfileName().ToString(), *OtherActor->GetName(), LerpForce);
 	}
-	else if (OtherCompCollsionName == "PhysicsActor" || OtherCompCollsionName == "Item")
-	{
-		if (IsPush)
-		{
-			ApplyPunchImpulsePrimitiveComponent(OtherComponent, Hit, LerpForce);
-		}
-		else
-		{
-			GrapActorToOwner(OtherActor, OtherComponent);
-		}
-	}
-	OnForceReturn.Broadcast(true);
-
-	// Set Value
 	bIsAlreadyOverlapped = true;
-	OverlapActors.Add(OtherActor);
-	UE_LOG(LogTemp, Warning, TEXT("[URPCollisionComponent] Overrlap Type is '%s', Name is '%s', Force is '%f'"), *OtherComponent->GetCollisionProfileName().ToString(), *OtherActor->GetName(), LerpForce);
+	OnForceReturn.ExecuteIfBound(true);
 }
 void URPCollisionComponent::ResetOverlapActors()
 {

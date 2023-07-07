@@ -93,6 +93,7 @@ protected:
 	void CreateStatFlagTimer(ECharacterStat InFlag, float ChangeDuration);
 	void RemoveStatFlagTimer(ECharacterStat InFlag);
 
+
 protected:
 	UPROPERTY(VisibleAnywhere, Category = "Stat")
 	FPassiveStat DefaultPassiveStat;

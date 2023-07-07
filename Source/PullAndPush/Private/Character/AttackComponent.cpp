@@ -1,6 +1,5 @@
 #include "Character/AttackComponent.h"
 #include "RocketPunch/RocketPunch.h"
-#include "RocketPunch/ClientRocketPunch.h"
 #include "GameFramework/Character.h"
 #include "Engine/SkeletalMeshSocket.h"
 #include "Math/Quat.h"
@@ -81,13 +80,8 @@ void UAttackComponent::EndLaunch(bool bIsPush)
 		TScriptInterface<class ICharacterStatHandler> OwnerHandler = OwnerCharacter.Get();
 		if (OwnerHandler.GetInterface())
 		{
-			OwnerHandler->GetPassiveStat();
-
 			RocketPunch->ReadyToLaunch(ChargingAlpha, GetOwner(), bIsPush, LaunchLocation, LaunchRotation, OwnerHandler->GetPassiveStat());
-			if (ClientRocketPunch)	
-			{
-				ClientRocketPunch->ReadyToLaunch(ChargingAlpha, GetOwner(), bIsPush, LaunchLocation, LaunchRotation, OwnerHandler->GetPassiveStat());
-			}
+			ServerReadyToLaunch(ChargingAlpha, GetOwner(), bIsPush, LaunchLocation, LaunchRotation, OwnerHandler->GetPassiveStat());
 		}
 	}
 	else bIsCanLaunch = true;
@@ -97,29 +91,20 @@ void UAttackComponent::SpawnRocketPunch()
 	if (GetOwnerRole() == ROLE_AutonomousProxy)
 	{
 		ServerSpawnRocketPunch();
-
-		if (ClientRocketPunchClass)
-		{
-			FActorSpawnParameters SpawnParams;
-			SpawnParams.Owner = GetOwner();
-			SpawnParams.Instigator = GetOwner()->GetInstigator();
-
-			ClientRocketPunch = GetWorld()->SpawnActor<AClientRocketPunch>(ClientRocketPunchClass, SpawnParams);
-			ensure(ClientRocketPunch != nullptr);
-			ClientRocketPunch->SetActorLocation(FVector(900.f));
-		}
 	}
-	else if (!RocketPunch && RocketPunchClass)
+	else if (!RocketPunch && !ClientRocketPunch && RocketPunchClass && ClientRocketPunchClass)
 	{
 		FActorSpawnParameters SpawnParams;
 		SpawnParams.Owner = GetOwner();
 		SpawnParams.Instigator = GetOwner()->GetInstigator();
 
 		RocketPunch = GetWorld()->SpawnActor<ARocketPunch>(RocketPunchClass, SpawnParams);
-		ensure(RocketPunch != nullptr);
-		RocketPunch->SetActorLocation(FVector(900.f));
-		RocketPunch->OutOfUse.BindUObject(this, &UAttackComponent::ClientSetCanLaunch);
-		RocketPunch->OnRocketPunchCallBack.BindUObject(this, &UAttackComponent::SetRPForceReturn);
+		if (RocketPunch)
+		{
+			RocketPunch->OutOfUse.BindUObject(this, &UAttackComponent::ClientSetCanLaunch);
+		}
+
+		ClientRocketPunch = GetWorld()->SpawnActor<ARocketPunch>(ClientRocketPunchClass, SpawnParams);
 	}
 }
 void UAttackComponent::ServerSpawnRocketPunch_Implementation()
@@ -138,11 +123,15 @@ void UAttackComponent::ChangeMovementSpeed(const bool& IsCharging)
 		CharacterPropertyHandler->SetPlayerAttackCondition(IsCharging);
 	}
 }
-void UAttackComponent::SetRPForceReturn_Implementation()
+void UAttackComponent::ServerReadyToLaunch_Implementation(const float& InForceAlpha, AActor* InCasterActor, const bool IsPush, const FVector& InVec, const FRotator& InRot, FPassiveStat InPassiveStat)
+{
+	MultiReadyToLaunch(InForceAlpha, InCasterActor, IsPush, InVec, InRot, InPassiveStat);
+}
+void UAttackComponent::MultiReadyToLaunch_Implementation(const float& InForceAlpha, AActor* InCasterActor, const bool IsPush, const FVector& InVec, const FRotator& InRot, FPassiveStat InPassiveStat)
 {
 	if (ClientRocketPunch)
 	{
-		ClientRocketPunch->SetForceReturn();
+		ClientRocketPunch->ReadyToLaunch(InForceAlpha, InCasterActor, IsPush, InVec, InRot, InPassiveStat);
 	}
 }
 void UAttackComponent::ClientSetCanLaunch_Implementation(const bool Val)
@@ -155,4 +144,5 @@ void UAttackComponent::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& O
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
 	DOREPLIFETIME(UAttackComponent, RocketPunch);
+	DOREPLIFETIME(UAttackComponent, ClientRocketPunch);
 }
