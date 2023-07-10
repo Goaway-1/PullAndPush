@@ -36,7 +36,6 @@ private:
 	UPROPERTY()
 	TObjectPtr<class UInGameWidget> InGameWidget;
 
-/** Funtion */
 	UPROPERTY()
 	TObjectPtr<class USpectatorWidget> SpectatorWidget;
 
