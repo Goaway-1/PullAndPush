@@ -76,8 +76,8 @@ private:
 /** Stat System */
 #pragma region STATSYSTEM
 public:
-	void SetPassiveStat(FPassiveStat InPassiveStat);
-	FPassiveStat GetPassiveStat();
+	void SetPassiveStat(FItemEnhancedStat InPassiveStat);
+	FItemEnhancedStat GetPassiveStat();
 
 	UFUNCTION()
 	void EnableStatFlag(ECharacterStat InFlag, float ChangeDuration);
@@ -96,7 +96,7 @@ protected:
 
 protected:
 	UPROPERTY(VisibleAnywhere, Category = "Stat")
-	FPassiveStat DefaultPassiveStat;
+	FItemEnhancedStat DefaultPassiveStat;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Stat | Flag", meta = (Bitmask, BitmaskEnum = "/Script/PullAndPush.ECharacterStat"))
 	uint8 StatFlags;

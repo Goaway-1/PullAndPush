@@ -44,15 +44,15 @@ public:
 
 	/** Item : For Passive Stat */
 	UFUNCTION()
-	virtual void SetPassiveStat(FPassiveStat InPassiveStat) = 0;
+	virtual void SetPassiveStat(FItemEnhancedStat InPassiveStat) = 0;
 
 	UFUNCTION()
-	virtual FPassiveStat GetPassiveStat() = 0;
+	virtual FItemEnhancedStat GetPassiveStat() = 0;
 
 /** Character Stat */
 public:
 	UFUNCTION()
-	virtual void EnableStatFlag(ECharacterStat InFlag, float ChangeDuration) = 0;
+	virtual void EnableStatFlag(ECharacterStat InFlag, float ChangeDuration = 100.f) = 0;
 
 	UFUNCTION()
 	virtual void DisableStatFlag(ECharacterStat InFlag) = 0;
