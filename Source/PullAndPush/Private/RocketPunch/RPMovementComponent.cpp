@@ -51,7 +51,7 @@ void URPMovementComponent::CheckMovement()
 		UpdateLocation();
 	}
 }
-void URPMovementComponent::Launch(const float& ForceAlpha, AActor* InCasterActor, const FVector& InVec, const FRotator& InRot, FPassiveStat InPassiveStat)
+void URPMovementComponent::Launch(const float& ForceAlpha, AActor* InCasterActor, const FVector& InVec, const FRotator& InRot, FItemEnhancedStat InPassiveStat)
 {
 	if (CasterActor == nullptr) CasterActor = InCasterActor;
 

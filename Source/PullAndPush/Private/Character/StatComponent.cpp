@@ -131,11 +131,11 @@ UMaterialInterface* UStatComponent::GetMaterialForCharacterStat(FString StatName
 	PPLOG(Warning, TEXT("No valid MaterialUI found in StatMartialTable : %s"),*StatName);
 	return nullptr; 
 }
-void UStatComponent::SetPassiveStat(FPassiveStat InPassiveStat)
+void UStatComponent::SetPassiveStat(FItemEnhancedStat InPassiveStat)
 {
 	DefaultPassiveStat = DefaultPassiveStat + InPassiveStat;
 }
-FPassiveStat UStatComponent::GetPassiveStat()
+FItemEnhancedStat UStatComponent::GetPassiveStat()
 {
 	return DefaultPassiveStat;
 }

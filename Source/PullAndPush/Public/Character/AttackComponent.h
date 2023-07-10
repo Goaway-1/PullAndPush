@@ -71,8 +71,8 @@ protected:
 
 	// @TEST
 	UFUNCTION(Server, Reliable)
-	void ServerReadyToLaunch(const float& InForceAlpha, AActor* InCasterActor, const bool IsPush, const FVector& InVec, const FRotator& InRot, FPassiveStat InPassiveStat);
+	void ServerReadyToLaunch(const float& InForceAlpha, AActor* InCasterActor, const bool IsPush, const FVector& InVec, const FRotator& InRot, FItemEnhancedStat InPassiveStat);
 
 	UFUNCTION(NetMulticast, Reliable)
-	void MultiReadyToLaunch(const float& InForceAlpha, AActor* InCasterActor, const bool IsPush, const FVector& InVec, const FRotator& InRot, FPassiveStat InPassiveStat);
+	void MultiReadyToLaunch(const float& InForceAlpha, AActor* InCasterActor, const bool IsPush, const FVector& InVec, const FRotator& InRot, FItemEnhancedStat InPassiveStat);
 };

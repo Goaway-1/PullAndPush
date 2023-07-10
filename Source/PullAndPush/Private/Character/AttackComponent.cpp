@@ -123,11 +123,11 @@ void UAttackComponent::ChangeMovementSpeed(const bool& IsCharging)
 		CharacterPropertyHandler->SetPlayerAttackCondition(IsCharging);
 	}
 }
-void UAttackComponent::ServerReadyToLaunch_Implementation(const float& InForceAlpha, AActor* InCasterActor, const bool IsPush, const FVector& InVec, const FRotator& InRot, FPassiveStat InPassiveStat)
+void UAttackComponent::ServerReadyToLaunch_Implementation(const float& InForceAlpha, AActor* InCasterActor, const bool IsPush, const FVector& InVec, const FRotator& InRot, FItemEnhancedStat InPassiveStat)
 {
 	MultiReadyToLaunch(InForceAlpha, InCasterActor, IsPush, InVec, InRot, InPassiveStat);
 }
-void UAttackComponent::MultiReadyToLaunch_Implementation(const float& InForceAlpha, AActor* InCasterActor, const bool IsPush, const FVector& InVec, const FRotator& InRot, FPassiveStat InPassiveStat)
+void UAttackComponent::MultiReadyToLaunch_Implementation(const float& InForceAlpha, AActor* InCasterActor, const bool IsPush, const FVector& InVec, const FRotator& InRot, FItemEnhancedStat InPassiveStat)
 {
 	if (ClientRocketPunch)
 	{

@@ -364,11 +364,11 @@ bool APlayableCharacter::IsCanAttack()
 {
 	return (StatComp->IsStatFlagSet(ECharacterStat::Stun)) ? false : true;
 }
-void APlayableCharacter::SetPassiveStat(FPassiveStat InPassiveStat)
+void APlayableCharacter::SetPassiveStat(FItemEnhancedStat InPassiveStat)
 {
 	StatComp->SetPassiveStat(InPassiveStat);
 }
-FPassiveStat APlayableCharacter::GetPassiveStat()
+FItemEnhancedStat APlayableCharacter::GetPassiveStat()
 {
 	return StatComp->GetPassiveStat();
 }

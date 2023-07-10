@@ -58,16 +58,16 @@ protected:
 #pragma region LAUNCH
 	/** Launch */
 public:
-	virtual void ReadyToLaunch(const float& InForceAlpha, AActor* InCasterActor, const bool IsPush, const FVector& InVec, const FRotator& InRot, FPassiveStat InPassiveStat);
+	virtual void ReadyToLaunch(const float& InForceAlpha, AActor* InCasterActor, const bool IsPush, const FVector& InVec, const FRotator& InRot, FItemEnhancedStat InPassiveStat);
 
 	UFUNCTION()
 	void SetForceReturn();
 protected:
 	UFUNCTION(Server, Reliable)
-	void ServerReadyToLaunch(const float& InForceAlpha, AActor* InCasterActor, const bool IsPush, const FVector& InVec, const FRotator& InRot, FPassiveStat InPassiveStat);
+	void ServerReadyToLaunch(const float& InForceAlpha, AActor* InCasterActor, const bool IsPush, const FVector& InVec, const FRotator& InRot, FItemEnhancedStat InPassiveStat);
 	
 	UPROPERTY()
-	FPassiveStat CurrentPassiveStat;
+	FItemEnhancedStat CurrentPassiveStat;
 
 	UPROPERTY(Transient)
 	float ForceAlpha;

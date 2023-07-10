@@ -51,7 +51,7 @@ void ARocketPunch::BeginPlay()
 
 	SetMeshVisibility(false);
 }
-void ARocketPunch::ReadyToLaunch(const float& InForceAlpha, AActor* InCasterActor, const bool IsPush, const FVector& InVec, const FRotator& InRot, FPassiveStat InPassiveStat)
+void ARocketPunch::ReadyToLaunch(const float& InForceAlpha, AActor* InCasterActor, const bool IsPush, const FVector& InVec, const FRotator& InRot, FItemEnhancedStat InPassiveStat)
 {
 	if (!HasAuthority() && bIsServerRP)
 	{
@@ -75,7 +75,7 @@ void ARocketPunch::ReadyToLaunch(const float& InForceAlpha, AActor* InCasterActo
 		SetMeshChange(bIsPush);
 	}
 }
-void ARocketPunch::ServerReadyToLaunch_Implementation(const float& InForceAlpha, AActor* InCasterActor, const bool IsPush, const FVector& InVec, const FRotator& InRot, FPassiveStat InPassiveStat)
+void ARocketPunch::ServerReadyToLaunch_Implementation(const float& InForceAlpha, AActor* InCasterActor, const bool IsPush, const FVector& InVec, const FRotator& InRot, FItemEnhancedStat InPassiveStat)
 {
 	ReadyToLaunch(InForceAlpha, InCasterActor, IsPush, InVec, InRot, InPassiveStat);
 }
