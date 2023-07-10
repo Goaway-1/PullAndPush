@@ -1,5 +1,6 @@
 #include "Character/StatComponent.h"
 #include "GameData/CharacterStatMaterialTable.h"
+#include "Interface/CharacterStatHandler.h"
 
 UStatComponent::UStatComponent()
 	:
@@ -23,7 +24,7 @@ void UStatComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorC
 bool UStatComponent::ModifyMoveSpeed(const float NewMoveSpeed)
 {
 	if (NewMoveSpeed > 0.f || NewMoveSpeed < 0.f) {
-		float Speed = CurrentMoveSpeed + NewMoveSpeed;
+		float Speed = PendingMoveSpeed + NewMoveSpeed;
 		PendingMoveSpeed.exchange(Speed);
 		return true;
 	}
@@ -129,4 +130,12 @@ UMaterialInterface* UStatComponent::GetMaterialForCharacterStat(FString StatName
 	}
 	PPLOG(Warning, TEXT("No valid MaterialUI found in StatMartialTable : %s"),*StatName);
 	return nullptr; 
+}
+void UStatComponent::SetPassiveStat(FPassiveStat InPassiveStat)
+{
+	DefaultPassiveStat = DefaultPassiveStat + InPassiveStat;
+}
+FPassiveStat UStatComponent::GetPassiveStat()
+{
+	return DefaultPassiveStat;
 }

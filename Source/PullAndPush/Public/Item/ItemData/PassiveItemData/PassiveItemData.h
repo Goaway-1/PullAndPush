@@ -22,10 +22,7 @@ public:
 
 protected:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Item)
-	float DurationTime;				
-
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Item)
-	float WeightValue;
+	float DurationTime;	
 
 /** Handler */
 public:

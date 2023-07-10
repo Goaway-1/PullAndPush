@@ -12,7 +12,6 @@
 class USpringArmComponent;
 class UCameraComponent;
 
-
 UCLASS()
 class PULLANDPUSH_API APlayableCharacter : public ACharacter, public ICharacterInterActionHandler, public ICharacterPickupHandler, public ICharacterStatHandler
 {
@@ -139,6 +138,7 @@ private:
 
 private:
 	FTimerHandle MovementModeHandle;
+	FTimerHandle CheckCollisionHandle;
 
 	// Time the character stays in 'MOVE_Flying'
 	UPROPERTY(EditAnywhere, Category = "Hited")
@@ -186,15 +186,6 @@ public:
 	UFUNCTION(Client, Reliable)
 	void ClientPickUpItem(class UItemData* ItemData);
 
-	// Set Alpha Value Affected By Item
-	virtual void SetRocketPunchSpeed(const float& deltaspeed) override;
-	virtual void SetRocketPunchRange(const float& deltarange) override;
-	virtual void SetRocketPunchScale(const float& deltasize) override;
-
-	virtual float GetRocketPunchSpeed() override;
-	virtual float GetRocketPunchRange() override;
-	virtual float GetRocketPunchScale() override;
-
 private:
 	UFUNCTION()
 	void UseActiveItem();
@@ -206,13 +197,15 @@ private:
 /** Stat */
 #pragma region STAT
 public:
+	virtual void SetPassiveStat(FPassiveStat InPassiveStat) override;
+	virtual FPassiveStat GetPassiveStat() override;
+
 	virtual void EnableStatFlag(ECharacterStat InFlag, float ChangeDuration) override;
 	virtual void DisableStatFlag(ECharacterStat InFlag) override;
 	virtual bool IsStatFlagSet(ECharacterStat InFlag) override;
 
 	/** Clear All Timer */
 	void ClearAllTimer();
-
 private:
 	UFUNCTION(Server, Reliable)
 	void ServerEnableStatFlag(ECharacterStat InFlag, float ChangeDuration);
@@ -224,4 +217,5 @@ protected:
 	bool IsCanMove();
 	bool IsCanAttack();
 #pragma endregion
+
 };

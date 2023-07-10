@@ -26,4 +26,8 @@ public:
 public:
 	virtual void UsePassiveItem(class AActor* TargetActor, FTimerHandle Handler, bool InPassiveItemAlreadyActivated) override;
 	virtual void EndPassiveItem() override;
+
+protected:
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Item)
+	float WeightValue;
 };

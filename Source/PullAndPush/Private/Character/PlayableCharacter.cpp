@@ -71,7 +71,6 @@ void APlayableCharacter::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 
 	UpdateAimPitch();
-	CheckCollisionWithWall();
 }
 void APlayableCharacter::FellOutOfWorld(const UDamageType& dmgType)
 {
@@ -267,6 +266,10 @@ void APlayableCharacter::ApplyPunchImpulse(const FVector& DirVec, bool IsPush)
 	bIsKnockBack = IsPush;
 	HitedVector = DirVec;
 	GetCharacterMovement()->AddImpulse(DirVec);
+
+	// Check Collision with wall...
+	GetWorld()->GetTimerManager().ClearTimer(CheckCollisionHandle);
+	GetWorld()->GetWorld()->GetTimerManager().SetTimer(CheckCollisionHandle, this, &APlayableCharacter::CheckCollisionWithWall, 0.1f, true);
 	GetWorld()->GetTimerManager().ClearTimer(MovementModeHandle);
 	GetWorld()->GetTimerManager().SetTimer(MovementModeHandle, this, &APlayableCharacter::ResetMovementMode, DurationInFlyMode, false);
 }
@@ -281,6 +284,9 @@ void APlayableCharacter::ResetMovementMode()
 		GetCharacterMovement()->SetMovementMode(EMovementMode::MOVE_Falling);
 	}
 	bIsKnockBack = false;
+
+	GetWorld()->GetTimerManager().ClearTimer(CheckCollisionHandle);
+	GetWorld()->GetTimerManager().ClearTimer(MovementModeHandle);
 }
 void APlayableCharacter::CheckCollisionWithWall()
 {
@@ -358,35 +364,19 @@ bool APlayableCharacter::IsCanAttack()
 {
 	return (StatComp->IsStatFlagSet(ECharacterStat::Stun)) ? false : true;
 }
+void APlayableCharacter::SetPassiveStat(FPassiveStat InPassiveStat)
+{
+	StatComp->SetPassiveStat(InPassiveStat);
+}
+FPassiveStat APlayableCharacter::GetPassiveStat()
+{
+	return StatComp->GetPassiveStat();
+}
 void APlayableCharacter::ClearAllTimer()
 {
 	GetWorld()->GetTimerManager().ClearAllTimersForObject(this);
 	GetWorld()->GetTimerManager().ClearAllTimersForObject(ItemUsageComp);
 	GetWorld()->GetTimerManager().ClearAllTimersForObject(StatComp);
-}
-void APlayableCharacter::SetRocketPunchSpeed(const float& DeltaSpeed)
-{ 
-	StatComp->SetRocketPunchSpeed(DeltaSpeed); 
-}
-void APlayableCharacter::SetRocketPunchRange(const float& DeltaRange)
-{ 
-	StatComp->SetRocketPunchRange(DeltaRange); 
-}
-void APlayableCharacter::SetRocketPunchScale(const float& DeltaSize)
-{ 
-	StatComp->SetRocketPunchScale(DeltaSize); 
-}
-float APlayableCharacter::GetRocketPunchSpeed()
-{ 
-	return StatComp->GetRocketPunchSpeed(); 
-}
-float APlayableCharacter::GetRocketPunchRange()
-{ 
-	return StatComp->GetRocketPunchRange(); 
-}
-float APlayableCharacter::GetRocketPunchScale()
-{ 
-	return StatComp->GetRocketPunchScale(); 
 }
 void APlayableCharacter::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const
 {

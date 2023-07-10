@@ -1,6 +1,6 @@
 #include "RocketPunch/RPMovementComponent.h"
 #include "Kismet/KismetMathLibrary.h"
-#include "RocketPunch/RocketPunch.h"
+#include "Interface/RocketPunchHandler.h"
 #include "DrawDebugHelpers.h"
 #include "Net/UnrealNetwork.h"
 
@@ -28,10 +28,15 @@ void URPMovementComponent::TickComponent(float DeltaTime, ELevelTick TickType, F
 }
 void URPMovementComponent::InitSetting()
 {
-	Owner = Cast<ARocketPunch>(GetOwner());
-	Owner->SetActorEnableCollision(false);
-	Owner->SetMeshVisibility(false);
-	Owner->SetActorTickEnabled(false);
+	Owner = GetOwner();
+
+	TScriptInterface<class IRocketPunchHandler> RocketPunchHandler = Owner;
+	if (RocketPunchHandler.GetInterface())
+	{
+		Owner->SetActorEnableCollision(false);
+		RocketPunchHandler->SetMeshVisibility(false);
+		Owner->SetActorTickEnabled(false);
+	}
 }
 void URPMovementComponent::SetPreDistance(bool IsReturn, float InTargetDistance)
 {
@@ -46,16 +51,20 @@ void URPMovementComponent::CheckMovement()
 		UpdateLocation();
 	}
 }
-void URPMovementComponent::Launch(const float& ForceAlpha, AActor* InCasterActor, const FVector& InVec, const FRotator& InRot, const float& AlphaSpeed, const float& AlphaRange)
+void URPMovementComponent::Launch(const float& ForceAlpha, AActor* InCasterActor, const FVector& InVec, const FRotator& InRot, FPassiveStat InPassiveStat)
 {
 	if (CasterActor == nullptr) CasterActor = InCasterActor;
 
 	// Rocket Punch Setting
-	Owner->SetActorLocationAndRotation(InVec, InRot);
-	Owner->SetActorEnableCollision(true);
-	Owner->SetMeshVisibility(true);
-	Owner->SetActorTickEnabled(true);
-	Owner->SetCollisionSimulatePhysics(true);
+	TScriptInterface<class IRocketPunchHandler> RocketPunchHandler = Owner;
+	if (RocketPunchHandler.GetInterface())
+	{
+		Owner->SetActorLocationAndRotation(InVec, InRot);
+		Owner->SetActorEnableCollision(true);
+		RocketPunchHandler->SetMeshVisibility(true);	  
+		Owner->SetActorTickEnabled(true);
+		RocketPunchHandler->SetCollisionSimulatePhysics(true);		
+	}
 
 	// Movement Setting
 	bIsLaunch = true;
@@ -63,8 +72,11 @@ void URPMovementComponent::Launch(const float& ForceAlpha, AActor* InCasterActor
 	bIsForceReturn = false;
 
 	// Target Distance & Speed by Lerp + Plus Alpha Value...
-	const float LerpDistance = FMath::Lerp(MinDistance, MaxDistance, ForceAlpha) * AlphaRange;
-	const float LerpMoveSpeed = FMath::Lerp(MinMoveSpeed, MaxMoveSpeed, ForceAlpha) * AlphaSpeed;
+	float LerpDistance = FMath::Lerp(MinDistance, MaxDistance, ForceAlpha);
+	float LerpMoveSpeed = FMath::Lerp(MinMoveSpeed, MaxMoveSpeed, ForceAlpha);
+
+	if(InPassiveStat.RPRange > KINDA_SMALL_NUMBER) LerpDistance = LerpDistance + InPassiveStat.RPRange;
+	if(InPassiveStat.RPSpeed > KINDA_SMALL_NUMBER) LerpMoveSpeed = LerpMoveSpeed + InPassiveStat.RPSpeed;
 
 	SetPreDistance(false, LerpDistance);
 	SetCurMoveSpeed(LerpMoveSpeed);
@@ -78,7 +90,9 @@ void URPMovementComponent::UpdateLocation()
 
 	// Check is nearby target pos
 	CurDistance = (EndLoc - Owner->GetActorLocation()).Size();
-	if (GetIsForceReturn() || (PreDistance <= CurDistance && CasterActor)) {
+	TScriptInterface<class IRocketPunchHandler> RocketPunchHandler = Owner;
+	if (RocketPunchHandler.GetInterface() && (GetIsForceReturn() || (PreDistance <= CurDistance && CasterActor))) 
+	{
 		SetPreDistance(true);
 
 		// Return or Invisible
@@ -86,14 +100,14 @@ void URPMovementComponent::UpdateLocation()
 			bIsReturn = true;
 			bIsForceReturn = false;
 			Owner->SetActorEnableCollision(false);
-			Owner->SetCollisionSimulatePhysics(false);
+			RocketPunchHandler->SetCollisionSimulatePhysics(false);	  
 			SetCurMoveSpeed(ReturnMoveSpeed);
 		}
 		else {
 			bIsLaunch = false;
 			SetCanLaunch(true);
-			Owner->SetActorLocation(FVector(999.f));		// Set Location Safe Place
-			Owner->SetMeshVisibility(false);
+			Owner->SetActorLocation(FVector(999.f));		// @TODO : юс╫ц (Set Location Safe Place)
+			RocketPunchHandler->SetMeshVisibility(false);	  
 			Owner->SetActorTickEnabled(false);
 		}
 	}
@@ -116,9 +130,9 @@ void URPMovementComponent::OnRep_ChangeRotation()
 void URPMovementComponent::SetCanLaunch(const bool& Val)
 {
 	UE_LOG(LogTemp, Log, TEXT("[RPMovementComponent] OnReturn Delegate is called!"));
-	OnReturn.Execute(Val);
+	OnReturn.ExecuteIfBound(Val);
 }
-void URPMovementComponent::SetIsForceReturn(const bool& Val)
+void URPMovementComponent::SetIsForceReturn(bool Val)
 {
 	bIsForceReturn = Val;
 }
