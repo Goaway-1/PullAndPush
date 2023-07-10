@@ -71,7 +71,6 @@ void APlayableCharacter::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 
 	UpdateAimPitch();
-	CheckCollisionWithWall();
 }
 void APlayableCharacter::FellOutOfWorld(const UDamageType& dmgType)
 {
@@ -267,6 +266,10 @@ void APlayableCharacter::ApplyPunchImpulse(const FVector& DirVec, bool IsPush)
 	bIsKnockBack = IsPush;
 	HitedVector = DirVec;
 	GetCharacterMovement()->AddImpulse(DirVec);
+
+	// Check Collision with wall...
+	GetWorld()->GetTimerManager().ClearTimer(CheckCollisionHandle);
+	GetWorld()->GetWorld()->GetTimerManager().SetTimer(CheckCollisionHandle, this, &APlayableCharacter::CheckCollisionWithWall, 0.1f, true);
 	GetWorld()->GetTimerManager().ClearTimer(MovementModeHandle);
 	GetWorld()->GetTimerManager().SetTimer(MovementModeHandle, this, &APlayableCharacter::ResetMovementMode, DurationInFlyMode, false);
 }
@@ -281,6 +284,9 @@ void APlayableCharacter::ResetMovementMode()
 		GetCharacterMovement()->SetMovementMode(EMovementMode::MOVE_Falling);
 	}
 	bIsKnockBack = false;
+
+	GetWorld()->GetTimerManager().ClearTimer(CheckCollisionHandle);
+	GetWorld()->GetTimerManager().ClearTimer(MovementModeHandle);
 }
 void APlayableCharacter::CheckCollisionWithWall()
 {

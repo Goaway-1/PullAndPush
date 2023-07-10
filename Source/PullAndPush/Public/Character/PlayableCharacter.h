@@ -138,6 +138,7 @@ private:
 
 private:
 	FTimerHandle MovementModeHandle;
+	FTimerHandle CheckCollisionHandle;
 
 	// Time the character stays in 'MOVE_Flying'
 	UPROPERTY(EditAnywhere, Category = "Hited")

@@ -8,7 +8,7 @@
 
 ARocketPunch::ARocketPunch()
 	:
-	bIsPush(false), bIsServerRP(0)
+	bIsServerRP(0), bIsPush(false)
 {
 	PrimaryActorTick.bCanEverTick = true;
 

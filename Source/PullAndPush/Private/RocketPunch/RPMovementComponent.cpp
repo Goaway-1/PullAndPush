@@ -1,6 +1,6 @@
 #include "RocketPunch/RPMovementComponent.h"
 #include "Kismet/KismetMathLibrary.h"
-#include "RocketPunch/RocketPunch.h"
+#include "Interface/RocketPunchHandler.h"
 #include "DrawDebugHelpers.h"
 #include "Net/UnrealNetwork.h"
 
@@ -28,10 +28,15 @@ void URPMovementComponent::TickComponent(float DeltaTime, ELevelTick TickType, F
 }
 void URPMovementComponent::InitSetting()
 {
-	Owner = Cast<ARocketPunch>(GetOwner());
-	Owner->SetActorEnableCollision(false);
-	Owner->SetMeshVisibility(false);
-	Owner->SetActorTickEnabled(false);
+	Owner = GetOwner();
+
+	TScriptInterface<class IRocketPunchHandler> RocketPunchHandler = Owner;
+	if (RocketPunchHandler.GetInterface())
+	{
+		Owner->SetActorEnableCollision(false);
+		RocketPunchHandler->SetMeshVisibility(false);
+		Owner->SetActorTickEnabled(false);
+	}
 }
 void URPMovementComponent::SetPreDistance(bool IsReturn, float InTargetDistance)
 {
@@ -51,11 +56,15 @@ void URPMovementComponent::Launch(const float& ForceAlpha, AActor* InCasterActor
 	if (CasterActor == nullptr) CasterActor = InCasterActor;
 
 	// Rocket Punch Setting
-	Owner->SetActorLocationAndRotation(InVec, InRot);
-	Owner->SetActorEnableCollision(true);
-	Owner->SetMeshVisibility(true);
-	Owner->SetActorTickEnabled(true);
-	Owner->SetCollisionSimulatePhysics(true);
+	TScriptInterface<class IRocketPunchHandler> RocketPunchHandler = Owner;
+	if (RocketPunchHandler.GetInterface())
+	{
+		Owner->SetActorLocationAndRotation(InVec, InRot);
+		Owner->SetActorEnableCollision(true);
+		RocketPunchHandler->SetMeshVisibility(true);	  
+		Owner->SetActorTickEnabled(true);
+		RocketPunchHandler->SetCollisionSimulatePhysics(true);		
+	}
 
 	// Movement Setting
 	bIsLaunch = true;
@@ -81,7 +90,9 @@ void URPMovementComponent::UpdateLocation()
 
 	// Check is nearby target pos
 	CurDistance = (EndLoc - Owner->GetActorLocation()).Size();
-	if (GetIsForceReturn() || (PreDistance <= CurDistance && CasterActor)) {
+	TScriptInterface<class IRocketPunchHandler> RocketPunchHandler = Owner;
+	if (RocketPunchHandler.GetInterface() && (GetIsForceReturn() || (PreDistance <= CurDistance && CasterActor))) 
+	{
 		SetPreDistance(true);
 
 		// Return or Invisible
@@ -89,14 +100,14 @@ void URPMovementComponent::UpdateLocation()
 			bIsReturn = true;
 			bIsForceReturn = false;
 			Owner->SetActorEnableCollision(false);
-			Owner->SetCollisionSimulatePhysics(false);
+			RocketPunchHandler->SetCollisionSimulatePhysics(false);	  
 			SetCurMoveSpeed(ReturnMoveSpeed);
 		}
 		else {
 			bIsLaunch = false;
 			SetCanLaunch(true);
 			Owner->SetActorLocation(FVector(999.f));		// @TODO : юс╫ц (Set Location Safe Place)
-			Owner->SetMeshVisibility(false);
+			RocketPunchHandler->SetMeshVisibility(false);	  
 			Owner->SetActorTickEnabled(false);
 		}
 	}

@@ -70,7 +70,7 @@ private:
 	float CurMoveSpeed;
 
 	UPROPERTY()
-	TObjectPtr<class ARocketPunch> Owner;			// RocketPunch
+	TObjectPtr<class AActor> Owner;					// RocketPunch
 
 	UPROPERTY()
 	TObjectPtr<class AActor> CasterActor;			// RocketPunch의 소유자

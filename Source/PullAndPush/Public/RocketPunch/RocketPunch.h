@@ -3,15 +3,15 @@
 #pragma once
 
 #include "PullAndPush.h"
-#include "Interface/AttackWeapon.h"
-#include "Interface/CharacterStatHandler.h"
+#include "Interface/RocketPunchHandler.h"
+#include "GameData/CharacterStat.h"
 #include "GameFramework/Actor.h"
 #include "RocketPunch.generated.h"
 
 DECLARE_DELEGATE_OneParam(FRocketPunchOutOfUse, const bool)
 
 UCLASS()
-class PULLANDPUSH_API ARocketPunch : public AActor
+class PULLANDPUSH_API ARocketPunch : public AActor, public IRocketPunchHandler
 {
 	GENERATED_BODY()
 
@@ -41,8 +41,7 @@ public:
 	FORCEINLINE class URPMovementComponent* GetRPMovementComponent() const { return RPMovementComponent; }
 	FORCEINLINE class URPCollisionComponent* GetRPCollisionComponent() const { return RPCollisionComponent; }
 
-	UFUNCTION()
-	void SetCollisionSimulatePhysics(bool Val);
+	virtual void SetCollisionSimulatePhysics(bool Val) override;
 
 	FRocketPunchOutOfUse OutOfUse;
 
@@ -86,7 +85,7 @@ private:
 #pragma region VISIBILITY
 /** Visibility */
 public:
-	virtual void SetMeshVisibility(bool InVisibility);
+	virtual void SetMeshVisibility(bool InVisibility) override;
 
 	virtual void SetMeshChange(bool IsPush);
 
