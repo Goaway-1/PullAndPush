@@ -42,6 +42,7 @@ APlayableCharacter::~APlayableCharacter()
 void APlayableCharacter::PossessedBy(AController* NewController)
 {
 	Super::PossessedBy(NewController);
+
 }
 void APlayableCharacter::UnPossessed()
 {
@@ -139,8 +140,9 @@ void APlayableCharacter::Look(const FVector2D& AxisValue) {
 	LookUp(AxisValue.Y);
 	Turn(AxisValue.X);
 }
-void APlayableCharacter::MoveForward(float NewAxisValue) {
-	const FRotator ControlRotation = GetControlRotation();
+void APlayableCharacter::MoveForward(float NewAxisValue) 
+{
+		const FRotator ControlRotation = GetControlRotation();
 	const FRotator YawRotation(0.0f, ControlRotation.Yaw, 0.0f);
 	const FVector Direction = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::X);
 	AddMovementInput(Direction, NewAxisValue);

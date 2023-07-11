@@ -4,6 +4,9 @@
 #include "Game/InGameInstance.h"
 #include "Interface/UIControllerHandler.h"
 
+
+#include "Kismet/GameplayStatics.h"
+
 void ULobbyWidget::NativeConstruct()
 {
     Super::NativeConstruct();

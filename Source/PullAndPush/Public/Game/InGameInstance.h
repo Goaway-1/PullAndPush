@@ -85,8 +85,19 @@ private:
 private:
 	const FString LevelDirectoryPath = "/Game/Maps/InGame/";
 	FName MainLevelName = "MainLevel";
-	const FString LobbyLevelName = "/Game/Maps/LobbyLevel";
-	const FString ResultLevelName = "/Game/Maps/ResultLevel";
+	const FString LobbyLevelName = "/Game/Maps/LobbyLevel?listen";
+	const FString ResultLevelName = "/Game/Maps/ResultLevel?listen";
 #pragma endregion
+
+private:
+	FText PlayerName;
+
+public:
+	UFUNCTION(BlueprintCallable)
+	FORCEINLINE void SetPlayerName(FText InText) {PlayerName = InText;}
+
+
+	UFUNCTION(BlueprintCallable)
+	FORCEINLINE FText GetPlayerName() { return PlayerName; }
 
 };

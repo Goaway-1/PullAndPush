@@ -65,7 +65,7 @@ void UInGameInstance::TravelLevel(ELevelType LevelType)
 FString UInGameInstance::GetRandomLevelName()
 {
 	// Get Random Level used by AssetManager
-	UAssetManager& Manager = UAssetManager::Get();
+	/*UAssetManager& Manager = UAssetManager::Get();
 	TArray<FPrimaryAssetId> Assets;
 	Manager.GetPrimaryAssetIdList(TEXT("Map"), Assets);
 	ensure(0 < Assets.Num());
@@ -76,9 +76,9 @@ FString UInGameInstance::GetRandomLevelName()
 		int32 RandomIndex = FMath::RandRange(0, Assets.Num() - 1);
 		FSoftObjectPtr AssetPtr(Manager.GetPrimaryAssetPath(Assets[RandomIndex]));
 		AssetName = LevelDirectoryPath + AssetPtr.GetAssetName();
-	}
+	}*/
 	// @TODO : 이슈.. 실제로 플레이 하면 안됌
-	AssetName = LevelDirectoryPath + "Level1";
+	AssetName = LevelDirectoryPath + "Level1?listen";
 
 	return AssetName;
 }
