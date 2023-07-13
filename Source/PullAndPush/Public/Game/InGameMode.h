@@ -21,7 +21,7 @@ public:
 #pragma region ROUND
 public:
 	/** Decrease player count if character is fell out of world */
-	void PlayerFellOutOfWorld(APlayerController* Player);
+	void PlayerFellOutOfWorld(const FString& ControllerName);
 
 private:
 	/** Start round if all players are logged in to the level */
@@ -47,9 +47,12 @@ private:
 #pragma endregion
 
 #pragma region SCORE
-private:
+public:
 	/** Initialize the score to be given to the player's controller */
-	void InitPlayersScore(APlayerController* NewPlayer);
+	void InitPlayersScore(const FString& ControllerName);
+
+private:
+	void InitPlayers(APlayerController* NewPlayer);
 
 	void SetPlayerScore(const FString & ControllerName);
 

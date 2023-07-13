@@ -5,6 +5,7 @@
 #include "Game/InGameInstance.h"
 #include "Character/PlayableCharacter.h"
 
+
 APlayableController::APlayableController() {
 
 }
@@ -17,6 +18,21 @@ void APlayableController::BeginPlay()
 	{
 		CurGameMode = Cast<AInGameMode>(GetWorld()->GetAuthGameMode());
 	}
+
+
+	// Set Player Name to GameMode
+	if (IsLocalController())
+	{
+		UInGameInstance* InGameInstance = Cast<UInGameInstance>(GetGameInstance());
+		FString PlayerName = InGameInstance->GetPlayerName().ToString();
+
+		SetPlayerName(PlayerName);
+	}
+}
+void APlayableController::SetPlayerName_Implementation(const FString& ControllerName)
+{
+	CurGameMode = Cast<AInGameMode>(GetWorld()->GetAuthGameMode());
+	CurGameMode->InitPlayersScore(ControllerName);
 }
 void APlayableController::UpdateItemUI(UDataAsset* CurrentItem, const bool IsPassvieItem)
 {
@@ -44,7 +60,10 @@ void APlayableController::PlayerFellOutOfWorld()
 {
 	if (CurGameMode)
 	{
-		CurGameMode->PlayerFellOutOfWorld(this);
+		UInGameInstance* InGameInstance = Cast<UInGameInstance>(GetGameInstance());
+		FString PlayerName = InGameInstance->GetPlayerName().ToString();
+
+		CurGameMode->PlayerFellOutOfWorld(PlayerName);
 	}
 
 	SetPlayerSpectate();

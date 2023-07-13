@@ -78,6 +78,8 @@ FString UInGameInstance::GetRandomLevelName()
 		AssetName = LevelDirectoryPath + AssetPtr.GetAssetName();
 	}*/
 	// @TODO : 이슈.. 실제로 플레이 하면 안됌
+
+	FString AssetName;
 	AssetName = LevelDirectoryPath + "Level1?listen";
 
 	return AssetName;

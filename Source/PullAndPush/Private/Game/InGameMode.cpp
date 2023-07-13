@@ -25,7 +25,7 @@ void AInGameMode::PostLogin(APlayerController* NewPlayer)
 {
 	Super::PostLogin(NewPlayer);
 
-	InitPlayersScore(NewPlayer);
+	InitPlayers(NewPlayer);
 
 	/** Round start when all players enter */
 	if (++CurrentPlayerCount >= TotalPlayerCount)
@@ -33,9 +33,8 @@ void AInGameMode::PostLogin(APlayerController* NewPlayer)
 		RoundStart();
 	}
 }
-void AInGameMode::PlayerFellOutOfWorld(APlayerController* Player)
+void AInGameMode::PlayerFellOutOfWorld(const FString& ControllerName)
 {
-	const FString ControllerName = Player->GetName();
 	SetPlayerScore(ControllerName);
 
 	// Check Round Is End?
@@ -63,6 +62,7 @@ void AInGameMode::RoundEnd()
 	for (auto Controller : Controllers)
 	{
 		Controller->ClearAllTimer();
+		Controller->UnPossess();
 	}
 
 	// Access GameInstance and Switch Level
@@ -83,11 +83,12 @@ void AInGameMode::AllRoundsCompleted()
 {
 	InGameInstance->TravelLevel(ELevelType::ELT_Result);
 }
-void AInGameMode::InitPlayersScore(APlayerController* NewPlayer)
+void AInGameMode::InitPlayersScore(const FString& ControllerName)
 {
-	ControllersScore.Add(NewPlayer->GetName(), InitialScore);
-
-	// Init Player Count
+	ControllersScore.Add(ControllerName, InitialScore);
+}
+void AInGameMode::InitPlayers(APlayerController* NewPlayer)
+{
 	APlayableController* PlayableController = Cast<APlayableController>(NewPlayer);
 	if (PlayableController)
 	{
@@ -97,7 +98,10 @@ void AInGameMode::InitPlayersScore(APlayerController* NewPlayer)
 }
 void AInGameMode::SetPlayerScore(const FString& ControllerName)
 {
-	ControllersScore[ControllerName] = CurrentScore++;
+	if (ControllersScore.Num() > 0)
+	{
+		ControllersScore[ControllerName] = CurrentScore++;
+	}
 }
 void AInGameMode::CalculatePlayerScore()
 {
