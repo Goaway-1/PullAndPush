@@ -33,9 +33,9 @@ void AInGameMode::PostLogin(APlayerController* NewPlayer)
 		RoundStart();
 	}
 }
-void AInGameMode::PlayerFellOutOfWorld(const FString& ControllerName)
+void AInGameMode::PlayerFellOutOfWorld(const FString& InPlayerName)
 {
-	SetPlayerScore(ControllerName);
+	SetPlayerScore(InPlayerName);
 
 	// Check Round Is End?
 	if (--CurrentPlayerCount <= 1)
@@ -83,9 +83,9 @@ void AInGameMode::AllRoundsCompleted()
 {
 	InGameInstance->TravelLevel(ELevelType::ELT_Result);
 }
-void AInGameMode::InitPlayersScore(const FString& ControllerName)
+void AInGameMode::InitPlayersScore(const FString& InPlayerName)
 {
-	ControllersScore.Add(ControllerName, InitialScore);
+	ControllersScore.Add(InPlayerName, InitialScore);
 }
 void AInGameMode::InitPlayers(APlayerController* NewPlayer)
 {
@@ -96,11 +96,12 @@ void AInGameMode::InitPlayers(APlayerController* NewPlayer)
 		PlayableController->InitPlayerCount(TotalPlayerCount);
 	}
 }
-void AInGameMode::SetPlayerScore(const FString& ControllerName)
+void AInGameMode::SetPlayerScore(const FString& InPlayerName)
 {
 	if (ControllersScore.Num() > 0)
 	{
-		ControllersScore[ControllerName] = CurrentScore++;
+		UE_LOG(LogTemp,Warning,TEXT("%s 's Score : %d"), *InPlayerName, CurrentScore);
+		ControllersScore[InPlayerName] = CurrentScore++;
 	}
 }
 void AInGameMode::CalculatePlayerScore()

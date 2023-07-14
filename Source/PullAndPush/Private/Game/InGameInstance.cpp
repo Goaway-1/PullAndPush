@@ -12,9 +12,10 @@ bool UInGameInstance::IsAllRoundsFinished()
 }
 void UInGameInstance::ResetData()
 {
-	MaxRoundCount = 0;
 	CurrentRoundCount = 1;
 	TotalPlayerCount = 0;
+	PlayersScore.Reset();
+	PlayerName = FText::GetEmpty();
 }
 void UInGameInstance::SetPlayersScore(TMap<FString, int8>& Controllers)
 {

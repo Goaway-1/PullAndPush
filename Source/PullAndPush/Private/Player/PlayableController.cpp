@@ -4,7 +4,7 @@
 #include "Game/InGameMode.h"
 #include "Game/InGameInstance.h"
 #include "Character/PlayableCharacter.h"
-
+#include "GameFramework/PlayerState.h"
 
 APlayableController::APlayableController() {
 
@@ -19,20 +19,19 @@ void APlayableController::BeginPlay()
 		CurGameMode = Cast<AInGameMode>(GetWorld()->GetAuthGameMode());
 	}
 
-
 	// Set Player Name to GameMode
 	if (IsLocalController())
 	{
 		UInGameInstance* InGameInstance = Cast<UInGameInstance>(GetGameInstance());
 		FString PlayerName = InGameInstance->GetPlayerName().ToString();
 
-		SetPlayerName(PlayerName);
+		ServerSetPlayerNameToMode(PlayerName);
 	}
 }
-void APlayableController::SetPlayerName_Implementation(const FString& ControllerName)
+void APlayableController::ServerSetPlayerNameToMode_Implementation(const FString& InPlayerName)
 {
 	CurGameMode = Cast<AInGameMode>(GetWorld()->GetAuthGameMode());
-	CurGameMode->InitPlayersScore(ControllerName);
+	CurGameMode->InitPlayersScore(InPlayerName);
 }
 void APlayableController::UpdateItemUI(UDataAsset* CurrentItem, const bool IsPassvieItem)
 {
@@ -56,17 +55,18 @@ void APlayableController::UpdateStatUI(const FString& StatName, UMaterialInterfa
 		InGameHUD->UpdateStatUI(StatName,Material);
 	}
 }
-void APlayableController::PlayerFellOutOfWorld()
+void APlayableController::ClientPlayerFellOutOfWorld_Implementation()
 {
-	if (CurGameMode)
-	{
-		UInGameInstance* InGameInstance = Cast<UInGameInstance>(GetGameInstance());
-		FString PlayerName = InGameInstance->GetPlayerName().ToString();
-
-		CurGameMode->PlayerFellOutOfWorld(PlayerName);
-	}
+	UInGameInstance* InGameInstance = Cast<UInGameInstance>(GetGameInstance());
+	FString PlayerName = InGameInstance->GetPlayerName().ToString();
+	ServerPlayerFellOutOfWorld(PlayerName);
 
 	SetPlayerSpectate();
+}
+void APlayableController::ServerPlayerFellOutOfWorld_Implementation(const FString& InPlayerName)
+{
+	CurGameMode = Cast<AInGameMode>(GetWorld()->GetAuthGameMode());
+	CurGameMode->PlayerFellOutOfWorld(InPlayerName);
 }
 void APlayableController::InitPlayerCount_Implementation(int8 InTotalPlayerCount)
 {

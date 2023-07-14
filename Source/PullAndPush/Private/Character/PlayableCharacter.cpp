@@ -11,6 +11,7 @@
 #include "EnhancedInputSubsystems.h"
 #include "Player/PlayableController.h"
 #include "Net/UnrealNetwork.h"
+#include "Game/InGameInstance.h"
 #include "Kismet/KismetMathLibrary.h"
 
 APlayableCharacter::APlayableCharacter()
@@ -79,7 +80,7 @@ void APlayableCharacter::FellOutOfWorld(const UDamageType& dmgType)
 	APlayableController* NewPlayableController = Cast<APlayableController>(GetController());
 	if (NewPlayableController)
 	{
-		NewPlayableController->PlayerFellOutOfWorld();
+		NewPlayableController->ClientPlayerFellOutOfWorld();
 	}
 
 	// Disable Character..

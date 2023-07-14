@@ -44,9 +44,13 @@ private:
 #pragma region GAMEMODE
 public:
 	UFUNCTION(Server, Reliable)
-	void SetPlayerName(const FString& ControllerName);
+	void ServerSetPlayerNameToMode(const FString& InPlayerName);
 
-	void PlayerFellOutOfWorld(); 
+	UFUNCTION(Client, Reliable)
+	void ClientPlayerFellOutOfWorld();
+
+	UFUNCTION(Server, Reliable)
+	void ServerPlayerFellOutOfWorld(const FString& InPlayerName);
 
 	/** Clear All Timer of Character */
 	void ClearAllTimer();

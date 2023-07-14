@@ -34,7 +34,8 @@ void AItemPickup::OnHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, U
 	const FName OtherCompCollsionName = OtherComponent->GetCollisionProfileName();
 
 	// Hit Event of Push & Pull or Character
-	if (OtherCompCollsionName == "Pawn") {		
+	if (OtherCompCollsionName == "Pawn") 
+	{		
 		/** Character's Pickup Action */
 		TScriptInterface<class ICharacterPickupHandler> ActionHandler = OtherActor;
 		if (ActionHandler.GetInterface() && CurItemData.IsValid())
@@ -43,7 +44,8 @@ void AItemPickup::OnHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, U
 			SetActiveItemPickup(false);
 		}
 	}
-	else {
+	else 
+	{
 		/** Enable Gravity */
 		if(!CollisionComp->IsGravityEnabled())
 		{
@@ -51,7 +53,7 @@ void AItemPickup::OnHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, U
 		}
 	}
 }
-void AItemPickup::SetActiveItemPickup(bool IsSpawn, UItemData* InItemDataAsset, FVector SpawnLocation)
+void AItemPickup::SetActiveItemPickup(bool IsSpawn, UItemData* InItemDataAsset, FVector InSpawnLocation)
 {
 	// Turn OnOff Item Enable
 	bIsSpawn = IsSpawn;
@@ -66,11 +68,12 @@ void AItemPickup::SetActiveItemPickup(bool IsSpawn, UItemData* InItemDataAsset, 
 	// SetLocation & Mesh if Spawn!
 	if(IsSpawn && CurItemData.IsValid())
 	{
-		SetActorLocationAndRotation(SpawnLocation, FRotator::ZeroRotator);
+		CollisionComp->AddForce(FVector::Zero());
+		SetActorLocationAndRotation(InSpawnLocation, FRotator::ZeroRotator);
 		StaticMeshComp->SetStaticMesh(CurItemData.Get()->GetStaticMesh());
 		StaticMeshComp->SetRelativeLocation(FVector::Zero());
 	}
-	else
+	else if(!IsSpawn)
 	{
 		// Inform ItemSpawner of Pickup Action.
 		OnPickupAction.ExecuteIfBound();
