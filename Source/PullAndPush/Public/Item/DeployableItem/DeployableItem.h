@@ -35,7 +35,7 @@ protected:
 	virtual void ActiveDeployableItem();
 
 	UFUNCTION()
-	void DestoryDeployableItem();
+	virtual void DestoryDeployableItem();
 
 	// Automatically run timer when bIsAutoActive is enabled
 	void SetActiveTimer();

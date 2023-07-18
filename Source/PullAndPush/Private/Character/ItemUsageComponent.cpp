@@ -132,7 +132,7 @@ void UItemUsageComponent::ServerSetDeployableItemMesh_Implementation(UItemData* 
 	TScriptInterface<class IItemDataHandler> CurItemAction = ActiveItemData;
 	if (CurItemAction.GetInterface())
 	{
-		CurDeployableItemStaticMesh = CurItemAction->GetStaticMesh();
+		CurDeployableItemStaticMesh = CurItemAction->GetDeployStaticMesh();
 		ItemStaticMeshComp->SetStaticMesh(CurDeployableItemStaticMesh);
 		ItemStaticMeshComp->SetVisibility(true);
 	}
@@ -146,7 +146,7 @@ void UItemUsageComponent::ThrowDeployableItem()
 {
 	if (!CurRequiredActiveItemData) return;
 
-	TSubclassOf<class AActor> DeployableItemClass = CurRequiredActiveItemData->GetSpawnItemClass();
+	TSubclassOf<class AActor> DeployableItemClass = CurRequiredActiveItemData->GetDeployItemClass();
 	ServerThrowDeployableItem(DeployableItemClass);
 	ClearSplineMeshComponents();
 

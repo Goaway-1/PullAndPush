@@ -4,7 +4,7 @@
 
 AInteractiveObstacleMover::AInteractiveObstacleMover()
 	:
-	ForceStrength(2000.f), bLimitedTimeHit(0), MinHitTime(0.f), MaxHitTime(0.f)
+	ForceStrength(2000.f), bShowDebug(0), bLimitedTimeHit(0), MinHitTime(0.f), MaxHitTime(0.f)
 {
 	PrimaryActorTick.bCanEverTick = true;
 	bReplicates = true;
@@ -73,6 +73,9 @@ void AInteractiveObstacleMover::CheckHit()
 	}
 
 	// For log
-	FColor DrawColor = HitDetected ? FColor::Green : FColor::Red;
-	DrawDebugBox(GetWorld(), OriginPos, BoxCollisionExtent, OriginQuat, DrawColor, false, 0.3f);
+	if (bShowDebug)
+	{
+		FColor DrawColor = HitDetected ? FColor::Green : FColor::Red;
+		DrawDebugBox(GetWorld(), OriginPos, BoxCollisionExtent, OriginQuat, DrawColor, false, 0.3f);
+	}
 }

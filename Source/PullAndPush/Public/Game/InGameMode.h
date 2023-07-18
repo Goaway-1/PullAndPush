@@ -25,6 +25,7 @@ public:
 
 private:
 	/** Start round if all players are logged in to the level */
+	//UFUNCTION(Server, Reliable)
 	void RoundStart();
 
 	/** Finsh round if only one player is survive */

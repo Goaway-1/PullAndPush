@@ -49,7 +49,8 @@ void ASnareDeployableItem::AddOverlapActors(UPrimitiveComponent* OverlappedCompo
 		ProjectileMovementComponent->Velocity = FVector::Zero();
 		bIsCollision = true;
 
-		// Destory
+		// Play Animation & Try to Destory
+		PlayAnimation();
 		DestoryDeployableItem();
 	}
 }

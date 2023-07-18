@@ -37,7 +37,7 @@ TMap<FString, int8>& UInGameInstance::GetPlayersScore()
 }
 void UInGameInstance::TravelLevel(ELevelType LevelType)
 {
-	/*if (LevelType != ELevelType::ELT_Main)
+	if (LevelType != ELevelType::ELT_Main)
 	{
 		GetWorld()->ServerTravel(GetLevelPathOfEnum(LevelType));
 	}
@@ -45,9 +45,9 @@ void UInGameInstance::TravelLevel(ELevelType LevelType)
 	{
 		ResetData();
 		UGameplayStatics::OpenLevel(this, MainLevelName);
-	}*/
+	}
 
-	switch (LevelType)
+	/*switch (LevelType)
 	{
 	case ELevelType::ELT_Main:
 		UGameplayStatics::OpenLevel(this, MainLevelName);
@@ -61,12 +61,12 @@ void UInGameInstance::TravelLevel(ELevelType LevelType)
 	case ELevelType::ELT_Result:
 		GetWorld()->ServerTravel(ResultLevelName);
 		break;
-	}
+	}*/
 }
 FString UInGameInstance::GetRandomLevelName()
 {
 	// Get Random Level used by AssetManager
-	/*UAssetManager& Manager = UAssetManager::Get();
+	UAssetManager& Manager = UAssetManager::Get();
 	TArray<FPrimaryAssetId> Assets;
 	Manager.GetPrimaryAssetIdList(TEXT("Map"), Assets);
 	ensure(0 < Assets.Num());
@@ -77,11 +77,7 @@ FString UInGameInstance::GetRandomLevelName()
 		int32 RandomIndex = FMath::RandRange(0, Assets.Num() - 1);
 		FSoftObjectPtr AssetPtr(Manager.GetPrimaryAssetPath(Assets[RandomIndex]));
 		AssetName = LevelDirectoryPath + AssetPtr.GetAssetName();
-	}*/
-	// @TODO : 이슈.. 실제로 플레이 하면 안됌
-
-	FString AssetName;
-	AssetName = LevelDirectoryPath + "Level1?listen";
+	}
 
 	return AssetName;
 }

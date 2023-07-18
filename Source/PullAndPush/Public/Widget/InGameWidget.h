@@ -65,10 +65,12 @@ public:
 	FOnChangeVisibleItemWidget OnChangeVisibleItemWidget;
 #pragma endregion
 
-#pragma region SCORE
+#pragma region ROUND
 public:
 	void InitPlayerCount(int8 InTotalPlayerCount);
 	void SetCurrentPlayerCount(int8 InCount);
+	void SetRoundStart();
+	void SetRoundEnd();
 
 private:
 	UPROPERTY(meta = (BindWidget))
@@ -76,6 +78,9 @@ private:
 
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<class UTextBlock> CurrentCount;
+
+	UPROPERTY(meta = (BindWidget))
+	TObjectPtr<class UTextBlock> RoundState;
 #pragma endregion
 
 };

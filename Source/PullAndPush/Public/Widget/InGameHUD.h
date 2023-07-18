@@ -36,7 +36,6 @@ private:
 	UPROPERTY()
 	TObjectPtr<class UInGameWidget> InGameWidget;
 
-/** Funtion */
 	UPROPERTY()
 	TObjectPtr<class USpectatorWidget> SpectatorWidget;
 
@@ -49,8 +48,10 @@ public:
 
 /** Player Count Widget */
 public:
-	void InitPlayerCount(int8 InTotalPlayerCount);
+	bool InitPlayerCount(int8 InTotalPlayerCount);
 	void SetCurrentPlayerCount(int8 InCount);
+	bool SetRoundStart();
+	void SetRoundEnd();
 
 private:
 	/* Current HUD state */

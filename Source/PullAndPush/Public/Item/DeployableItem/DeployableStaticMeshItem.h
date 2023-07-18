@@ -17,6 +17,9 @@ public:
 	ADeployableStaticMeshItem();
 
 protected:
+	virtual void DestoryDeployableItem() override;
+
+protected:
 	UPROPERTY(VisibleAnywhere, Category = "DeployableItem")
 	TObjectPtr<class UStaticMeshComponent> MeshComp;	
 };

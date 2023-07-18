@@ -74,6 +74,8 @@ struct FCharacterStatModifier
 	GENERATED_USTRUCT_BODY()
 
 public:
+	FCharacterStatModifier() : Stat(ECharacterStat::None), ChangeDuration(0.f) {}
+
 	UPROPERTY(EditDefaultsOnly, Category = Stat)
 	ECharacterStat Stat;
 

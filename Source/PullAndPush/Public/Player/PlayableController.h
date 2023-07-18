@@ -2,11 +2,10 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/PlayerController.h"
-#include "Interface/PlayableControllerHandler.h"
 #include "PlayableController.generated.h"
 
 UCLASS()
-class PULLANDPUSH_API APlayableController : public APlayerController, public IPlayableControllerHandler
+class PULLANDPUSH_API APlayableController : public APlayerController
 {
 	GENERATED_BODY()
 public:
@@ -33,12 +32,15 @@ public:
 	UFUNCTION(Client, Reliable)
 	void SetCurrentPlayerCount(int8 InCount);
 
-	virtual void SetPlayerCount() override;
+	UFUNCTION(Client, Reliable)
+	void SetRoundStart();
+
+	UFUNCTION(Client, Reliable)
+	void SetRoundEnd();
 private:
 	UPROPERTY()
 	TObjectPtr<class AInGameHUD> InGameHUD;
 
-	int8 TotalPlayerCount;
 #pragma endregion
 
 #pragma region GAMEMODE

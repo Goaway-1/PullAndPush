@@ -17,17 +17,15 @@ bool UItemData::CheckIsActiveItem() const
 		return false;
 	}
 }
-
 FPrimaryAssetId UItemData::GetPrimaryAssetId() const
 {
 	return FPrimaryAssetId(ItemType, GetFName());
 }
-
-UStaticMesh* UItemData::GetStaticMesh() const
+UNiagaraSystem* UItemData::GetNiagraAsset() const
 {
-	if (StaticMesh.IsPending())
+	if (NiagraAsset.IsPending())
 	{
-		StaticMesh.LoadSynchronous();
+		NiagraAsset.LoadSynchronous();
 	}
-	return StaticMesh.Get();
+	return NiagraAsset.Get();
 }

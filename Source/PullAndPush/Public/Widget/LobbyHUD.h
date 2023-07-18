@@ -16,7 +16,7 @@ protected:
 public:
 	virtual void DrawHUD() override;
 
-	void SetLobbyWidgetData(int8 InMaxPlayerCount, int8 InTotalPlayerCount);
+	bool SetLobbyWidgetData(int8 InMaxPlayerCount, int8 InTotalPlayerCount);
 
 private:
 	UPROPERTY(EditDefaultsOnly, Category = "Widget")

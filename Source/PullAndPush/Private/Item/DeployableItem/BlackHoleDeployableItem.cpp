@@ -9,7 +9,7 @@ ABlackHoleDeployableItem::ABlackHoleDeployableItem()
 {
 	EventCollisionComp = CreateDefaultSubobject<USphereComponent>(TEXT("EventCollisionComp"));
 	EventCollisionComp->SetupAttachment(GetRootComponent());
-	EventCollisionComp->SetSphereRadius(1500.f);
+	EventCollisionComp->SetSphereRadius(1000.f);
 
 	ProjectileMovementComponent->bRotationFollowsVelocity = true;
 }
@@ -39,6 +39,12 @@ void ABlackHoleDeployableItem::ActiveDeployableItem()
 	CollisionComp->SetEnableGravity(false);
 	ProjectileMovementComponent->ProjectileGravityScale = 0;
 	ProjectileMovementComponent->Velocity = FVector::Zero();
+}
+void ABlackHoleDeployableItem::DestoryDeployableItem()
+{
+	Super::DestoryDeployableItem();
+
+	bIsBlackHoleActived = false;
 }
 void ABlackHoleDeployableItem::ActivateBlackHole()
 {
@@ -78,7 +84,7 @@ void ABlackHoleDeployableItem::AddOverlapActors(UPrimitiveComponent* OverlappedC
 		// Exception handling if item
 		TScriptInterface<class IItemPickupHandler> ActionHandler = OtherComp;
 		if (ActionHandler.GetInterface()) {
-			ActionHandler->SetActiveItemPickup(true);
+			//ActionHandler->SetActiveItemPickup(true);
 		}
 	}
 }

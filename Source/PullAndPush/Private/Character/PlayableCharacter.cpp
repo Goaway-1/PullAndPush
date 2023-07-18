@@ -43,7 +43,13 @@ APlayableCharacter::~APlayableCharacter()
 void APlayableCharacter::PossessedBy(AController* NewController)
 {
 	Super::PossessedBy(NewController);
-
+	
+	/** Disable Input */
+	APlayerController* NewPlayerController = Cast<APlayerController>(NewController);
+	if(NewPlayerController)
+	{
+		DisableInput(NewPlayerController);
+	}
 }
 void APlayableCharacter::UnPossessed()
 {
@@ -67,6 +73,8 @@ void APlayableCharacter::BeginPlay()
 		ItemUsageComp->GetItemWidgetUpdateDelegate().BindUObject(PlayableController, &APlayableController::UpdateItemUI);
 		StatComp->OnUpdateStatWidget.BindUObject(PlayableController, &APlayableController::UpdateStatUI);
 	}
+
+	SetPlayerAttackCondition(false);
 }
 void APlayableCharacter::Tick(float DeltaTime)
 {

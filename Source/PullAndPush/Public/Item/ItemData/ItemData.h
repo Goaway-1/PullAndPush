@@ -24,7 +24,7 @@ protected:
 	FString Description;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Item)
-	TSoftObjectPtr<UStaticMesh> StaticMesh;
+	TSoftObjectPtr<class UNiagaraSystem> NiagraAsset;
 	
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Item)
 	TSoftObjectPtr<UMaterialInterface> MaterialUI;
@@ -32,8 +32,7 @@ protected:
 public:
 	/** Overridden to use saved type */
 	virtual FPrimaryAssetId GetPrimaryAssetId() const override;
-
-	virtual UStaticMesh* GetStaticMesh() const override;
+	virtual UNiagaraSystem* GetNiagraAsset()const override;
 public:
 /** Handler */
 	/** Returns the logical name, equivalent to the primary asset id */
@@ -72,7 +71,12 @@ public:
 		if (CheckIsActiveItem()) PPLOG(Warning, TEXT("Invalid access to the Active item"));
 		return;
 	}
-	virtual TSubclassOf<AActor> GetSpawnItemClass() const override {
+	virtual TSubclassOf<AActor> GetDeployItemClass() const override {
+		if (!CheckIsActiveItem()) PPLOG(Warning, TEXT("Invalid access to the Passive item"));
+		return nullptr;
+	}
+	virtual UStaticMesh* GetDeployStaticMesh() const override
+	{
 		if (!CheckIsActiveItem()) PPLOG(Warning, TEXT("Invalid access to the Passive item"));
 		return nullptr;
 	}

@@ -29,9 +29,9 @@ void URPCollisionComponent::OnHit(UPrimitiveComponent* HitComponent, AActor* Oth
 		const FName OtherCompCollsionName = OtherComponent->GetCollisionProfileName();
 		float LerpForce = FMath::Lerp(MinKnockBackForce, MaxKnockBackForce + InPassiveStat.RPForce, ForceAlpha);
 		AActor* TargetActor;
-		if (OtherCompCollsionName == "BlockAll" || OtherCompCollsionName == "Pawn")
+		if (OtherCompCollsionName == "BlockAll" || OtherCompCollsionName == "Gimmick" || OtherCompCollsionName == "Pawn")
 		{
-			if (OtherCompCollsionName == "BlockAll")
+			if (OtherCompCollsionName == "BlockAll" || OtherCompCollsionName == "Gimmick")
 			{
 				LerpForce *= (IsPush) ? -1 : 1;
 				TargetActor = CasterActor;

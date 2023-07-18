@@ -2,6 +2,7 @@
 #include "Components/SphereComponent.h"
 #include "Interface/CharacterPickupHandler.h"
 #include "Item/ItemData/ItemData.h"
+#include "NiagaraComponent.h"
 #include "Net/UnrealNetwork.h"
 
 AItemPickup::AItemPickup()
@@ -12,11 +13,10 @@ AItemPickup::AItemPickup()
 
 	CollisionComp = CreateDefaultSubobject<USphereComponent>(TEXT("CollisionComp"));
 	CollisionComp->SetCollisionProfileName(CollisionName);
-	StaticMeshComp = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("StaticMeshComp"));
-	StaticMeshComp->SetCollisionProfileName(MeshCollisionName);
+	NiagaraComp = CreateDefaultSubobject<UNiagaraComponent>(TEXT("NiagaraComp"));
 
 	SetRootComponent(CollisionComp);
-	StaticMeshComp->SetupAttachment(RootComponent);
+	NiagaraComp->SetupAttachment(RootComponent);
 }
 void AItemPickup::FellOutOfWorld(const UDamageType& dmgType)
 {
@@ -62,16 +62,15 @@ void AItemPickup::SetActiveItemPickup(bool IsSpawn, UItemData* InItemDataAsset, 
 	SetActorEnableCollision(bIsSpawn);
 	SetActorHiddenInGame(!bIsSpawn);
 	SetActorTickEnabled(bIsSpawn);
-	CollisionComp->SetSimulatePhysics(bIsSpawn);
-	CollisionComp->SetEnableGravity(!bIsSpawn);
+	CollisionComp->SetSimulatePhysics(bIsSpawn);			
+	CollisionComp->SetEnableGravity(!bIsSpawn);		
 
 	// SetLocation & Mesh if Spawn!
 	if(IsSpawn && CurItemData.IsValid())
 	{
 		CollisionComp->AddForce(FVector::Zero());
 		SetActorLocationAndRotation(InSpawnLocation, FRotator::ZeroRotator);
-		StaticMeshComp->SetStaticMesh(CurItemData.Get()->GetStaticMesh());
-		StaticMeshComp->SetRelativeLocation(FVector::Zero());
+		NiagaraComp->SetAsset(CurItemData.Get()->GetNiagraAsset());
 	}
 	else if(!IsSpawn)
 	{
@@ -86,8 +85,7 @@ void AItemPickup::OnRep_ChangeCurItemData()
 
 	if (CurItemData.IsValid())
 	{
-		StaticMeshComp->SetStaticMesh(CurItemData.Get()->GetStaticMesh());
-		StaticMeshComp->SetRelativeLocation(FVector::Zero());
+		NiagaraComp->SetAsset(CurItemData.Get()->GetNiagraAsset());
 	}
 }
 void AItemPickup::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const

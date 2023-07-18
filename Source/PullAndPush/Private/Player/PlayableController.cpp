@@ -70,21 +70,43 @@ void APlayableController::ServerPlayerFellOutOfWorld_Implementation(const FStrin
 }
 void APlayableController::InitPlayerCount_Implementation(int8 InTotalPlayerCount)
 {
-	TotalPlayerCount = InTotalPlayerCount;
-	SetPlayerCount();
-}
-void APlayableController::SetPlayerCount()
-{
-	if (InGameHUD)
+	if (InGameHUD && InGameHUD->InitPlayerCount(InTotalPlayerCount))
 	{
-		InGameHUD->InitPlayerCount(TotalPlayerCount);
+		PPLOG(Log,TEXT("InitPlayer Count Successed!"));
 	}
-}
+	else
+	{
+		GetWorld()->GetTimerManager().SetTimerForNextTick(FTimerDelegate::CreateUObject(this, &APlayableController::InitPlayerCount, InTotalPlayerCount));
+	}
+}	
 void APlayableController::SetCurrentPlayerCount_Implementation(int8 InCount)
 {
 	if (InGameHUD)
 	{
 		InGameHUD->SetCurrentPlayerCount(InCount);
+	}
+}
+void APlayableController::SetRoundStart_Implementation()
+{
+	// Check tick-by-tick to see if widget created
+	if (InGameHUD && InGameHUD->SetRoundStart())
+	{
+		PPLOG(Log, TEXT("Set Round Text Successed!"));
+		FTimerHandle Handle;
+		GetWorld()->GetTimerManager().SetTimer(Handle, this, &APlayableController::SetRoundEnd,1.5f,false);
+	}
+	else
+	{
+		GetWorld()->GetTimerManager().SetTimerForNextTick(this, &APlayableController::SetRoundStart);
+	}
+}
+void APlayableController::SetRoundEnd_Implementation()
+{
+	// Enable Input & Hide Widgets
+	if (InGameHUD)
+	{
+		GetPawn()->EnableInput(this);
+		InGameHUD->SetRoundEnd();
 	}
 }
 void APlayableController::ClearAllTimer()

@@ -37,7 +37,7 @@ private:
 	const float SelfExplosionImpulse = 400.f;
 
 	// Explosion Value other things
-	const float ExplosionRadius = 250.f;
+	const float ExplosionRadius = 300.f;
 	const float ExplosionImpulse = 1000.f;
 
 /** For Change Character Stat */

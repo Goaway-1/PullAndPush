@@ -2,9 +2,6 @@
 #include "Components/Button.h"
 #include "Components/TextBlock.h"
 #include "Game/InGameInstance.h"
-#include "Interface/UIControllerHandler.h"
-
-
 #include "Kismet/GameplayStatics.h"
 
 void ULobbyWidget::NativeConstruct()
@@ -12,13 +9,6 @@ void ULobbyWidget::NativeConstruct()
     Super::NativeConstruct();
 
     StartButton->OnClicked.AddDynamic(this, &ULobbyWidget::StartGame);
-
-    // Notify the controller that edit widget is possible
-    TScriptInterface<class IUIControllerHandler> ActionHandler = GetOwningPlayer();
-    if (ActionHandler.GetInterface())
-    {
-        ActionHandler->SetCanEditLobbyWidget();
-    }
 }
 void ULobbyWidget::StartGame()
 {

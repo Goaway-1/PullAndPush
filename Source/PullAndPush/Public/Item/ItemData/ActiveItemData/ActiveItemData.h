@@ -22,9 +22,20 @@ protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Item")
 	TSubclassOf<class AActor> DeployableItemClass;
 
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Item")
+	TSoftObjectPtr<class UStaticMesh> StaticMesh;
+
 /** Handler */
 public:
-	virtual TSubclassOf<AActor> GetSpawnItemClass() const override {
+	virtual TSubclassOf<AActor> GetDeployItemClass() const override {
 		return DeployableItemClass;
+	}
+	virtual UStaticMesh* GetDeployStaticMesh() const override
+	{
+		if (StaticMesh.IsPending())
+		{
+			StaticMesh.LoadSynchronous();
+		}
+		return StaticMesh.Get();
 	}
 };

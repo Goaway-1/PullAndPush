@@ -38,7 +38,7 @@ private:
 	TObjectPtr<class USphereComponent> CollisionComp;
 
 	UPROPERTY(EditDefaultsOnly)
-	TObjectPtr<class UStaticMeshComponent> StaticMeshComp;
+	TObjectPtr<class UNiagaraComponent> NiagaraComp;
 
 	UPROPERTY(Replicated, ReplicatedUsing = OnRep_ChangeCurItemData, VisibleAnywhere, Category="Item")
 	TWeakObjectPtr<class UItemData> CurItemData;
@@ -48,5 +48,4 @@ private:
 	uint8 bIsSpawn:1;
 
 	const FName CollisionName = TEXT("Item");
-	const FName MeshCollisionName = "NoCollision";
 };

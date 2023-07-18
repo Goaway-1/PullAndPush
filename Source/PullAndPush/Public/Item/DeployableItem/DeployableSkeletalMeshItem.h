@@ -17,6 +17,13 @@ public:
 	ADeployableSkeletalMeshItem();
 
 protected:
+	void PlayAnimation();
+
+	virtual void DestoryDeployableItem() override;
+protected:
 	UPROPERTY(VisibleAnywhere, Category = "DeployableItem")
 	TObjectPtr<class USkeletalMeshComponent> MeshComp;
+
+	UPROPERTY(EditDefaultsOnly, Category = "DeployableItem")
+	TObjectPtr<class UAnimationAsset> MeshAnimation;
 };

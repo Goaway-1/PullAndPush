@@ -74,6 +74,7 @@ Plugins/*/Intermediate/*
 DerivedDataCache/*
 
 # Another Content
-Content/SuperGrid
-Content/StarterContent
-Content/sA_Megapack_v1
+Content/SuperGrid/*
+Content/StarterContent/*
+Content/sA_Megapack_v1/*
+Build/*

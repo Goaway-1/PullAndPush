@@ -1,6 +1,6 @@
 #include "Item/ItemSpawner.h"
-#include "Components/StaticMeshComponent.h"
 #include "Kismet/KismetMathLibrary.h"
+#include "NiagaraComponent.h"
 #include "Item/ItemData/ItemData.h"
 
 AItemSpawner::AItemSpawner()
@@ -10,8 +10,8 @@ AItemSpawner::AItemSpawner()
     bReplicates = true;
     SetReplicateMovement(true);
 
-	StaticMeshComp = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("StaticMeshComp"));
-    StaticMeshComp->SetCollisionProfileName(CollisionName,false);
+    NiagaraComp = CreateDefaultSubobject<UNiagaraComponent>(TEXT("NiagaraComp"));
+    NiagaraComp->SetupAttachment(GetRootComponent());
 
     ItemSpawnType = EItemSpawnType::Normal;
 }

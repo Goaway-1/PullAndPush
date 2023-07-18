@@ -46,8 +46,7 @@ void ADeployableItem::DestoryDeployableItem()
 	GetWorld()->GetTimerManager().ClearTimer(ActiveHandler);
 	GetWorld()->GetTimerManager().ClearTimer(DestoryHandler);
 
-	// @TODO : 애니메이션 하고, 천천히 삭제되도록 처리...
-	Destroy();
+	SetLifeSpan(1.5f);
 }
 void ADeployableItem::SetActiveTimer()
 {

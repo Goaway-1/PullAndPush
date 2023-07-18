@@ -25,6 +25,8 @@ public:
 
 protected:
 	virtual void ActiveDeployableItem() override;
+	virtual void DestoryDeployableItem() override;
+
 
 	// Set Acitve Black Hole
 	void ActivateBlackHole();

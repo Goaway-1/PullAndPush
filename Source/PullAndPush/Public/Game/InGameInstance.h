@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Engine/GameInstance.h"
+//#include "Interfaces/OnlineSessionInterface.h"
 #include "InGameInstance.generated.h"
 
 UENUM(BlueprintType)
@@ -96,8 +97,7 @@ private:
 private:
 	const FString LevelDirectoryPath = "/Game/Maps/InGame/";
 	FName MainLevelName = "MainLevel";
-	const FString LobbyLevelName = "/Game/Maps/LobbyLevel?listen";
-	const FString ResultLevelName = "/Game/Maps/ResultLevel?listen";
+	const FString LobbyLevelName = "/Game/Maps/LobbyLevel";
+	const FString ResultLevelName = "/Game/Maps/ResultLevel";
 #pragma endregion
-
 };

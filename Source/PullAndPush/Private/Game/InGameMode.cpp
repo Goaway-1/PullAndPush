@@ -30,7 +30,8 @@ void AInGameMode::PostLogin(APlayerController* NewPlayer)
 	/** Round start when all players enter */
 	if (++CurrentPlayerCount >= TotalPlayerCount)
 	{
-		RoundStart();
+		FTimerHandle Timer;
+		GetWorld()->GetTimerManager().SetTimer(Timer, this, &AInGameMode::RoundStart, 1.5f);
 	}
 }
 void AInGameMode::PlayerFellOutOfWorld(const FString& InPlayerName)
@@ -51,8 +52,11 @@ void AInGameMode::PlayerFellOutOfWorld(const FString& InPlayerName)
 }
 void AInGameMode::RoundStart()
 {
-	PPLOG(Warning, TEXT("RoundStart!"));
-
+	// Change Widget of Round State
+	for (auto Controller : Controllers)
+	{
+		Controller->SetRoundStart();
+	}
 }
 void AInGameMode::RoundEnd()
 {
