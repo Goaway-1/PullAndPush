@@ -65,7 +65,7 @@ private:
 #pragma region SPECTATE
 private:
 	/** Set Player to spectate. Should be called only on server */
-	UFUNCTION()
+	UFUNCTION(Server, Reliable)
 	void SetPlayerSpectate();
 
 	/** Notify HUD of a state change so it shows suitable widgets accordingly */

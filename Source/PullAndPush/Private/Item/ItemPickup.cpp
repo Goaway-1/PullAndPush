@@ -13,9 +13,11 @@ AItemPickup::AItemPickup()
 
 	CollisionComp = CreateDefaultSubobject<USphereComponent>(TEXT("CollisionComp"));
 	CollisionComp->SetCollisionProfileName(CollisionName);
+	OverlapCollisionComp = CreateDefaultSubobject<USphereComponent>(TEXT("OverlapCollisionComp"));
 	NiagaraComp = CreateDefaultSubobject<UNiagaraComponent>(TEXT("NiagaraComp"));
 
 	SetRootComponent(CollisionComp);
+	OverlapCollisionComp->SetupAttachment(RootComponent);
 	NiagaraComp->SetupAttachment(RootComponent);
 }
 void AItemPickup::FellOutOfWorld(const UDamageType& dmgType)
@@ -27,7 +29,8 @@ void AItemPickup::BeginPlay()
 {
 	Super::BeginPlay();
 
-	CollisionComp->OnComponentHit.AddDynamic(this, &AItemPickup::OnHit);
+	//CollisionComp->OnComponentHit.AddDynamic(this, &AItemPickup::OnHit);
+	OverlapCollisionComp->OnComponentBeginOverlap.AddDynamic(this, &AItemPickup::OnOverlap);
 }
 void AItemPickup::OnHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComponent, FVector NormalImpulse, const FHitResult& Hit)
 {
@@ -53,6 +56,30 @@ void AItemPickup::OnHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, U
 		}
 	}
 }
+void AItemPickup::OnOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
+{
+	const FName OtherCompCollsionName = OtherComp->GetCollisionProfileName();
+
+	// Hit Event of Push & Pull or Character
+	if (OtherCompCollsionName == "Pawn")
+	{
+		/** Character's Pickup Action */
+		TScriptInterface<class ICharacterPickupHandler> ActionHandler = OtherActor;
+		if (ActionHandler.GetInterface() && CurItemData.IsValid())
+		{
+			ActionHandler->PickUpItem(CurItemData.Get());
+			SetActiveItemPickup(false);
+		}
+	}
+	else
+	{
+		/** Enable Gravity */
+		if (!OverlapCollisionComp->IsGravityEnabled())
+		{
+			OverlapCollisionComp->SetEnableGravity(true);
+		}
+	}
+}
 void AItemPickup::SetActiveItemPickup(bool IsSpawn, UItemData* InItemDataAsset, FVector InSpawnLocation)
 {
 	// Turn OnOff Item Enable
@@ -75,6 +102,7 @@ void AItemPickup::SetActiveItemPickup(bool IsSpawn, UItemData* InItemDataAsset, 
 	else if(!IsSpawn)
 	{
 		// Inform ItemSpawner of Pickup Action.
+		SetActorLocationAndRotation(InSpawnLocation, FRotator::ZeroRotator);
 		OnPickupAction.ExecuteIfBound();
 	}
 }

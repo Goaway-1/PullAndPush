@@ -33,9 +33,6 @@ private:
 	UPROPERTY(EditDefaultsOnly, Category = "DeployableItem | FX")
 	TObjectPtr<class UMaterialInterface> ExplodedMaterial;
 
-	// Explosion Impulse Over Oneself
-	const float SelfExplosionImpulse = 400.f;
-
 	// Explosion Value other things
 	const float ExplosionRadius = 300.f;
 	const float ExplosionImpulse = 1000.f;

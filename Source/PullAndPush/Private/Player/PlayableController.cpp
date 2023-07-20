@@ -117,7 +117,7 @@ void APlayableController::ClearAllTimer()
 		PlayableCharacter->ClearAllTimer();
 	}
 }
-void APlayableController::SetPlayerSpectate()
+void APlayableController::SetPlayerSpectate_Implementation()
 {
 	// Only proceed if we're on the server
 	if (!HasAuthority()) return;

@@ -32,10 +32,18 @@ private:
 	void OnHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComponent, FVector NormalImpulse, const FHitResult& Hit);
 
 	UFUNCTION()
+	void OnOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
+
+
+
+	UFUNCTION()
 	void OnRep_ChangeCurItemData();
 
 	UPROPERTY(EditDefaultsOnly)
 	TObjectPtr<class USphereComponent> CollisionComp;
+
+	UPROPERTY(EditDefaultsOnly)
+	TObjectPtr<class USphereComponent> OverlapCollisionComp;
 
 	UPROPERTY(EditDefaultsOnly)
 	TObjectPtr<class UNiagaraComponent> NiagaraComp;

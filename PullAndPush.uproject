@@ -18,13 +18,10 @@
 	"Plugins": [
 		{
 			"Name": "ModelingToolsEditorMode",
-			"Enabled": true,
-			"TargetAllowList": [
-				"Editor"
-			]
+			"Enabled": true
 		},
 		{
-			"Name": "OnlineSubsystemEOS",
+			"Name": "EOSShared",
 			"Enabled": true
 		},
 		{
@@ -32,11 +29,11 @@
 			"Enabled": true
 		},
 		{
-			"Name": "OnlineServicesEOSGS",
+			"Name": "OnlineSubsystemEOS",
 			"Enabled": true
 		},
 		{
-			"Name": "OnlineSubsystemSteam",
+			"Name": "OnlineServicesEOSGS",
 			"Enabled": true
 		}
 	]

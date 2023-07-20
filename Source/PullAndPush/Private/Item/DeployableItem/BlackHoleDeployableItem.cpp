@@ -84,7 +84,7 @@ void ABlackHoleDeployableItem::AddOverlapActors(UPrimitiveComponent* OverlappedC
 		// Exception handling if item
 		TScriptInterface<class IItemPickupHandler> ActionHandler = OtherComp;
 		if (ActionHandler.GetInterface()) {
-			//ActionHandler->SetActiveItemPickup(true);
+			ActionHandler->SetActiveItemPickup(true);
 		}
 	}
 }
