@@ -6,6 +6,8 @@
 #include "Net/UnrealNetwork.h"
 
 AItemPickup::AItemPickup()
+	:
+	bIsCanPickUp(0)
 {
 	PrimaryActorTick.bCanEverTick = false;
 	bReplicates = true;
@@ -29,35 +31,11 @@ void AItemPickup::BeginPlay()
 {
 	Super::BeginPlay();
 
-	//CollisionComp->OnComponentHit.AddDynamic(this, &AItemPickup::OnHit);
 	OverlapCollisionComp->OnComponentBeginOverlap.AddDynamic(this, &AItemPickup::OnOverlap);
-}
-void AItemPickup::OnHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComponent, FVector NormalImpulse, const FHitResult& Hit)
-{
-	const FName OtherCompCollsionName = OtherComponent->GetCollisionProfileName();
-
-	// Hit Event of Push & Pull or Character
-	if (OtherCompCollsionName == "Pawn") 
-	{		
-		/** Character's Pickup Action */
-		TScriptInterface<class ICharacterPickupHandler> ActionHandler = OtherActor;
-		if (ActionHandler.GetInterface() && CurItemData.IsValid())
-		{
-			ActionHandler->PickUpItem(CurItemData.Get());
-			SetActiveItemPickup(false);
-		}
-	}
-	else 
-	{
-		/** Enable Gravity */
-		if(!CollisionComp->IsGravityEnabled())
-		{
-			CollisionComp->SetEnableGravity(true);	
-		}
-	}
 }
 void AItemPickup::OnOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
+	if(!bIsCanPickUp) return;
 	const FName OtherCompCollsionName = OtherComp->GetCollisionProfileName();
 
 	// Hit Event of Push & Pull or Character
@@ -69,14 +47,20 @@ void AItemPickup::OnOverlap(UPrimitiveComponent* OverlappedComponent, AActor* Ot
 		{
 			ActionHandler->PickUpItem(CurItemData.Get());
 			SetActiveItemPickup(false);
+			bIsCanPickUp = false;
 		}
 	}
 	else
 	{
 		/** Enable Gravity */
-		if (!OverlapCollisionComp->IsGravityEnabled())
+		if (!bIsCanPickUp && !OverlapCollisionComp->IsGravityEnabled())
 		{
-			OverlapCollisionComp->SetEnableGravity(true);
+			SetActorEnableCollision(true);
+			SetActorHiddenInGame(false);
+			SetActorTickEnabled(true);
+			CollisionComp->SetSimulatePhysics(true);
+			CollisionComp->SetEnableGravity(true);
+			bIsCanPickUp = true;
 		}
 	}
 }
@@ -98,6 +82,7 @@ void AItemPickup::SetActiveItemPickup(bool IsSpawn, UItemData* InItemDataAsset, 
 		CollisionComp->AddForce(FVector::Zero());
 		SetActorLocationAndRotation(InSpawnLocation, FRotator::ZeroRotator);
 		NiagaraComp->SetAsset(CurItemData.Get()->GetNiagraAsset());
+		bIsCanPickUp = true;
 	}
 	else if(!IsSpawn)
 	{

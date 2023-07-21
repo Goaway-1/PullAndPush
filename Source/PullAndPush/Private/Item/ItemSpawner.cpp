@@ -30,7 +30,7 @@ void AItemSpawner::InitSetting()
         SpawnParams.Instigator = GetInstigator();
         SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
 
-        SpawnLocation = GetActorLocation() + FVector(0.f, 0.f, 50.f);
+        SpawnLocation = GetActorLocation() + FVector(0.f, 0.f, 60.f);
         ItemPickup = World->SpawnActor<AItemPickup>(ItemPickupClass, SpawnLocation, GetActorRotation(), SpawnParams);   // ÀÌ³נ
         ensure(ItemPickup != nullptr);
         RespawnItem();
