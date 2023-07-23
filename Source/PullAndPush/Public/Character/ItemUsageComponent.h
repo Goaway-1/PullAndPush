@@ -1,5 +1,3 @@
-// Fill out your copyright notice in the Description page of Project Settings.
-
 #pragma once
 
 #include "PullAndPush.h"
@@ -14,6 +12,9 @@
 */
 DECLARE_DELEGATE_TwoParams(FOnItemWidgetUpdate, class UDataAsset*, const bool)
 
+/**
+* Components responsible for using items
+*/
 UCLASS(ClassGroup = (Custom), meta = (BlueprintSpawnableComponent))
 class PULLANDPUSH_API UItemUsageComponent : public UActorComponent, public ICharacterPickupHandler
 {
@@ -68,7 +69,7 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Gameplay)
 	TObjectPtr<class UStaticMeshComponent> ItemStaticMeshComp;
 
-protected:
+private:
 	// Create Projectile Item Path
 	void CreatePredictedProjectilePath();
 	void InitializeSplineMeshComponent(class USplineMeshComponent* InSplineMeshComponent, int32 SplineCount);

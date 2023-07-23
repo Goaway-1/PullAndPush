@@ -1,11 +1,12 @@
-// Fill out your copyright notice in the Description page of Project Settings.
-
 #pragma once
 
 #include "PullAndPush.h"
 #include "Components/ActorComponent.h"
 #include "AttackComponent.generated.h"
 
+/**
+* Components responsible for character attacks
+*/
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class PULLANDPUSH_API UAttackComponent : public UActorComponent
 {
@@ -16,7 +17,6 @@ public:
 
 protected:
 	virtual void BeginPlay() override;
-
 	virtual void ReadyForReplication() override;
 
 public:	
@@ -68,11 +68,9 @@ protected:
 	UPROPERTY(Replicated, VisibleAnywhere, Category = "RocketPunch")
 	TObjectPtr<class ARocketPunch> ClientRocketPunch;
 
-
-	// @TEST
 	UFUNCTION(Server, Reliable)
 	void ServerReadyToLaunch(const float& InForceAlpha, AActor* InCasterActor, const bool IsPush, const FVector& InVec, const FRotator& InRot, FItemEnhancedStat InPassiveStat);
-
+	
 	UFUNCTION(NetMulticast, Reliable)
 	void MultiReadyToLaunch(const float& InForceAlpha, AActor* InCasterActor, const bool IsPush, const FVector& InVec, const FRotator& InRot, FItemEnhancedStat InPassiveStat);
 };

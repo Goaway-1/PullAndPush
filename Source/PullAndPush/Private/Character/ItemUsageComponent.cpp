@@ -1,15 +1,12 @@
-// Fill out your copyright notice in the Description page of Project Settings.
-
 #include "Character/ItemUsageComponent.h"
 #include "Item/ItemData/ItemData.h"
 #include "Interface/ItemDataHandler.h"
 #include "Kismet/GameplayStatics.h"
 #include "GameFramework/PlayerController.h"
+#include "GameFramework/Character.h"
 #include "Components/SplineComponent.h"
 #include "Components/SplineMeshComponent.h"
-#include "Components/SplineMeshComponent.h"
 #include "Net/UnrealNetwork.h"
-#include "GameFramework/Character.h"
 
 UItemUsageComponent::UItemUsageComponent()
 	:

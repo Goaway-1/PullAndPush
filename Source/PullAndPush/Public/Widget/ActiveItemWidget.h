@@ -1,5 +1,3 @@
-// Fill out your copyright notice in the Description page of Project Settings.
-
 #pragma once
 
 #include "CoreMinimal.h"
@@ -7,7 +5,7 @@
 #include "ActiveItemWidget.generated.h"
 
 /**
- * 
+ *	Active Item Widget for player hud
  */
 UCLASS(Abstract)
 class PULLANDPUSH_API UActiveItemWidget : public UUserWidget

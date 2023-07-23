@@ -28,7 +28,6 @@ class PULLANDPUSH_API UInGameInstance : public UGameInstance
 public:
 	UInGameInstance();
 
-
 /** Round Info */
 #pragma region ROUND
 public:
@@ -61,7 +60,6 @@ public:
 	void SetPlayersScore(TMap<FString, int8>& Controllers);
 	TMap<FString, int8>& GetPlayersScore();
 
-
 	UFUNCTION(BlueprintCallable)
 	FORCEINLINE void SetPlayerName(FText InText) { PlayerName = InText; }
 
@@ -81,9 +79,9 @@ private:
 	TMap<FString, int8> PlayersScore;
 
 	FText PlayerName;
-
 #pragma endregion
 
+/** Travel Level */
 #pragma region LEVEL
 public:
 	void TravelLevel(ELevelType LevelType);

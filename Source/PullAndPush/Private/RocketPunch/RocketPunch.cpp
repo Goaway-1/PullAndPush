@@ -3,8 +3,6 @@
 #include "RocketPunch/RPCollisionComponent.h"
 #include "Components/SphereComponent.h"
 #include "Components/StaticMeshComponent.h"
-#include "Kismet/KismetMathLibrary.h"
-#include "Engine/SkeletalMeshSocket.h"
 
 ARocketPunch::ARocketPunch()
 	:
@@ -95,12 +93,14 @@ void ARocketPunch::OnHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, 
 }
 void ARocketPunch::SetForceReturn()
 {
-	PPLOG(Warning, TEXT("SetForceReturn"));
 	RPMovementComponent->SetIsForceReturn(true);
 }
 void ARocketPunch::SetCollisionSimulatePhysics(bool Val)
 {
-	if (CollisionComp) CollisionComp->SetSimulatePhysics(Val);
+	if (CollisionComp) 
+	{
+		CollisionComp->SetSimulatePhysics(Val);
+	}
 }
 void ARocketPunch::SetMeshChange(bool IsPush)
 {

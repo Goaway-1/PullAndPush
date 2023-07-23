@@ -1,5 +1,3 @@
-// Fill out your copyright notice in the Description page of Project Settings.
-
 #pragma once
 
 #include "CoreMinimal.h"
@@ -7,7 +5,7 @@
 #include "ResultHUD.generated.h"
 
 /**
- * 
+ * Result level HUD for player
  */
 UCLASS()
 class PULLANDPUSH_API AResultHUD : public AHUD
@@ -18,9 +16,7 @@ protected:
 	virtual void BeginPlay() override;
 
 public:
-	virtual void DrawHUD() override;
-
-public:
+	// Returns true if widget is created, and saves data for widget
 	void ShowResult(TMap<FString, int8>& ScoreInfo);
 
 private:

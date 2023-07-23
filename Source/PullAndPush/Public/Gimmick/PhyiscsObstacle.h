@@ -1,11 +1,12 @@
-// Fill out your copyright notice in the Description page of Project Settings.
-
 #pragma once
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
 #include "PhyiscsObstacle.generated.h"
 
+/**
+* Gimmicks Affected by Physical Forces
+*/
 UCLASS()
 class PULLANDPUSH_API APhyiscsObstacle : public AActor
 {

@@ -7,7 +7,7 @@
 #include "PassiveItemDataSpeedUp.generated.h"
 
 /**
- * 
+ * Change the speed of the character (must be modified to UCustomPassiveItemData)
  */
 UCLASS()
 class PULLANDPUSH_API UPassiveItemDataSpeedUp : public UPassiveItemData

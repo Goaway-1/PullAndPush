@@ -2,7 +2,6 @@
 #include "Components/Button.h"
 #include "Components/TextBlock.h"
 #include "Game/InGameInstance.h"
-#include "Kismet/GameplayStatics.h"
 
 void ULobbyWidget::NativeConstruct()
 {
@@ -13,7 +12,10 @@ void ULobbyWidget::NativeConstruct()
 void ULobbyWidget::StartGame()
 {
     UInGameInstance* GameInstance = Cast<UInGameInstance>(GetGameInstance());
-    GameInstance->TravelLevel(ELevelType::ELT_InGame);
+    if (GameInstance)
+    {
+        GameInstance->TravelLevel(ELevelType::ELT_InGame);
+    }
 }
 void ULobbyWidget::SetLobbyWidgetData(int8 InMaxPlayerCount, int8 InTotalPlayerCount)
 {

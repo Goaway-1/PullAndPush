@@ -46,22 +46,6 @@ void UInGameInstance::TravelLevel(ELevelType LevelType)
 		ResetData();
 		UGameplayStatics::OpenLevel(this, MainLevelName);
 	}
-
-	/*switch (LevelType)
-	{
-	case ELevelType::ELT_Main:
-		UGameplayStatics::OpenLevel(this, MainLevelName);
-		break;
-	case ELevelType::ELT_Lobby:
-		GetWorld()->ServerTravel(LobbyLevelName);
-		break;
-	case ELevelType::ELT_InGame:
-		GetWorld()->ServerTravel(GetRandomLevelName());
-		break;
-	case ELevelType::ELT_Result:
-		GetWorld()->ServerTravel(ResultLevelName);
-		break;
-	}*/
 }
 FString UInGameInstance::GetRandomLevelName()
 {

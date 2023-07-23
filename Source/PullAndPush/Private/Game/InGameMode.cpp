@@ -47,7 +47,7 @@ void AInGameMode::PlayerFellOutOfWorld(const FString& InPlayerName)
 	// Set Current Player Count for Widget
 	for (auto Controller : Controllers)
 	{
-		Controller->SetCurrentPlayerCount(CurrentPlayerCount);
+		Controller->ClientSetCurrentPlayerCount(CurrentPlayerCount);
 	}
 }
 void AInGameMode::RoundStart()
@@ -55,7 +55,7 @@ void AInGameMode::RoundStart()
 	// Change Widget of Round State
 	for (auto Controller : Controllers)
 	{
-		Controller->SetRoundStart();
+		Controller->ClientSetRoundStart();
 	}
 }
 void AInGameMode::RoundEnd()
@@ -97,7 +97,7 @@ void AInGameMode::InitPlayers(APlayerController* NewPlayer)
 	if (PlayableController)
 	{
 		Controllers.Add(PlayableController);
-		PlayableController->InitPlayerCount(TotalPlayerCount);
+		PlayableController->ClientInitPlayerCount(TotalPlayerCount);
 	}
 }
 void AInGameMode::SetPlayerScore(const FString& InPlayerName)

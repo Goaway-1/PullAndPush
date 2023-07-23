@@ -17,9 +17,6 @@ class PULLANDPUSH_API URPCollisionComponent : public UActorComponent
 public:	
 	URPCollisionComponent();
 
-protected:
-	virtual void BeginPlay() override;
-
 public:
 	UFUNCTION()
 	void OnHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComponent, FVector NormalImpulse,

@@ -26,19 +26,34 @@ void AItemPickup::FellOutOfWorld(const UDamageType& dmgType)
 {
 	PPLOG(Log, TEXT("Item FellOutOfWorld"));
 	SetActiveItemPickup(false);
+	bIsCanPickUp = false;
 }
 void AItemPickup::BeginPlay()
 {
 	Super::BeginPlay();
 
+	CollisionComp->OnComponentHit.AddDynamic(this, &AItemPickup::OnHit);
 	OverlapCollisionComp->OnComponentBeginOverlap.AddDynamic(this, &AItemPickup::OnOverlap);
+}
+void AItemPickup::OnHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)
+{
+	const FName OtherCompCollsionName = OtherComp->GetCollisionProfileName();
+
+	if (OtherCompCollsionName != "Pawn")
+	{
+		/** Enable Gravity */
+		if (!CollisionComp->IsGravityEnabled())
+		{
+			CollisionComp->SetEnableGravity(true);
+		}
+	}
 }
 void AItemPickup::OnOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
 	if(!bIsCanPickUp) return;
-	const FName OtherCompCollsionName = OtherComp->GetCollisionProfileName();
 
 	// Hit Event of Push & Pull or Character
+	const FName OtherCompCollsionName = OtherComp->GetCollisionProfileName();
 	if (OtherCompCollsionName == "Pawn")
 	{
 		/** Character's Pickup Action */
@@ -48,19 +63,6 @@ void AItemPickup::OnOverlap(UPrimitiveComponent* OverlappedComponent, AActor* Ot
 			ActionHandler->PickUpItem(CurItemData.Get());
 			SetActiveItemPickup(false);
 			bIsCanPickUp = false;
-		}
-	}
-	else
-	{
-		/** Enable Gravity */
-		if (!bIsCanPickUp && !OverlapCollisionComp->IsGravityEnabled())
-		{
-			SetActorEnableCollision(true);
-			SetActorHiddenInGame(false);
-			SetActorTickEnabled(true);
-			CollisionComp->SetSimulatePhysics(true);
-			CollisionComp->SetEnableGravity(true);
-			bIsCanPickUp = true;
 		}
 	}
 }

@@ -4,21 +4,13 @@
 #include "Game/InGameMode.h"
 #include "Game/InGameInstance.h"
 #include "Character/PlayableCharacter.h"
-#include "GameFramework/PlayerState.h"
 
-APlayableController::APlayableController() {
-
-}
 void APlayableController::BeginPlay() 
 {
 	Super::BeginPlay();
 
  	InGameHUD = Cast<AInGameHUD>(GetHUD());
-	if (HasAuthority()) 
-	{
-		CurGameMode = Cast<AInGameMode>(GetWorld()->GetAuthGameMode());
-	}
-
+	
 	// Set Player Name to GameMode
 	if (IsLocalController())
 	{
@@ -31,7 +23,10 @@ void APlayableController::BeginPlay()
 void APlayableController::ServerSetPlayerNameToMode_Implementation(const FString& InPlayerName)
 {
 	CurGameMode = Cast<AInGameMode>(GetWorld()->GetAuthGameMode());
-	CurGameMode->InitPlayersScore(InPlayerName);
+	if (CurGameMode)
+	{
+		CurGameMode->InitPlayersScore(InPlayerName);
+	}
 }
 void APlayableController::UpdateItemUI(UDataAsset* CurrentItem, const bool IsPassvieItem)
 {
@@ -61,14 +56,17 @@ void APlayableController::ClientPlayerFellOutOfWorld_Implementation()
 	FString PlayerName = InGameInstance->GetPlayerName().ToString();
 	ServerPlayerFellOutOfWorld(PlayerName);
 
-	SetPlayerSpectate();
+	ServerSetPlayerSpectate();
 }
 void APlayableController::ServerPlayerFellOutOfWorld_Implementation(const FString& InPlayerName)
 {
 	CurGameMode = Cast<AInGameMode>(GetWorld()->GetAuthGameMode());
-	CurGameMode->PlayerFellOutOfWorld(InPlayerName);
+	if (CurGameMode)
+	{
+		CurGameMode->PlayerFellOutOfWorld(InPlayerName);
+	}
 }
-void APlayableController::InitPlayerCount_Implementation(int8 InTotalPlayerCount)
+void APlayableController::ClientInitPlayerCount_Implementation(int8 InTotalPlayerCount)
 {
 	if (InGameHUD && InGameHUD->InitPlayerCount(InTotalPlayerCount))
 	{
@@ -76,31 +74,31 @@ void APlayableController::InitPlayerCount_Implementation(int8 InTotalPlayerCount
 	}
 	else
 	{
-		GetWorld()->GetTimerManager().SetTimerForNextTick(FTimerDelegate::CreateUObject(this, &APlayableController::InitPlayerCount, InTotalPlayerCount));
+		GetWorld()->GetTimerManager().SetTimerForNextTick(FTimerDelegate::CreateUObject(this, &APlayableController::ClientInitPlayerCount, InTotalPlayerCount));
 	}
 }	
-void APlayableController::SetCurrentPlayerCount_Implementation(int8 InCount)
+void APlayableController::ClientSetCurrentPlayerCount_Implementation(int8 InCount)
 {
 	if (InGameHUD)
 	{
 		InGameHUD->SetCurrentPlayerCount(InCount);
 	}
 }
-void APlayableController::SetRoundStart_Implementation()
+void APlayableController::ClientSetRoundStart_Implementation()
 {
 	// Check tick-by-tick to see if widget created
 	if (InGameHUD && InGameHUD->SetRoundStart())
 	{
 		PPLOG(Log, TEXT("Set Round Text Successed!"));
 		FTimerHandle Handle;
-		GetWorld()->GetTimerManager().SetTimer(Handle, this, &APlayableController::SetRoundEnd,1.5f,false);
+		GetWorld()->GetTimerManager().SetTimer(Handle, this, &APlayableController::ClientSetRoundEnd,1.5f,false);
 	}
 	else
 	{
-		GetWorld()->GetTimerManager().SetTimerForNextTick(this, &APlayableController::SetRoundStart);
+		GetWorld()->GetTimerManager().SetTimerForNextTick(this, &APlayableController::ClientSetRoundStart);
 	}
 }
-void APlayableController::SetRoundEnd_Implementation()
+void APlayableController::ClientSetRoundEnd_Implementation()
 {
 	// Enable Input & Hide Widgets
 	if (InGameHUD)
@@ -117,7 +115,7 @@ void APlayableController::ClearAllTimer()
 		PlayableCharacter->ClearAllTimer();
 	}
 }
-void APlayableController::SetPlayerSpectate_Implementation()
+void APlayableController::ServerSetPlayerSpectate_Implementation()
 {
 	// Only proceed if we're on the server
 	if (!HasAuthority()) return;
@@ -126,7 +124,7 @@ void APlayableController::SetPlayerSpectate_Implementation()
 	StartSpectatingOnly();
 	ClientHUDStateChanged(EHUDState::Spectating);
 
-	// @TODO : 임시 방패용도
+	// @TODO : 강제로 진행
 	FTimerHandle Handle;
 	GetWorld()->GetTimerManager().SetTimer(Handle, this, &APlayableController::SetState,1.f,false);
 }
@@ -136,7 +134,7 @@ void APlayableController::SetState()
 }
 void APlayableController::ClientHUDStateChanged_Implementation(EHUDState NewState)
 {
-	if (InGameHUD = Cast<AInGameHUD>(GetHUD()))
+	if (InGameHUD)
 	{
 		InGameHUD->OnStateChanged(NewState);
 	}

@@ -27,7 +27,7 @@ protected:
 	virtual void ActiveDeployableItem() override;
 	virtual void DestoryDeployableItem() override;
 
-
+private:
 	// Set Acitve Black Hole
 	void ActivateBlackHole();
 
@@ -37,7 +37,7 @@ protected:
 	UFUNCTION()
 	void DeleteOverlapActors(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex);
 
-protected:
+private:
 	UPROPERTY(EditAnywhere, Category="DeployableItem")
 	TObjectPtr<class USphereComponent> EventCollisionComp;
 

@@ -8,8 +8,6 @@ UCLASS()
 class PULLANDPUSH_API APlayableController : public APlayerController
 {
 	GENERATED_BODY()
-public:
-	APlayableController();
 
 protected:
 	virtual void BeginPlay() override;
@@ -27,16 +25,16 @@ public:
 	void UpdateStatUI(const FString& StatName, UMaterialInterface* Material);
 
 	UFUNCTION(Client, Reliable)
-	void InitPlayerCount(int8 InTotalPlayerCount);
+	void ClientInitPlayerCount(int8 InTotalPlayerCount);
 
 	UFUNCTION(Client, Reliable)
-	void SetCurrentPlayerCount(int8 InCount);
+	void ClientSetCurrentPlayerCount(int8 InCount);
 
 	UFUNCTION(Client, Reliable)
-	void SetRoundStart();
+	void ClientSetRoundStart();
 
 	UFUNCTION(Client, Reliable)
-	void SetRoundEnd();
+	void ClientSetRoundEnd();
 private:
 	UPROPERTY()
 	TObjectPtr<class AInGameHUD> InGameHUD;
@@ -66,7 +64,7 @@ private:
 private:
 	/** Set Player to spectate. Should be called only on server */
 	UFUNCTION(Server, Reliable)
-	void SetPlayerSpectate();
+	void ServerSetPlayerSpectate();
 
 	/** Notify HUD of a state change so it shows suitable widgets accordingly */
 	UFUNCTION(Client, Reliable)

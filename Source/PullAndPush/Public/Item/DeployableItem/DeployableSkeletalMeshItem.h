@@ -1,5 +1,3 @@
-// Fill out your copyright notice in the Description page of Project Settings.
-
 #pragma once
 
 #include "CoreMinimal.h"
@@ -7,7 +5,7 @@
 #include "DeployableSkeletalMeshItem.generated.h"
 
 /**
- * 
+ * If DeployableItem doesn't have animation
  */
 UCLASS()
 class PULLANDPUSH_API ADeployableSkeletalMeshItem : public ADeployableItem

@@ -18,10 +18,6 @@ void AInGameHUD::BeginPlay()
 		SpectatorWidget->SetVisibility(ESlateVisibility::Hidden);
 	}
 }
-void AInGameHUD::DrawHUD()
-{
-	Super::DrawHUD();
-}
 void AInGameHUD::UpdateItemUI(UDataAsset* CurrentItem, const bool IsPassvieItem)
 {
 	InGameWidget->UpdateItemUI(CurrentItem, IsPassvieItem);

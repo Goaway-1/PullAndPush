@@ -1,5 +1,3 @@
-// Fill out your copyright notice in the Description page of Project Settings.
-
 #pragma once
 
 #include "CoreMinimal.h"
@@ -7,7 +5,9 @@
 #include "Components/TimelineComponent.h"
 #include "AimingComponent.generated.h"
 
-
+/**
+* Components responsible for zooming in and out of the camera
+*/
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class PULLANDPUSH_API UAimingComponent : public UActorComponent
 {

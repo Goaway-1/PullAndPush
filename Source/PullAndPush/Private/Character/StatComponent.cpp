@@ -4,8 +4,7 @@
 
 UStatComponent::UStatComponent()
 	:
-	CurrentMoveSpeed(0), RocketPunchSpeed(1.f), RocketPunchRange(1.f), RocketPunchScale(1.f),
-	StatFlags(0)
+	CurrentMoveSpeed(0),StatFlags(0)
 {
 	PrimaryComponentTick.bCanEverTick = true;
 }

@@ -13,11 +13,6 @@ URPCollisionComponent::URPCollisionComponent()
 
 	OnArrayReset.BindUObject(this, &URPCollisionComponent::ResetOverlapActors);
 }
-void URPCollisionComponent::BeginPlay()
-{
-	Super::BeginPlay();
-	
-}
 void URPCollisionComponent::OnHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComponent, FVector NormalImpulse, const FHitResult& Hit, AActor* CasterActor, const bool IsPush, const bool IsServerRP, const float& ForceAlpha, FItemEnhancedStat InPassiveStat)
 {
 	// Check if the object is already processed

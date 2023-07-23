@@ -6,7 +6,9 @@
 #include "Item/ItemData/PassiveItemData/PassiveItemData.h"
 #include "CustomPassiveItemData.generated.h"
 
-
+/**
+* Use modified values in BLueprint
+*/
 UENUM(BlueprintType)
 enum class ECustomStatType : uint8
 {

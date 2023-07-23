@@ -1,6 +1,6 @@
 #include "Item/ItemSpawner.h"
-#include "Kismet/KismetMathLibrary.h"
 #include "NiagaraComponent.h"
+#include "Kismet/KismetMathLibrary.h"
 #include "Item/ItemData/ItemData.h"
 
 AItemSpawner::AItemSpawner()
@@ -47,7 +47,8 @@ void AItemSpawner::TryRespawnItem()
     GetWorld()->GetTimerManager().ClearTimer(RespawnHandle);
     GetWorld()->GetTimerManager().SetTimer(RespawnHandle, this, &AItemSpawner::RespawnItem, SpawnDelay, false);
 }
-void AItemSpawner::RespawnItem() {
+void AItemSpawner::RespawnItem() 
+{
     ensure(ItemPickup);
 
     // Set Item Data

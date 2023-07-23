@@ -14,11 +14,6 @@ void ALobbyHUD::BeginPlay()
 		LobbyWidget->AddToViewport();
 	}
 }
-void ALobbyHUD::DrawHUD()
-{
-	Super::DrawHUD();
-}
-
 bool ALobbyHUD::SetLobbyWidgetData(int8 InMaxPlayerCount, int8 InTotalPlayerCount)
 {
 	if (!LobbyWidget)

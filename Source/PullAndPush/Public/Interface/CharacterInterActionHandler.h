@@ -1,5 +1,3 @@
-// Fill out your copyright notice in the Description page of Project Settings.
-
 #pragma once
 
 #include "CoreMinimal.h"
@@ -14,7 +12,7 @@ class UCharacterInterActionHandler : public UInterface
 };
 
 /**
- * 
+ * Externally applying force to a character
  */
 class PULLANDPUSH_API ICharacterInterActionHandler
 {
