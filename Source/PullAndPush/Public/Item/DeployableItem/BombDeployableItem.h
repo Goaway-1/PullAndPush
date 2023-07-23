@@ -16,10 +16,6 @@ class PULLANDPUSH_API ABombDeployableItem : public ADeployableStaticMeshItem
 public:	
 	ABombDeployableItem();
 
-protected:
-	UPROPERTY(VisibleAnywhere, Category = "DeployableItem | Component")
-	TObjectPtr<class URadialForceComponent> RadialForceComp;
-
 private:
 	void Explosion();
 
@@ -27,17 +23,17 @@ protected:
 	virtual void ActiveDeployableItem() override;
 
 private:
+	UPROPERTY(VisibleAnywhere, Category = "DeployableItem | Component")
+	TObjectPtr<class URadialForceComponent> RadialForceComp;
+
 	UPROPERTY(EditDefaultsOnly, Category = "DeployableItem | FX")
 	TObjectPtr<class UParticleSystem> ExplosionEffect;
 
 	UPROPERTY(EditDefaultsOnly, Category = "DeployableItem | FX")
 	TObjectPtr<class UMaterialInterface> ExplodedMaterial;
 
-	// Explosion Impulse Over Oneself
-	const float SelfExplosionImpulse = 400.f;
-
 	// Explosion Value other things
-	const float ExplosionRadius = 250.f;
+	const float ExplosionRadius = 300.f;
 	const float ExplosionImpulse = 1000.f;
 
 /** For Change Character Stat */

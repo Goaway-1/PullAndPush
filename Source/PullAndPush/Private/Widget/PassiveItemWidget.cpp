@@ -1,12 +1,8 @@
-// Fill out your copyright notice in the Description page of Project Settings.
-
-
 #include "Widget/PassiveItemWidget.h"
 #include "Components/Image.h"
-#include "Materials/MaterialInstanceDynamic.h"
 #include "Components/TextBlock.h"
+#include "Materials/MaterialInstanceDynamic.h"
 #include "Kismet/KismetSystemLibrary.h"
-
 
 void UPassiveItemWidget::NativeTick(const FGeometry& MyGeometry, float InDeltaTime)
 {

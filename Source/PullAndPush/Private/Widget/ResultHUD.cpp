@@ -12,10 +12,6 @@ void AResultHUD::BeginPlay()
 		ResultWidget->AddToViewport();
 	}
 }
-void AResultHUD::DrawHUD()
-{
-	Super::DrawHUD();
-}
 void AResultHUD::ShowResult(TMap<FString, int8>& ScoreInfo)
 {
 	ResultWidget->SetScoreBoard(ScoreInfo);

@@ -1,15 +1,12 @@
-// Fill out your copyright notice in the Description page of Project Settings.
-
 #include "Character/ItemUsageComponent.h"
 #include "Item/ItemData/ItemData.h"
 #include "Interface/ItemDataHandler.h"
 #include "Kismet/GameplayStatics.h"
 #include "GameFramework/PlayerController.h"
+#include "GameFramework/Character.h"
 #include "Components/SplineComponent.h"
 #include "Components/SplineMeshComponent.h"
-#include "Components/SplineMeshComponent.h"
 #include "Net/UnrealNetwork.h"
-#include "GameFramework/Character.h"
 
 UItemUsageComponent::UItemUsageComponent()
 	:
@@ -132,7 +129,7 @@ void UItemUsageComponent::ServerSetDeployableItemMesh_Implementation(UItemData* 
 	TScriptInterface<class IItemDataHandler> CurItemAction = ActiveItemData;
 	if (CurItemAction.GetInterface())
 	{
-		CurDeployableItemStaticMesh = CurItemAction->GetStaticMesh();
+		CurDeployableItemStaticMesh = CurItemAction->GetDeployStaticMesh();
 		ItemStaticMeshComp->SetStaticMesh(CurDeployableItemStaticMesh);
 		ItemStaticMeshComp->SetVisibility(true);
 	}
@@ -146,7 +143,7 @@ void UItemUsageComponent::ThrowDeployableItem()
 {
 	if (!CurRequiredActiveItemData) return;
 
-	TSubclassOf<class AActor> DeployableItemClass = CurRequiredActiveItemData->GetSpawnItemClass();
+	TSubclassOf<class AActor> DeployableItemClass = CurRequiredActiveItemData->GetDeployItemClass();
 	ServerThrowDeployableItem(DeployableItemClass);
 	ClearSplineMeshComponents();
 

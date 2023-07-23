@@ -1,5 +1,3 @@
-// Fill out your copyright notice in the Description page of Project Settings.
-
 #pragma once
 
 #include "PullAndPush.h"
@@ -26,10 +24,13 @@ public:
 	FItemPickupOnAction OnPickupAction;
 
 	// Settings when an item is created or used
-	virtual void SetActiveItemPickup(bool IsSpawn, class UItemData* InItemDataAsset = nullptr, FVector SpawnLocation = FVector(0.f)) override;
+	virtual void SetActiveItemPickup(bool IsSpawn, class UItemData* InItemDataAsset = nullptr, FVector InSpawnLocation = FVector(0.f)) override;
 private:
 	UFUNCTION()
-	void OnHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComponent, FVector NormalImpulse, const FHitResult& Hit);
+	void OnHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit);
+
+	UFUNCTION()
+	void OnOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
 
 	UFUNCTION()
 	void OnRep_ChangeCurItemData();
@@ -38,15 +39,19 @@ private:
 	TObjectPtr<class USphereComponent> CollisionComp;
 
 	UPROPERTY(EditDefaultsOnly)
-	TObjectPtr<class UStaticMeshComponent> StaticMeshComp;
+	TObjectPtr<class USphereComponent> OverlapCollisionComp;
+
+	UPROPERTY(EditDefaultsOnly)
+	TObjectPtr<class UNiagaraComponent> NiagaraComp;
 
 	UPROPERTY(Replicated, ReplicatedUsing = OnRep_ChangeCurItemData, VisibleAnywhere, Category="Item")
 	TWeakObjectPtr<class UItemData> CurItemData;
 
 	// Is Item Spawn or Despawn
 	UPROPERTY(Replicated)
-	uint8 bIsSpawn:1;
+	uint8 bIsSpawn:1; 
+
+	uint8 bIsCanPickUp:1;
 
 	const FName CollisionName = TEXT("Item");
-	const FName MeshCollisionName = "NoCollision";
 };

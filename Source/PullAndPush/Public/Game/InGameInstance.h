@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Engine/GameInstance.h"
+//#include "Interfaces/OnlineSessionInterface.h"
 #include "InGameInstance.generated.h"
 
 UENUM(BlueprintType)
@@ -27,7 +28,6 @@ class PULLANDPUSH_API UInGameInstance : public UGameInstance
 public:
 	UInGameInstance();
 
-
 /** Round Info */
 #pragma region ROUND
 public:
@@ -35,6 +35,8 @@ public:
 	bool IsAllRoundsFinished();
 
 private:
+	/** Reset Data for session */
+	UFUNCTION(BlueprintCallable)
 	void ResetData();
 
 private:
@@ -58,6 +60,12 @@ public:
 	void SetPlayersScore(TMap<FString, int8>& Controllers);
 	TMap<FString, int8>& GetPlayersScore();
 
+	UFUNCTION(BlueprintCallable)
+	FORCEINLINE void SetPlayerName(FText InText) { PlayerName = InText; }
+
+	UFUNCTION(BlueprintCallable)
+	FORCEINLINE FText GetPlayerName() { return PlayerName; }
+
 private:
 	int8 TotalPlayerCount;					// 참가한 인원
 	const int8 MaxPlayerCount = 8;			// 참가가 가능한 인원
@@ -70,8 +78,10 @@ private:
 	UPROPERTY()
 	TMap<FString, int8> PlayersScore;
 
+	FText PlayerName;
 #pragma endregion
 
+/** Travel Level */
 #pragma region LEVEL
 public:
 	void TravelLevel(ELevelType LevelType);
@@ -88,5 +98,4 @@ private:
 	const FString LobbyLevelName = "/Game/Maps/LobbyLevel";
 	const FString ResultLevelName = "/Game/Maps/ResultLevel";
 #pragma endregion
-
 };

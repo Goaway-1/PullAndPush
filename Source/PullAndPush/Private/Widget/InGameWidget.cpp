@@ -1,6 +1,3 @@
-// Fill out your copyright notice in the Description page of Project Settings.
-
-
 #include "Widget/InGameWidget.h"
 #include "Widget/PassiveItemWidget.h"
 #include "Widget/ActiveItemWidget.h"
@@ -9,9 +6,7 @@
 #include "Components/CanvasPanelSlot.h"
 #include "Components/HorizontalBox.h"
 #include "Components/TextBlock.h"
-#include "Game/InGameInstance.h"
 #include "Interface/ItemDataHandler.h"
-#include "Interface/PlayableControllerHandler.h"
 
 void UInGameWidget::NativeConstruct()
 {
@@ -29,13 +24,6 @@ void UInGameWidget::NativeConstruct()
 
         // Bind Delegate : Visible Active Item
         OnChangeVisibleItemWidget.BindUObject(ActiveItemWidget, &UActiveItemWidget::ChangeVisibleItemInfo);
-    }
-
-    // Notify the controller that edit widget is possible
-    TScriptInterface<class IPlayableControllerHandler> ActionHandler = GetOwningPlayer();
-    if (ActionHandler.GetInterface())
-    {
-        ActionHandler->SetPlayerCount();
     }
 }
 void UInGameWidget::UpdateItemUI(UDataAsset* CurrentItem, const bool& IsPassvieItem)
@@ -120,4 +108,11 @@ void UInGameWidget::SetCurrentPlayerCount(int8 InCount)
 {
     CurrentCount->SetText(FText::AsNumber(InCount));
 }
- 
+void UInGameWidget::SetRoundStart()
+{
+    RoundState->SetText(FText::AsCultureInvariant("START!"));
+}
+void UInGameWidget::SetRoundEnd()
+{
+    RoundState->SetText(FText::AsCultureInvariant(""));
+}

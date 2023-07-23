@@ -32,6 +32,10 @@ protected:
 	UPROPERTY(EditAnywhere, Category = "Gimmick | Hit")
 	float ForceStrength;
 
+	/** For Debug */
+	UPROPERTY(EditAnywhere, Category = "Gimmick")
+	uint8 bShowDebug : 1;
+
 	/** Hit only for the time want */
 	UPROPERTY(EditDefaultsOnly, Category = "Gimmick | Hit")
 	uint8 bLimitedTimeHit:1;

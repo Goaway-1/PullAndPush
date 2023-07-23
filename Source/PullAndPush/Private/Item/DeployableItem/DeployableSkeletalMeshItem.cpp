@@ -6,3 +6,20 @@ ADeployableSkeletalMeshItem::ADeployableSkeletalMeshItem()
 	MeshComp->SetupAttachment(GetRootComponent());
 	MeshComp->SetCollisionProfileName(MeshCollisionName);
 }
+void ADeployableSkeletalMeshItem::PlayAnimation()
+{
+	if (MeshAnimation) 
+	{
+		MeshComp->PlayAnimation(MeshAnimation, false);
+	}
+	else
+	{
+		PPLOG(Error, TEXT("MeshAnimation is null"));
+	}
+}
+
+void ADeployableSkeletalMeshItem::DestoryDeployableItem()
+{
+	Super::DestoryDeployableItem();
+	MeshComp->SetVisibility(false);
+}

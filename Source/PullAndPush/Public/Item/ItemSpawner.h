@@ -32,7 +32,7 @@ private:
 
 private:
 	UPROPERTY(EditDefaultsOnly)
-	TObjectPtr<class UStaticMeshComponent> StaticMeshComp;
+	TObjectPtr<class UNiagaraComponent> NiagaraComp;
 
 	UPROPERTY(EditDefaultsOnly)
 	TSubclassOf<class AItemPickup> ItemPickupClass;
@@ -44,7 +44,6 @@ private:
 	EItemSpawnType ItemSpawnType;
 
 	FVector SpawnLocation;
-	const FName CollisionName = "NoCollision";
 
 /** Respawn */
 private:

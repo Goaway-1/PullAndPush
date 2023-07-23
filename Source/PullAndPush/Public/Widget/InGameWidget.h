@@ -1,5 +1,3 @@
-// Fill out your copyright notice in the Description page of Project Settings.
-
 #pragma once
 
 #include "CoreMinimal.h"
@@ -8,23 +6,24 @@
 
 DECLARE_DELEGATE_OneParam(FOnChangeVisibleItemWidget, bool)
 
+/**
+* Show info of Item, Stat, Round...
+*/
 UCLASS()
 class PULLANDPUSH_API UInGameWidget : public UUserWidget
 {
 	GENERATED_BODY()
 
+protected:
+	virtual void NativeConstruct() override;
 #pragma region DEFAULT
 public:
 	void UpdateItemUI(class UDataAsset* CurrentItem, const bool& IsPassvieItem);
+	void UpdateStatUI(const FString& StatName, UMaterialInterface* Material);
 
 protected:
-	virtual void NativeConstruct() override;
-
 	void UpdatePassiveItemUI(UDataAsset* CurrentItem);
 	void UpdateActiveItemUI(UDataAsset* CurrentItem);
-
-public:
-	void UpdateStatUI(const FString& StatName, UMaterialInterface* Material);
 
 protected:
 	// Horizontal Box By Widget Type
@@ -65,10 +64,12 @@ public:
 	FOnChangeVisibleItemWidget OnChangeVisibleItemWidget;
 #pragma endregion
 
-#pragma region SCORE
+#pragma region ROUND
 public:
 	void InitPlayerCount(int8 InTotalPlayerCount);
 	void SetCurrentPlayerCount(int8 InCount);
+	void SetRoundStart();
+	void SetRoundEnd();
 
 private:
 	UPROPERTY(meta = (BindWidget))
@@ -76,6 +77,9 @@ private:
 
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<class UTextBlock> CurrentCount;
+
+	UPROPERTY(meta = (BindWidget))
+	TObjectPtr<class UTextBlock> RoundState;
 #pragma endregion
 
 };

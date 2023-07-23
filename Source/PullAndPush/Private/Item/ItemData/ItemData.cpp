@@ -1,33 +1,29 @@
-// Fill out your copyright notice in the Description page of Project Settings.
-
 #include "Item/ItemData/ItemData.h"
 
 FString UItemData::GetIdentifierString() const
 {
 	return GetPrimaryAssetId().ToString();
 }
-
 bool UItemData::CheckIsActiveItem() const
 {
 	if (ItemType.IsValid() && ItemType == UItemAssetManager::ActiveItemType)
 	{
 		return true;
 	}
-	else {
+	else 
+	{
 		return false;
 	}
 }
-
 FPrimaryAssetId UItemData::GetPrimaryAssetId() const
 {
 	return FPrimaryAssetId(ItemType, GetFName());
 }
-
-UStaticMesh* UItemData::GetStaticMesh() const
+UNiagaraSystem* UItemData::GetNiagraAsset() const
 {
-	if (StaticMesh.IsPending())
+	if (NiagraAsset.IsPending())
 	{
-		StaticMesh.LoadSynchronous();
+		NiagraAsset.LoadSynchronous();
 	}
-	return StaticMesh.Get();
+	return NiagraAsset.Get();
 }

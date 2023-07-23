@@ -1,5 +1,3 @@
-// Fill out your copyright notice in the Description page of Project Settings.
-
 #pragma once
 
 #include "PullAndPush.h"
@@ -17,6 +15,9 @@ DECLARE_DELEGATE(FMoveSpeedChanged)
 */
 DECLARE_DELEGATE_TwoParams(FOnUpdateStatWidget, const FString&, UMaterialInterface* /** null is Delete */)
 
+/**
+* Components responsible for the status of the character
+*/
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class PULLANDPUSH_API UStatComponent : public UActorComponent
 {
@@ -54,30 +55,11 @@ private:
 	const float DefaultMoveSpeed = 600.f;
 	const float DefaultJumpVelocity = 420.f;
 
-/** Rocket Punch Values */
-public:
-	FORCEINLINE void SetRocketPunchSpeed(const float& DeltaSpeed) { RocketPunchSpeed = DeltaSpeed; }
-	FORCEINLINE void SetRocketPunchRange(const float& DeltaRange) { RocketPunchRange = DeltaRange; }
-	FORCEINLINE void SetRocketPunchScale(const float& DeltaSize) { RocketPunchScale = DeltaSize; }
-	FORCEINLINE float GetRocketPunchSpeed() { return RocketPunchSpeed; }
-	FORCEINLINE float GetRocketPunchRange() { return RocketPunchRange; }
-	FORCEINLINE float GetRocketPunchScale() { return RocketPunchScale; }
-
-private:
-	UPROPERTY(Transient, VisibleAnywhere, Category = "Stat | RocketPunch")
-	float RocketPunchSpeed;
-
-	UPROPERTY(Transient, VisibleAnywhere, Category = "Stat | RocketPunch")
-	float RocketPunchRange;
-
-	UPROPERTY(Transient, VisibleAnywhere, Category = "Stat | RocketPunch")
-	float RocketPunchScale;
-
 /** Stat System */
 #pragma region STATSYSTEM
 public:
-	void SetPassiveStat(FPassiveStat InPassiveStat);
-	FPassiveStat GetPassiveStat();
+	void SetPassiveStat(FItemEnhancedStat InPassiveStat);
+	FItemEnhancedStat GetPassiveStat();
 
 	UFUNCTION()
 	void EnableStatFlag(ECharacterStat InFlag, float ChangeDuration);
@@ -88,15 +70,13 @@ public:
 	UFUNCTION()
 	bool IsStatFlagSet(ECharacterStat InFlag);	// Is Flag bit enable?
 
-protected:
 	// 'Create or Delete' Stat Timer
 	void CreateStatFlagTimer(ECharacterStat InFlag, float ChangeDuration);
 	void RemoveStatFlagTimer(ECharacterStat InFlag);
 
-
 protected:
 	UPROPERTY(VisibleAnywhere, Category = "Stat")
-	FPassiveStat DefaultPassiveStat;
+	FItemEnhancedStat DefaultPassiveStat;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Stat | Flag", meta = (Bitmask, BitmaskEnum = "/Script/PullAndPush.ECharacterStat"))
 	uint8 StatFlags;

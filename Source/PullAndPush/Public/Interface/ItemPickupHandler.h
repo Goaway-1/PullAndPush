@@ -23,5 +23,5 @@ class PULLANDPUSH_API IItemPickupHandler
 public:
 	// Settings when an item is created or used
 	UFUNCTION()
-	virtual void SetActiveItemPickup(bool IsSpawn, class UItemData* InItemDataAsset = nullptr, FVector SpawnLocation = FVector(0.f)) = 0;
+	virtual void SetActiveItemPickup(bool IsSpawn, class UItemData* InItemDataAsset = nullptr, FVector InSpawnLocation = FVector(0.f)) = 0;
 };

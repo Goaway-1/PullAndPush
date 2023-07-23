@@ -1,5 +1,5 @@
 #include "Item/ItemSpawner.h"
-#include "Components/StaticMeshComponent.h"
+#include "NiagaraComponent.h"
 #include "Kismet/KismetMathLibrary.h"
 #include "Item/ItemData/ItemData.h"
 
@@ -10,8 +10,8 @@ AItemSpawner::AItemSpawner()
     bReplicates = true;
     SetReplicateMovement(true);
 
-	StaticMeshComp = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("StaticMeshComp"));
-    StaticMeshComp->SetCollisionProfileName(CollisionName,false);
+    NiagaraComp = CreateDefaultSubobject<UNiagaraComponent>(TEXT("NiagaraComp"));
+    NiagaraComp->SetupAttachment(GetRootComponent());
 
     ItemSpawnType = EItemSpawnType::Normal;
 }
@@ -30,7 +30,7 @@ void AItemSpawner::InitSetting()
         SpawnParams.Instigator = GetInstigator();
         SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
 
-        SpawnLocation = GetActorLocation() + FVector(0.f, 0.f, 50.f);
+        SpawnLocation = GetActorLocation() + FVector(0.f, 0.f, 60.f);
         ItemPickup = World->SpawnActor<AItemPickup>(ItemPickupClass, SpawnLocation, GetActorRotation(), SpawnParams);   // ÀÌ³נ
         ensure(ItemPickup != nullptr);
         RespawnItem();
@@ -47,7 +47,8 @@ void AItemSpawner::TryRespawnItem()
     GetWorld()->GetTimerManager().ClearTimer(RespawnHandle);
     GetWorld()->GetTimerManager().SetTimer(RespawnHandle, this, &AItemSpawner::RespawnItem, SpawnDelay, false);
 }
-void AItemSpawner::RespawnItem() {
+void AItemSpawner::RespawnItem() 
+{
     ensure(ItemPickup);
 
     // Set Item Data

@@ -6,7 +6,6 @@
 #include "GameFramework/HUD.h"
 #include "InGameHUD.generated.h"
 
-
 UENUM(BlueprintType)
 enum class EHUDState : uint8
 {
@@ -15,13 +14,13 @@ enum class EHUDState : uint8
 	Inactive
 };
 
+/**
+ * InGame level HUD for player
+ */
 UCLASS()
 class PULLANDPUSH_API AInGameHUD : public AHUD
 {
 	GENERATED_BODY()
-
-public:
-	virtual void DrawHUD() override;
 
 protected:
 	virtual void BeginPlay() override;
@@ -42,14 +41,18 @@ private:
 /** InGame Widget */
 public:
 	void UpdateItemUI(UDataAsset* CurrentItem, const bool IsPassvieItem);
-
-	void ChangeVisibleItemInfo(bool bVisibility);
 	void UpdateStatUI(const FString& StatName, UMaterialInterface* Material);
 
+	void ChangeVisibleItemInfo(bool bVisibility);
 /** Player Count Widget */
 public:
-	void InitPlayerCount(int8 InTotalPlayerCount);
+	// Returns true if widget is created, and saves data for widget
+	bool InitPlayerCount(int8 InTotalPlayerCount);
 	void SetCurrentPlayerCount(int8 InCount);
+
+	// Returns true if widget is created, and saves data for widget
+	bool SetRoundStart();
+	void SetRoundEnd();
 
 private:
 	/* Current HUD state */

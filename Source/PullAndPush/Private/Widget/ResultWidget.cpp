@@ -29,5 +29,8 @@ void UResultWidget::SetScoreBoard(TMap<FString, int8>& ScoreInfo)
 void UResultWidget::OnGotoMainClicked()
 {
     UInGameInstance* GameInstance = Cast<UInGameInstance>(GetGameInstance());
-    GameInstance->TravelLevel(ELevelType::ELT_Main);
+    if (GameInstance)
+    {
+        GameInstance->TravelLevel(ELevelType::ELT_Main);
+    }
 }

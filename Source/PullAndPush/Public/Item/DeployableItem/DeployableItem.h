@@ -1,5 +1,3 @@
-// Fill out your copyright notice in the Description page of Project Settings.
-
 #pragma once
 
 #include "PullAndPush.h"
@@ -35,7 +33,7 @@ protected:
 	virtual void ActiveDeployableItem();
 
 	UFUNCTION()
-	void DestoryDeployableItem();
+	virtual void DestoryDeployableItem();
 
 	// Automatically run timer when bIsAutoActive is enabled
 	void SetActiveTimer();

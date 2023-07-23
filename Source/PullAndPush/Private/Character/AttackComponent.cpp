@@ -2,8 +2,6 @@
 #include "RocketPunch/RocketPunch.h"
 #include "GameFramework/Character.h"
 #include "Engine/SkeletalMeshSocket.h"
-#include "Math/Quat.h"
-#include "GameFramework/CharacterMovementComponent.h"
 #include "Interface/CharacterStatHandler.h"
 #include "Net/UnrealNetwork.h"
 
@@ -123,11 +121,11 @@ void UAttackComponent::ChangeMovementSpeed(const bool& IsCharging)
 		CharacterPropertyHandler->SetPlayerAttackCondition(IsCharging);
 	}
 }
-void UAttackComponent::ServerReadyToLaunch_Implementation(const float& InForceAlpha, AActor* InCasterActor, const bool IsPush, const FVector& InVec, const FRotator& InRot, FPassiveStat InPassiveStat)
+void UAttackComponent::ServerReadyToLaunch_Implementation(const float& InForceAlpha, AActor* InCasterActor, const bool IsPush, const FVector& InVec, const FRotator& InRot, FItemEnhancedStat InPassiveStat)
 {
 	MultiReadyToLaunch(InForceAlpha, InCasterActor, IsPush, InVec, InRot, InPassiveStat);
 }
-void UAttackComponent::MultiReadyToLaunch_Implementation(const float& InForceAlpha, AActor* InCasterActor, const bool IsPush, const FVector& InVec, const FRotator& InRot, FPassiveStat InPassiveStat)
+void UAttackComponent::MultiReadyToLaunch_Implementation(const float& InForceAlpha, AActor* InCasterActor, const bool IsPush, const FVector& InVec, const FRotator& InRot, FItemEnhancedStat InPassiveStat)
 {
 	if (ClientRocketPunch)
 	{

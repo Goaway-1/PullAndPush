@@ -1,7 +1,6 @@
 #include "RocketPunch/RPMovementComponent.h"
 #include "Kismet/KismetMathLibrary.h"
 #include "Interface/RocketPunchHandler.h"
-#include "DrawDebugHelpers.h"
 #include "Net/UnrealNetwork.h"
 
 URPMovementComponent::URPMovementComponent()
@@ -51,7 +50,7 @@ void URPMovementComponent::CheckMovement()
 		UpdateLocation();
 	}
 }
-void URPMovementComponent::Launch(const float& ForceAlpha, AActor* InCasterActor, const FVector& InVec, const FRotator& InRot, FPassiveStat InPassiveStat)
+void URPMovementComponent::Launch(const float& ForceAlpha, AActor* InCasterActor, const FVector& InVec, const FRotator& InRot, FItemEnhancedStat InPassiveStat)
 {
 	if (CasterActor == nullptr) CasterActor = InCasterActor;
 

@@ -1,11 +1,12 @@
-// Fill out your copyright notice in the Description page of Project Settings.
-
 #pragma once
 
 #include "CoreMinimal.h"
 #include "Blueprint/UserWidget.h"
 #include "LobbyWidget.generated.h"
 
+/**
+* Host can show this widget
+*/
 UCLASS()
 class PULLANDPUSH_API ULobbyWidget : public UUserWidget
 {

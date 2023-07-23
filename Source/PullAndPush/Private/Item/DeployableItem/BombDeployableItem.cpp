@@ -21,10 +21,6 @@ void ABombDeployableItem::Explosion()
 	ensure(ExplosionEffect);
 	ensure(ExplodedMaterial);
 
-	// Excute Explosion My Self
-	const FVector BoostIntensity = FVector::UpVector * SelfExplosionImpulse;
-	CollisionComp->AddImpulse(BoostIntensity, NAME_None, true);
-
 	UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), ExplosionEffect, GetActorLocation());
 	MeshComp->SetMaterial(0, ExplodedMaterial);
 

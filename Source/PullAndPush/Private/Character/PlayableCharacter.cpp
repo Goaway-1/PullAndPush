@@ -11,6 +11,7 @@
 #include "EnhancedInputSubsystems.h"
 #include "Player/PlayableController.h"
 #include "Net/UnrealNetwork.h"
+#include "Game/InGameInstance.h"
 #include "Kismet/KismetMathLibrary.h"
 
 APlayableCharacter::APlayableCharacter()
@@ -42,6 +43,13 @@ APlayableCharacter::~APlayableCharacter()
 void APlayableCharacter::PossessedBy(AController* NewController)
 {
 	Super::PossessedBy(NewController);
+	
+	/** Disable Input */
+	APlayerController* NewPlayerController = Cast<APlayerController>(NewController);
+	if(NewPlayerController)
+	{
+		DisableInput(NewPlayerController);
+	}
 }
 void APlayableCharacter::UnPossessed()
 {
@@ -65,6 +73,8 @@ void APlayableCharacter::BeginPlay()
 		ItemUsageComp->GetItemWidgetUpdateDelegate().BindUObject(PlayableController, &APlayableController::UpdateItemUI);
 		StatComp->OnUpdateStatWidget.BindUObject(PlayableController, &APlayableController::UpdateStatUI);
 	}
+
+	SetPlayerAttackCondition(false);
 }
 void APlayableCharacter::Tick(float DeltaTime)
 {
@@ -78,7 +88,7 @@ void APlayableCharacter::FellOutOfWorld(const UDamageType& dmgType)
 	APlayableController* NewPlayableController = Cast<APlayableController>(GetController());
 	if (NewPlayableController)
 	{
-		NewPlayableController->PlayerFellOutOfWorld();
+		NewPlayableController->ClientPlayerFellOutOfWorld();
 	}
 
 	// Disable Character..
@@ -139,8 +149,9 @@ void APlayableCharacter::Look(const FVector2D& AxisValue) {
 	LookUp(AxisValue.Y);
 	Turn(AxisValue.X);
 }
-void APlayableCharacter::MoveForward(float NewAxisValue) {
-	const FRotator ControlRotation = GetControlRotation();
+void APlayableCharacter::MoveForward(float NewAxisValue) 
+{
+		const FRotator ControlRotation = GetControlRotation();
 	const FRotator YawRotation(0.0f, ControlRotation.Yaw, 0.0f);
 	const FVector Direction = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::X);
 	AddMovementInput(Direction, NewAxisValue);
@@ -364,11 +375,11 @@ bool APlayableCharacter::IsCanAttack()
 {
 	return (StatComp->IsStatFlagSet(ECharacterStat::Stun)) ? false : true;
 }
-void APlayableCharacter::SetPassiveStat(FPassiveStat InPassiveStat)
+void APlayableCharacter::SetPassiveStat(FItemEnhancedStat InPassiveStat)
 {
 	StatComp->SetPassiveStat(InPassiveStat);
 }
-FPassiveStat APlayableCharacter::GetPassiveStat()
+FItemEnhancedStat APlayableCharacter::GetPassiveStat()
 {
 	return StatComp->GetPassiveStat();
 }

@@ -3,8 +3,6 @@
 #include "RocketPunch/RPCollisionComponent.h"
 #include "Components/SphereComponent.h"
 #include "Components/StaticMeshComponent.h"
-#include "Kismet/KismetMathLibrary.h"
-#include "Engine/SkeletalMeshSocket.h"
 
 ARocketPunch::ARocketPunch()
 	:
@@ -51,7 +49,7 @@ void ARocketPunch::BeginPlay()
 
 	SetMeshVisibility(false);
 }
-void ARocketPunch::ReadyToLaunch(const float& InForceAlpha, AActor* InCasterActor, const bool IsPush, const FVector& InVec, const FRotator& InRot, FPassiveStat InPassiveStat)
+void ARocketPunch::ReadyToLaunch(const float& InForceAlpha, AActor* InCasterActor, const bool IsPush, const FVector& InVec, const FRotator& InRot, FItemEnhancedStat InPassiveStat)
 {
 	if (!HasAuthority() && bIsServerRP)
 	{
@@ -75,7 +73,7 @@ void ARocketPunch::ReadyToLaunch(const float& InForceAlpha, AActor* InCasterActo
 		SetMeshChange(bIsPush);
 	}
 }
-void ARocketPunch::ServerReadyToLaunch_Implementation(const float& InForceAlpha, AActor* InCasterActor, const bool IsPush, const FVector& InVec, const FRotator& InRot, FPassiveStat InPassiveStat)
+void ARocketPunch::ServerReadyToLaunch_Implementation(const float& InForceAlpha, AActor* InCasterActor, const bool IsPush, const FVector& InVec, const FRotator& InRot, FItemEnhancedStat InPassiveStat)
 {
 	ReadyToLaunch(InForceAlpha, InCasterActor, IsPush, InVec, InRot, InPassiveStat);
 }
@@ -95,12 +93,14 @@ void ARocketPunch::OnHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, 
 }
 void ARocketPunch::SetForceReturn()
 {
-	PPLOG(Warning, TEXT("SetForceReturn"));
 	RPMovementComponent->SetIsForceReturn(true);
 }
 void ARocketPunch::SetCollisionSimulatePhysics(bool Val)
 {
-	if (CollisionComp) CollisionComp->SetSimulatePhysics(Val);
+	if (CollisionComp) 
+	{
+		CollisionComp->SetSimulatePhysics(Val);
+	}
 }
 void ARocketPunch::SetMeshChange(bool IsPush)
 {

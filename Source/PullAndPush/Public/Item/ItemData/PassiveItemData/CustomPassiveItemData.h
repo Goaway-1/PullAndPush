@@ -7,8 +7,15 @@
 #include "CustomPassiveItemData.generated.h"
 
 /**
- * 
- */
+* Use modified values in BLueprint
+*/
+UENUM(BlueprintType)
+enum class ECustomStatType : uint8
+{
+	EST_ItemStat			UMETA(DisplayName = "EST_ItemStat"),
+	EST_CharacterStat		UMETA(DisplayName = "EST_CharacterStat")
+};
+
 UCLASS()
 class PULLANDPUSH_API UCustomPassiveItemData : public UPassiveItemData
 {
@@ -19,6 +26,12 @@ public:
 	virtual void EndPassiveItem() override;
 	
 protected:
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Item)
-	FPassiveStat PassiveStat;
+	UPROPERTY(EditDefaultsOnly, Category = Item)
+	ECustomStatType StatType;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Item, meta = (EditCondition = "StatType == ECustomStatType::EST_ItemStat"))
+	FItemEnhancedStat PassiveStat;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Item, meta = (EditCondition = "StatType == ECustomStatType::EST_CharacterStat"))
+	ECharacterStat CharacterStat;
 };

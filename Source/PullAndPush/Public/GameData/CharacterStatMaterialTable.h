@@ -13,6 +13,8 @@ struct FCharacterStatMaterialTable : public FTableRowBase
 	GENERATED_BODY()
 
 public:
+	FCharacterStatMaterialTable() : TargetStat(ECharacterStat::None), MaterialUI(nullptr){}
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Stat)
 	ECharacterStat TargetStat;
 

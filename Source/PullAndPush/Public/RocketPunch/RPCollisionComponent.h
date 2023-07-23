@@ -17,13 +17,10 @@ class PULLANDPUSH_API URPCollisionComponent : public UActorComponent
 public:	
 	URPCollisionComponent();
 
-protected:
-	virtual void BeginPlay() override;
-
 public:
 	UFUNCTION()
 	void OnHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComponent, FVector NormalImpulse,
-				const FHitResult& Hit, AActor* CasterActor, const bool IsPush, const bool IsServerRP, const float& ForceAlpha, FPassiveStat InPassiveStat);
+				const FHitResult& Hit, AActor* CasterActor, const bool IsPush, const bool IsServerRP, const float& ForceAlpha, FItemEnhancedStat InPassiveStat);
 
 	UFUNCTION()
 	void ResetOverlapActors();
@@ -46,7 +43,7 @@ private:
 	UPROPERTY(EditAnyWhere, Category = "Push | Force", meta = (AllowPrivateAccess = "true"))
 	float MinKnockBackForce;
 
-	void ApplyPunchImpulseCharacter(class UPrimitiveComponent* HitComponent, AActor* TargetActor, float ImpulseForce, bool IsPush);
+	void ApplyPunchImpulseCharacter(class UPrimitiveComponent* HitComponent, AActor* TargetActor, float ImpulseForce, bool IsPush, FItemEnhancedStat InPassiveStat);
 	void ApplyPunchImpulsePrimitiveComponent(class UPrimitiveComponent* OtherComponent, const FHitResult& Hit, float ImpulseForce);
 	
 /** Pull Event */

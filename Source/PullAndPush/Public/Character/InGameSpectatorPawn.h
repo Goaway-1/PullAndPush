@@ -1,5 +1,3 @@
-// Fill out your copyright notice in the Description page of Project Settings.
-
 #pragma once
 
 #include "CoreMinimal.h"
@@ -21,9 +19,9 @@ private:
 	UPROPERTY(EditDefaultsOnly, Category = Input)
 	TObjectPtr<class UInputAction> SpectateAction;
 
+private:
 	void InitEnhancedInput();
 
-private:
 	UFUNCTION()
 	void SpectateAnotherPlayer();
 };

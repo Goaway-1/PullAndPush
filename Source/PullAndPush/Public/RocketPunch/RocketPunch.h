@@ -45,7 +45,7 @@ public:
 
 	FRocketPunchOutOfUse OutOfUse;
 
-protected:
+private:
 	UPROPERTY()
 	TWeakObjectPtr<AActor> CasterActor;
 
@@ -58,16 +58,22 @@ protected:
 #pragma region LAUNCH
 	/** Launch */
 public:
-	virtual void ReadyToLaunch(const float& InForceAlpha, AActor* InCasterActor, const bool IsPush, const FVector& InVec, const FRotator& InRot, FPassiveStat InPassiveStat);
+	virtual void ReadyToLaunch(const float& InForceAlpha, AActor* InCasterActor, const bool IsPush, const FVector& InVec, const FRotator& InRot, FItemEnhancedStat InPassiveStat);
 
 	UFUNCTION()
 	void SetForceReturn();
+
 protected:
 	UFUNCTION(Server, Reliable)
-	void ServerReadyToLaunch(const float& InForceAlpha, AActor* InCasterActor, const bool IsPush, const FVector& InVec, const FRotator& InRot, FPassiveStat InPassiveStat);
-	
+	void ServerReadyToLaunch(const float& InForceAlpha, AActor* InCasterActor, const bool IsPush, const FVector& InVec, const FRotator& InRot, FItemEnhancedStat InPassiveStat);
+
+private:
+	UFUNCTION()
+	void OnHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComponent, FVector NormalImpulse, const FHitResult& Hit);
+
+private:
 	UPROPERTY()
-	FPassiveStat CurrentPassiveStat;
+	FItemEnhancedStat CurrentPassiveStat;
 
 	UPROPERTY(Transient)
 	float ForceAlpha;
@@ -76,17 +82,12 @@ protected:
 	const FName CollisionName = TEXT("RocketPunch");
 	const FName NoCollisionName = TEXT("NoCollision");
 
-private:
-	UFUNCTION()
-	void OnHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComponent, FVector NormalImpulse, const FHitResult& Hit);
-
 #pragma endregion
 
 #pragma region VISIBILITY
 /** Visibility */
 public:
 	virtual void SetMeshVisibility(bool InVisibility) override;
-
 	virtual void SetMeshChange(bool IsPush);
 
 protected:

@@ -1,5 +1,3 @@
-// Fill out your copyright notice in the Description page of Project Settings.
-
 #pragma once
 
 #include "PullAndPush.h"
@@ -7,6 +5,9 @@
 #include "Components/TimelineComponent.h"
 #include "ObstacleMover.generated.h"
 
+/**
+* Timeline-driven gimmicks
+*/
 UCLASS()
 class PULLANDPUSH_API AObstacleMover : public AActor
 {
@@ -32,6 +33,7 @@ protected:
 	UPROPERTY(EditDefaultsOnly)
 	TObjectPtr<class UTimelineComponent> RotationTimelineComp;
 
+protected:
 	void SetInitTimeline();
 
 	// Update 'Static Mesh' Location

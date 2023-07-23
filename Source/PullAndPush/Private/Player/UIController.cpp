@@ -1,11 +1,10 @@
 #include "Player/UIController.h"
 #include "Widget/ResultHUD.h"
 #include "Widget/LobbyHUD.h"
-#include "Kismet/GameplayStatics.h"	
 
 AUIController::AUIController() 
 	:
-	bIsResultController(0), bIsCanEditLobbyWidget(0)
+	bIsResultController(0)
 {
 	bShowMouseCursor = true;			
 	bEnableClickEvents = true;
@@ -26,9 +25,13 @@ void AUIController::BeginPlay()
 }
 void AUIController::SetLobbyWidgetData(int8 InMaxPlayerCount, int8 InTotalPlayerCount)
 {
-	if (bIsCanEditLobbyWidget && LobbyHUD.IsValid())
+	if (LobbyHUD.IsValid() && LobbyHUD.Get()->SetLobbyWidgetData(InMaxPlayerCount, InTotalPlayerCount))
 	{
-		LobbyHUD.Get()->SetLobbyWidgetData(InMaxPlayerCount, InTotalPlayerCount);
+		PPLOG(Log, TEXT("InitPlayer Count Successed!"));
+	}
+	else
+	{
+		GetWorld()->GetTimerManager().SetTimerForNextTick(FTimerDelegate::CreateUObject(this, &AUIController::SetLobbyWidgetData, InMaxPlayerCount, InTotalPlayerCount));
 	}
 }
 void AUIController::ShowResult(TMap<FString, int8>& PlayersScore)

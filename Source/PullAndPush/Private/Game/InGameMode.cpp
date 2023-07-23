@@ -25,18 +25,18 @@ void AInGameMode::PostLogin(APlayerController* NewPlayer)
 {
 	Super::PostLogin(NewPlayer);
 
-	InitPlayersScore(NewPlayer);
+	InitPlayers(NewPlayer);
 
 	/** Round start when all players enter */
 	if (++CurrentPlayerCount >= TotalPlayerCount)
 	{
-		RoundStart();
+		FTimerHandle Timer;
+		GetWorld()->GetTimerManager().SetTimer(Timer, this, &AInGameMode::RoundStart, 1.5f);
 	}
 }
-void AInGameMode::PlayerFellOutOfWorld(APlayerController* Player)
+void AInGameMode::PlayerFellOutOfWorld(const FString& InPlayerName)
 {
-	const FString ControllerName = Player->GetName();
-	SetPlayerScore(ControllerName);
+	SetPlayerScore(InPlayerName);
 
 	// Check Round Is End?
 	if (--CurrentPlayerCount <= 1)
@@ -47,12 +47,16 @@ void AInGameMode::PlayerFellOutOfWorld(APlayerController* Player)
 	// Set Current Player Count for Widget
 	for (auto Controller : Controllers)
 	{
-		Controller->SetCurrentPlayerCount(CurrentPlayerCount);
+		Controller->ClientSetCurrentPlayerCount(CurrentPlayerCount);
 	}
 }
 void AInGameMode::RoundStart()
 {
-	PPLOG(Warning, TEXT("RoundStart!"));
+	// Change Widget of Round State
+	for (auto Controller : Controllers)
+	{
+		Controller->ClientSetRoundStart();
+	}
 }
 void AInGameMode::RoundEnd()
 {
@@ -62,6 +66,7 @@ void AInGameMode::RoundEnd()
 	for (auto Controller : Controllers)
 	{
 		Controller->ClearAllTimer();
+		Controller->UnPossess();
 	}
 
 	// Access GameInstance and Switch Level
@@ -82,21 +87,26 @@ void AInGameMode::AllRoundsCompleted()
 {
 	InGameInstance->TravelLevel(ELevelType::ELT_Result);
 }
-void AInGameMode::InitPlayersScore(APlayerController* NewPlayer)
+void AInGameMode::InitPlayersScore(const FString& InPlayerName)
 {
-	ControllersScore.Add(NewPlayer->GetName(), InitialScore);
-
-	// Init Player Count
+	ControllersScore.Add(InPlayerName, InitialScore);
+}
+void AInGameMode::InitPlayers(APlayerController* NewPlayer)
+{
 	APlayableController* PlayableController = Cast<APlayableController>(NewPlayer);
 	if (PlayableController)
 	{
 		Controllers.Add(PlayableController);
-		PlayableController->InitPlayerCount(TotalPlayerCount);
+		PlayableController->ClientInitPlayerCount(TotalPlayerCount);
 	}
 }
-void AInGameMode::SetPlayerScore(const FString& ControllerName)
+void AInGameMode::SetPlayerScore(const FString& InPlayerName)
 {
-	ControllersScore[ControllerName] = CurrentScore++;
+	if (ControllersScore.Num() > 0)
+	{
+		UE_LOG(LogTemp,Warning,TEXT("%s 's Score : %d"), *InPlayerName, CurrentScore);
+		ControllersScore[InPlayerName] = CurrentScore++;
+	}
 }
 void AInGameMode::CalculatePlayerScore()
 {

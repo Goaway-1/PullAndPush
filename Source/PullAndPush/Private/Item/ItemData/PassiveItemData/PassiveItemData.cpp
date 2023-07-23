@@ -9,7 +9,8 @@ void UPassiveItemData::UsePassiveItem(AActor* TargetActor, FTimerHandle Handler,
 	CharacterPropertyHandler = TargetActor;
 	ItemTimerHandler = Handler;
 	bIsItemActivated = InPassiveItemAlreadyActivated;
-	if (CharacterPropertyHandler.GetInterface() && !bIsItemActivated) {
+	if (CharacterPropertyHandler.GetInterface() && !bIsItemActivated) 
+	{
 		PPLOG(Log, TEXT("[%s] Item Activated %f'sec"), *Name, DurationTime);
 	}
 }

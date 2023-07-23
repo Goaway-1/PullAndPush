@@ -6,3 +6,9 @@ ADeployableStaticMeshItem::ADeployableStaticMeshItem()
 	MeshComp->SetupAttachment(GetRootComponent());
 	MeshComp->SetCollisionProfileName(MeshCollisionName);
 }
+
+void ADeployableStaticMeshItem::DestoryDeployableItem()
+{
+	Super::DestoryDeployableItem();
+	MeshComp->SetVisibility(false);
+}

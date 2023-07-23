@@ -18,10 +18,6 @@ void AInGameHUD::BeginPlay()
 		SpectatorWidget->SetVisibility(ESlateVisibility::Hidden);
 	}
 }
-void AInGameHUD::DrawHUD()
-{
-	Super::DrawHUD();
-}
 void AInGameHUD::UpdateItemUI(UDataAsset* CurrentItem, const bool IsPassvieItem)
 {
 	InGameWidget->UpdateItemUI(CurrentItem, IsPassvieItem);
@@ -34,15 +30,38 @@ void AInGameHUD::UpdateStatUI(const FString& StatName, UMaterialInterface* Mater
 {
 	InGameWidget->UpdateStatUI(StatName, Material);
 }
-void AInGameHUD::InitPlayerCount(int8 InTotalPlayerCount)
+bool AInGameHUD::InitPlayerCount(int8 InTotalPlayerCount)
 {
+	if (!InGameWidget || !SpectatorWidget)
+	{
+		return false;
+	}
+
 	InGameWidget->InitPlayerCount(InTotalPlayerCount);
 	SpectatorWidget->InitPlayerCount(InTotalPlayerCount);
+	return true;
 }
 void AInGameHUD::SetCurrentPlayerCount(int8 InCount)
 {
 	InGameWidget->SetCurrentPlayerCount(InCount);
 	SpectatorWidget->SetCurrentPlayerCount(InCount);
+}
+bool AInGameHUD::SetRoundStart()
+{
+	if(!InGameWidget)
+	{
+		return false;
+	}
+
+	InGameWidget->SetRoundStart();
+	return true;
+}
+void AInGameHUD::SetRoundEnd()
+{
+	if (InGameWidget)
+	{
+		InGameWidget->SetRoundEnd();
+	}
 }
 EHUDState AInGameHUD::GetCurrentState() const
 {

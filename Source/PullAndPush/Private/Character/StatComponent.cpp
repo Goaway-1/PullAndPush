@@ -4,8 +4,7 @@
 
 UStatComponent::UStatComponent()
 	:
-	CurrentMoveSpeed(0), RocketPunchSpeed(1.f), RocketPunchRange(1.f), RocketPunchScale(1.f),
-	StatFlags(0)
+	CurrentMoveSpeed(0),StatFlags(0)
 {
 	PrimaryComponentTick.bCanEverTick = true;
 }
@@ -131,11 +130,11 @@ UMaterialInterface* UStatComponent::GetMaterialForCharacterStat(FString StatName
 	PPLOG(Warning, TEXT("No valid MaterialUI found in StatMartialTable : %s"),*StatName);
 	return nullptr; 
 }
-void UStatComponent::SetPassiveStat(FPassiveStat InPassiveStat)
+void UStatComponent::SetPassiveStat(FItemEnhancedStat InPassiveStat)
 {
 	DefaultPassiveStat = DefaultPassiveStat + InPassiveStat;
 }
-FPassiveStat UStatComponent::GetPassiveStat()
+FItemEnhancedStat UStatComponent::GetPassiveStat()
 {
 	return DefaultPassiveStat;
 }

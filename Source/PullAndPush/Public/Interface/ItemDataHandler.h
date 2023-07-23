@@ -1,9 +1,8 @@
-// Fill out your copyright notice in the Description page of Project Settings.
-
 #pragma once
 
 #include "CoreMinimal.h"
 #include "UObject/Interface.h"
+#include "NiagaraSystem.h"
 #include "ItemDataHandler.generated.h"
 
 // This class does not need to be modified.
@@ -23,7 +22,7 @@ class PULLANDPUSH_API IItemDataHandler
 public:
 	virtual FString GetIdentifierString() const = 0;
 	virtual bool CheckIsActiveItem() const = 0;
-	virtual UStaticMesh* GetStaticMesh() const = 0;
+	virtual class UNiagaraSystem* GetNiagraAsset() const = 0;
 
 	// For UI
 	virtual FString GetItemName() = 0;
@@ -38,5 +37,6 @@ public:
 	virtual FTimerHandle GetTimerHandler() = 0;
 
 	// For Active
-	virtual TSubclassOf<AActor> GetSpawnItemClass() const = 0;
+	virtual TSubclassOf<AActor> GetDeployItemClass() const = 0;
+	virtual UStaticMesh* GetDeployStaticMesh() const = 0;
 };

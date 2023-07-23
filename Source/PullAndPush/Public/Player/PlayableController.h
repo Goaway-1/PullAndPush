@@ -2,15 +2,12 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/PlayerController.h"
-#include "Interface/PlayableControllerHandler.h"
 #include "PlayableController.generated.h"
 
 UCLASS()
-class PULLANDPUSH_API APlayableController : public APlayerController, public IPlayableControllerHandler
+class PULLANDPUSH_API APlayableController : public APlayerController
 {
 	GENERATED_BODY()
-public:
-	APlayableController();
 
 protected:
 	virtual void BeginPlay() override;
@@ -28,22 +25,32 @@ public:
 	void UpdateStatUI(const FString& StatName, UMaterialInterface* Material);
 
 	UFUNCTION(Client, Reliable)
-	void InitPlayerCount(int8 InTotalPlayerCount);
+	void ClientInitPlayerCount(int8 InTotalPlayerCount);
 
 	UFUNCTION(Client, Reliable)
-	void SetCurrentPlayerCount(int8 InCount);
+	void ClientSetCurrentPlayerCount(int8 InCount);
 
-	virtual void SetPlayerCount() override;
+	UFUNCTION(Client, Reliable)
+	void ClientSetRoundStart();
+
+	UFUNCTION(Client, Reliable)
+	void ClientSetRoundEnd();
 private:
 	UPROPERTY()
 	TObjectPtr<class AInGameHUD> InGameHUD;
 
-	int8 TotalPlayerCount;
 #pragma endregion
 
 #pragma region GAMEMODE
 public:
-	void PlayerFellOutOfWorld(); 
+	UFUNCTION(Server, Reliable)
+	void ServerSetPlayerNameToMode(const FString& InPlayerName);
+
+	UFUNCTION(Client, Reliable)
+	void ClientPlayerFellOutOfWorld();
+
+	UFUNCTION(Server, Reliable)
+	void ServerPlayerFellOutOfWorld(const FString& InPlayerName);
 
 	/** Clear All Timer of Character */
 	void ClearAllTimer();
@@ -56,8 +63,8 @@ private:
 #pragma region SPECTATE
 private:
 	/** Set Player to spectate. Should be called only on server */
-	UFUNCTION()
-	void SetPlayerSpectate();
+	UFUNCTION(Server, Reliable)
+	void ServerSetPlayerSpectate();
 
 	/** Notify HUD of a state change so it shows suitable widgets accordingly */
 	UFUNCTION(Client, Reliable)

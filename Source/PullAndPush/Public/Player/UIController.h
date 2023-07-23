@@ -1,15 +1,14 @@
 #pragma once
 
-#include "CoreMinimal.h"
+#include "PullAndPush.h"
 #include "GameFramework/PlayerController.h"
-#include "Interface/UIControllerHandler.h"
 #include "UIController.generated.h"
 
 /**
  * Controllers used only in the UI
  */
 UCLASS()
-class PULLANDPUSH_API AUIController : public APlayerController, public IUIControllerHandler
+class PULLANDPUSH_API AUIController : public APlayerController
 {
 	GENERATED_BODY()
 
@@ -25,13 +24,9 @@ private:
 
 #pragma region MAIN/LOBBY
 public:
-	virtual void SetCanEditLobbyWidget() override { bIsCanEditLobbyWidget = true; }
-
 	void SetLobbyWidgetData(int8 InMaxPlayerCount, int8 InTotalPlayerCount);
 
 private:
-	uint8 bIsCanEditLobbyWidget : 1;
-
 	UPROPERTY()
 	TWeakObjectPtr<class ALobbyHUD> LobbyHUD;
 

@@ -197,10 +197,10 @@ private:
 /** Stat */
 #pragma region STAT
 public:
-	virtual void SetPassiveStat(FPassiveStat InPassiveStat) override;
-	virtual FPassiveStat GetPassiveStat() override;
+	virtual void SetPassiveStat(FItemEnhancedStat InPassiveStat) override;
+	virtual FItemEnhancedStat GetPassiveStat() override;
 
-	virtual void EnableStatFlag(ECharacterStat InFlag, float ChangeDuration) override;
+	virtual void EnableStatFlag(ECharacterStat InFlag, float ChangeDuration = 100.f) override;
 	virtual void DisableStatFlag(ECharacterStat InFlag) override;
 	virtual bool IsStatFlagSet(ECharacterStat InFlag) override;
 
