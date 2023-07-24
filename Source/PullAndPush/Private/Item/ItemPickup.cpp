@@ -37,6 +37,8 @@ void AItemPickup::BeginPlay()
 }
 void AItemPickup::OnHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)
 {
+	if (!bIsCanPickUp) return;
+
 	const FName OtherCompCollsionName = OtherComp->GetCollisionProfileName();
 
 	if (OtherCompCollsionName != "Pawn")
@@ -74,7 +76,6 @@ void AItemPickup::SetActiveItemPickup(bool IsSpawn, UItemData* InItemDataAsset, 
 
 	SetActorEnableCollision(bIsSpawn);
 	SetActorHiddenInGame(!bIsSpawn);
-	SetActorTickEnabled(bIsSpawn);
 	CollisionComp->SetSimulatePhysics(bIsSpawn);			
 	CollisionComp->SetEnableGravity(!bIsSpawn);		
 
@@ -95,6 +96,8 @@ void AItemPickup::SetActiveItemPickup(bool IsSpawn, UItemData* InItemDataAsset, 
 }
 void AItemPickup::OnRep_ChangeCurItemData()
 {
+	SetActorEnableCollision(bIsSpawn);
+	SetActorHiddenInGame(!bIsSpawn);
 	CollisionComp->SetSimulatePhysics(bIsSpawn);
 	CollisionComp->SetEnableGravity(!bIsSpawn);
 

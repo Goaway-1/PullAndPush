@@ -17,7 +17,6 @@ void UCustomPassiveItemData::UsePassiveItem(AActor* TargetActor, FTimerHandle Ha
         }
     }
 }
-
 void UCustomPassiveItemData::EndPassiveItem()
 {
     Super::EndPassiveItem();

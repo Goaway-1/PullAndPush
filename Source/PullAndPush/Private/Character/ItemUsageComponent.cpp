@@ -114,7 +114,8 @@ void UItemUsageComponent::PickUpItem(UItemData* ItemData)
 	check(ItemData);
 
 	// Play "Active or Passive" Action
-	if (!ItemData->CheckIsActiveItem()) {
+	if (!ItemData->CheckIsActiveItem()) 
+	{
 		TryToUsePassiveItem(ItemData);
 	}
 	else {
@@ -215,13 +216,19 @@ FTimerHandle UItemUsageComponent::AddTimer(class UItemData* PassiveItem, bool& b
 }
 void UItemUsageComponent::RemoveTimer(class UItemData* PassiveItem)
 {
-	const FName TimerName = FName(PassiveItem->GetItemName());
-	FTimerHandle* Handle = TimerHandles.Find(TimerName);
-	if (Handle->IsValid()) {
-		GetWorld()->GetTimerManager().ClearTimer(*Handle);
-		TimerHandles.Remove(TimerName);
+	if (!PassiveItem) return;
 
-		PPLOG(Log, TEXT("Remove Item Handle : %s"), *TimerName.ToString());
+	const FName TimerName = FName(PassiveItem->GetItemName());
+	if (TimerHandles.Contains(TimerName))
+	{
+		FTimerHandle* Handle = TimerHandles.Find(TimerName);
+		if (Handle->IsValid()) 
+		{
+			GetWorld()->GetTimerManager().ClearTimer(*Handle);
+			TimerHandles.Remove(TimerName);
+
+			PPLOG(Log, TEXT("Remove Item Handle : %s"), *TimerName.ToString());
+		}
 	}
 
 	PassiveItem->EndPassiveItem();

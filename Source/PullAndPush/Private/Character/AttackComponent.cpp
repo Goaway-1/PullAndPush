@@ -45,7 +45,8 @@ bool UAttackComponent::TryLaunch()
 	return true;
 }
 void UAttackComponent::ChargingLaunch()
-{
+{	
+	// Call on tick
 	if (bIsCharging && MaxChargingTime >= ChargingTime) {
 		ChargingTime += GetWorld()->GetDeltaSeconds();
 

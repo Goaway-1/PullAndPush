@@ -21,6 +21,7 @@ public:
 #pragma region ROUND
 public:
 	/** Decrease player count if character is fell out of world */
+	UFUNCTION(BlueprintNativeEvent)
 	void PlayerFellOutOfWorld(const FString& InPlayerName);
 
 private:

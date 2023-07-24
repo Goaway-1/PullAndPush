@@ -34,7 +34,7 @@ void AInGameMode::PostLogin(APlayerController* NewPlayer)
 		GetWorld()->GetTimerManager().SetTimer(Timer, this, &AInGameMode::RoundStart, 1.5f);
 	}
 }
-void AInGameMode::PlayerFellOutOfWorld(const FString& InPlayerName)
+void AInGameMode::PlayerFellOutOfWorld_Implementation(const FString& InPlayerName)
 {
 	SetPlayerScore(InPlayerName);
 

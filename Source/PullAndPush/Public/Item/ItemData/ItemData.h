@@ -18,7 +18,7 @@ protected:
 	FPrimaryAssetType ItemType;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Item)
-	FString Name;
+	FString Name = "";
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Item)
 	FString Description;

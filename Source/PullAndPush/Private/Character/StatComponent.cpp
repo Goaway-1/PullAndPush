@@ -92,11 +92,16 @@ void UStatComponent::CreateStatFlagTimer(ECharacterStat InFlag, float ChangeDura
 void UStatComponent::RemoveStatFlagTimer(ECharacterStat InFlag)
 {
 	FString FlagName = UEnum::GetValueAsString(InFlag);
-	FTimerHandle* Handle = StatFlagHandles.Find(FlagName);
 
-	if (Handle->IsValid()) {
-		GetWorld()->GetTimerManager().ClearTimer(*Handle);
-		StatFlagHandles.Remove(FlagName);
+	if (StatFlagHandles.Contains(FlagName))
+	{
+		FTimerHandle* Handle = StatFlagHandles.Find(FlagName);
+
+		if (Handle->IsValid())
+		{
+			GetWorld()->GetTimerManager().ClearTimer(*Handle);
+			StatFlagHandles.Remove(FlagName);
+		}
 	}
 
 	UpdateStatWidget(FlagName, false);
