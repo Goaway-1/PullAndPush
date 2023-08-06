@@ -15,7 +15,6 @@ void UInGameInstance::ResetData()
 	CurrentRoundCount = 1;
 	TotalPlayerCount = 0;
 	PlayersScore.Reset();
-	PlayerName = FText::GetEmpty();
 }
 void UInGameInstance::SetPlayersScore(TMap<FString, int8>& Controllers)
 {

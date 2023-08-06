@@ -4,21 +4,21 @@
 #include "Game/InGameMode.h"
 #include "Game/InGameInstance.h"
 #include "Character/PlayableCharacter.h"
+#include "GameFramework/PlayerState.h"
 
 void APlayableController::BeginPlay() 
 {
 	Super::BeginPlay();
 
  	InGameHUD = Cast<AInGameHUD>(GetHUD());
-	
-	// Set Player Name to GameMode
-	if (IsLocalController())
-	{
-		UInGameInstance* InGameInstance = Cast<UInGameInstance>(GetGameInstance());
-		FString PlayerName = InGameInstance->GetPlayerName().ToString();
+}
+void APlayableController::OnPossess(APawn* InPawn)
+{
+	Super::OnPossess(InPawn);
 
-		ServerSetPlayerNameToMode(PlayerName);
-	}
+	// Set Player Name to GameMode
+	FString PlayerName = GetPawn()->GetPlayerState()->GetPlayerName();
+	ServerSetPlayerNameToMode(PlayerName);
 }
 void APlayableController::ServerSetPlayerNameToMode_Implementation(const FString& InPlayerName)
 {
@@ -52,11 +52,11 @@ void APlayableController::UpdateStatUI(const FString& StatName, UMaterialInterfa
 }
 void APlayableController::ClientPlayerFellOutOfWorld_Implementation()
 {
-	UInGameInstance* InGameInstance = Cast<UInGameInstance>(GetGameInstance());
-	FString PlayerName = InGameInstance->GetPlayerName().ToString();
+	FString PlayerName = GetPawn()->GetPlayerState()->GetPlayerName();
 	ServerPlayerFellOutOfWorld(PlayerName);
 
-	ServerSetPlayerSpectate();
+	// @TEMP : 관전 중지
+	//ServerSetPlayerSpectate();
 }
 void APlayableController::ServerPlayerFellOutOfWorld_Implementation(const FString& InPlayerName)
 {

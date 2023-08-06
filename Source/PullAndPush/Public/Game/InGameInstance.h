@@ -60,12 +60,6 @@ public:
 	void SetPlayersScore(TMap<FString, int8>& Controllers);
 	TMap<FString, int8>& GetPlayersScore();
 
-	UFUNCTION(BlueprintCallable)
-	FORCEINLINE void SetPlayerName(FText InText) { PlayerName = InText; }
-
-	UFUNCTION(BlueprintCallable)
-	FORCEINLINE FText GetPlayerName() { return PlayerName; }
-
 private:
 	int8 TotalPlayerCount;					// 참가한 인원
 	const int8 MaxPlayerCount = 8;			// 참가가 가능한 인원
@@ -77,8 +71,6 @@ private:
 	*/
 	UPROPERTY()
 	TMap<FString, int8> PlayersScore;
-
-	FText PlayerName;
 #pragma endregion
 
 /** Travel Level */

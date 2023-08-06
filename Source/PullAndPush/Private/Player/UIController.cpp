@@ -1,6 +1,7 @@
 #include "Player/UIController.h"
 #include "Widget/ResultHUD.h"
 #include "Widget/LobbyHUD.h"
+#include "Widget/LobbyHUD.h"
 
 AUIController::AUIController() 
 	:
