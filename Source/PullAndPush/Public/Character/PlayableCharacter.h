@@ -88,7 +88,6 @@ protected:
 
 /** Charging */
 #pragma region CHARGING&ZOOM
-/** Charging */
 private:
 	UFUNCTION()
 	void TryLaunch(const FVector2D& Value);

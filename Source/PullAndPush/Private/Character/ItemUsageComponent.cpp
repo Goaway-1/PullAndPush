@@ -215,23 +215,21 @@ FTimerHandle UItemUsageComponent::AddTimer(class UItemData* PassiveItem, bool& b
 	return Handle;
 }
 void UItemUsageComponent::RemoveTimer(class UItemData* PassiveItem)
-{
-	if (!PassiveItem) return;
-
+{	
 	const FName TimerName = FName(PassiveItem->GetItemName());
 	if (TimerHandles.Contains(TimerName))
 	{
 		FTimerHandle* Handle = TimerHandles.Find(TimerName);
-		if (Handle->IsValid()) 
+		if (Handle->IsValid())
 		{
 			GetWorld()->GetTimerManager().ClearTimer(*Handle);
 			TimerHandles.Remove(TimerName);
 
 			PPLOG(Log, TEXT("Remove Item Handle : %s"), *TimerName.ToString());
 		}
-	}
 
-	PassiveItem->EndPassiveItem();
+		PassiveItem->EndPassiveItem();
+	}
 }
 void UItemUsageComponent::OnRep_ChangeItemStaticMesh()
 {

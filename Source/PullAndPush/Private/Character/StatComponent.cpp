@@ -102,9 +102,8 @@ void UStatComponent::RemoveStatFlagTimer(ECharacterStat InFlag)
 			GetWorld()->GetTimerManager().ClearTimer(*Handle);
 			StatFlagHandles.Remove(FlagName);
 		}
+		UpdateStatWidget(FlagName, false);
 	}
-
-	UpdateStatWidget(FlagName, false);
 }
 void UStatComponent::UpdateStatWidget(FString StatName, bool IsCreateWidget)
 {
