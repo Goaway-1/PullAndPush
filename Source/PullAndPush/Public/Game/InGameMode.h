@@ -17,6 +17,7 @@ public:
 
 	virtual void InitGame(const FString& MapName, const FString& Options, FString& ErrorMessage) override;
 	virtual void PostLogin(APlayerController* NewPlayer) override;
+	virtual void SwapPlayerControllers(APlayerController* OldPC, APlayerController* NewPC) override;
 
 #pragma region ROUND
 public:
@@ -25,6 +26,8 @@ public:
 	void PlayerFellOutOfWorld(const FString& InPlayerName);
 
 private:
+	void ReadyToRoundStart(APlayerController* NewPlayer);
+
 	/** Start round if all players are logged in to the level */
 	void RoundStart();
 
@@ -75,4 +78,6 @@ private:
 	int8 CurrentScore;
 	const int8 InitialScore = -1;
 #pragma endregion
+
+	FORCEINLINE int8 GetCurrentScore() {return CurrentScore++;}
 };

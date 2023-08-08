@@ -2,6 +2,7 @@
 #include "Game/InGameInstance.h"
 #include "Kismet/GameplayStatics.h"
 #include "Player/PlayableController.h"
+#include "GameFramework/PlayerState.h"
 
 AInGameMode::AInGameMode()
 	:
@@ -25,13 +26,18 @@ void AInGameMode::PostLogin(APlayerController* NewPlayer)
 {
 	Super::PostLogin(NewPlayer);
 
-	InitPlayers(NewPlayer);
+	ReadyToRoundStart(NewPlayer);
+}
+void AInGameMode::SwapPlayerControllers(APlayerController* OldPC, APlayerController* NewPC)
+{
+	Super::SwapPlayerControllers(OldPC, NewPC);
 
-	/** Round start when all players enter */
-	if (++CurrentPlayerCount >= TotalPlayerCount)
+	ReadyToRoundStart(NewPC);
+
+	// @TEST : SetScore
+	if (IsValid(OldPC) && IsValid(NewPC))
 	{
-		FTimerHandle Timer;
-		GetWorld()->GetTimerManager().SetTimer(Timer, this, &AInGameMode::RoundStart, 1.5f);
+		NewPC->PlayerState->SetScore(OldPC->PlayerState->GetScore());
 	}
 }
 void AInGameMode::PlayerFellOutOfWorld_Implementation(const FString& InPlayerName)
@@ -48,6 +54,17 @@ void AInGameMode::PlayerFellOutOfWorld_Implementation(const FString& InPlayerNam
 	for (auto Controller : Controllers)
 	{
 		Controller->ClientSetCurrentPlayerCount(CurrentPlayerCount);
+	}
+}
+void AInGameMode::ReadyToRoundStart(APlayerController* NewPlayer)
+{
+	InitPlayers(NewPlayer);
+
+	/** Round start when all players enter */
+	if (++CurrentPlayerCount >= TotalPlayerCount)
+	{
+		FTimerHandle Timer;
+		GetWorld()->GetTimerManager().SetTimer(Timer, this, &AInGameMode::RoundStart, 1.5f);
 	}
 }
 void AInGameMode::RoundStart()
