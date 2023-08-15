@@ -12,8 +12,6 @@ class PULLANDPUSH_API APlayableController : public APlayerController
 protected:
 	virtual void BeginPlay() override;
 
-	virtual void OnPossess(APawn* InPawn) override;
-
 #pragma region HUD
 public:
 	// For Item
@@ -45,9 +43,6 @@ private:
 
 #pragma region GAMEMODE
 public:
-	UFUNCTION(Server, Reliable)
-	void ServerSetPlayerNameToMode(const FString& InPlayerName);
-
 	UFUNCTION(Client, Reliable)
 	void ClientPlayerFellOutOfWorld();
 

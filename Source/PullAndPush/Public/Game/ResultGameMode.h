@@ -14,10 +14,14 @@ public:
 
 	virtual void InitGame(const FString& MapName, const FString& Options, FString& ErrorMessage) override;
 	virtual void PostLogin(APlayerController* NewPlayer) override;
+	virtual void SwapPlayerControllers(APlayerController* OldPC, APlayerController* NewPC) override;
 
 private:
 	/** Start round if all players are logged in to the level */
 	void ShowScoreBoard();
+
+	/** Add Controller & Show Score Board */
+	void InitSetting(APlayerController* NewPlayer);
 
 private:
 	UPROPERTY()

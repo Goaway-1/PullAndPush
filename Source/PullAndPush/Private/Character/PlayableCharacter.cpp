@@ -93,6 +93,7 @@ void APlayableCharacter::FellOutOfWorld(const UDamageType& dmgType)
 
 	// Disable Character..
 	ClearAllTimer();
+
 	Super::FellOutOfWorld(dmgType);
 }
 void APlayableCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)

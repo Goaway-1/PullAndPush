@@ -52,32 +52,14 @@ private:
 
 #pragma region SCORE
 public:
-	/** Initialize the score to be given to the player's controller */
-	void InitPlayersScore(const FString& InPlayerName);
-
+	FORCEINLINE int8 GetCurrentScore() { return CurrentScore++; }
 private:
 	void InitPlayers(APlayerController* NewPlayer);
 
-	void SetPlayerScore(const FString & InPlayerName);
-
-	/** Give score to the characters who survive to the end */
-	void CalculatePlayerScore();
-
 private:
-	/**
-	* Save Player's Score
-	* @param	FString			Player Name
-	* @param	int8			Score
-	*/
-	UPROPERTY()
-	TMap<FString, int8> ControllersScore;
-
 	UPROPERTY()
 	TArray<class APlayableController*> Controllers;
 
 	int8 CurrentScore;
-	const int8 InitialScore = -1;
 #pragma endregion
-
-	FORCEINLINE int8 GetCurrentScore() {return CurrentScore++;}
 };

@@ -2,7 +2,8 @@
 #include "Game/InGameInstance.h"
 #include "Kismet/GameplayStatics.h"
 #include "Player/PlayableController.h"
-#include "GameFramework/PlayerState.h"
+#include "GameFramework/GameState.h"
+#include "Player/PlayableState.h"
 
 AInGameMode::AInGameMode()
 	:
@@ -33,17 +34,9 @@ void AInGameMode::SwapPlayerControllers(APlayerController* OldPC, APlayerControl
 	Super::SwapPlayerControllers(OldPC, NewPC);
 
 	ReadyToRoundStart(NewPC);
-
-	// @TEST : SetScore
-	if (IsValid(OldPC) && IsValid(NewPC))
-	{
-		NewPC->PlayerState->SetScore(OldPC->PlayerState->GetScore());
-	}
 }
 void AInGameMode::PlayerFellOutOfWorld_Implementation(const FString& InPlayerName)
 {
-	SetPlayerScore(InPlayerName);
-
 	// Check Round Is End?
 	if (--CurrentPlayerCount <= 1)
 	{
@@ -77,7 +70,19 @@ void AInGameMode::RoundStart()
 }
 void AInGameMode::RoundEnd()
 {
-	CalculatePlayerScore();
+	// Find the last standing player and give score
+	for (auto PlayerState : GameState->PlayerArray)
+	{
+		if (APlayableState* NewPlayerState = Cast<APlayableState>(PlayerState))
+		{
+			if (!NewPlayerState->GetIsDead())
+			{
+				int8 NewScore = GetCurrentScore() + NewPlayerState->GetRankScore();
+				NewPlayerState->SetRankScore(NewScore);
+				break;
+			}
+		}
+	}
 
 	// Clear all timer of characters..
 	for (auto Controller : Controllers)
@@ -104,10 +109,6 @@ void AInGameMode::AllRoundsCompleted()
 {
 	InGameInstance->TravelLevel(ELevelType::ELT_Result);
 }
-void AInGameMode::InitPlayersScore(const FString& InPlayerName)
-{
-	ControllersScore.Add(InPlayerName, InitialScore);
-}
 void AInGameMode::InitPlayers(APlayerController* NewPlayer)
 {
 	APlayableController* PlayableController = Cast<APlayableController>(NewPlayer);
@@ -115,31 +116,5 @@ void AInGameMode::InitPlayers(APlayerController* NewPlayer)
 	{
 		Controllers.Add(PlayableController);
 		PlayableController->ClientInitPlayerCount(TotalPlayerCount);
-	}
-}
-void AInGameMode::SetPlayerScore(const FString& InPlayerName)
-{
-	if (ControllersScore.Num() > 0)
-	{
-		UE_LOG(LogTemp,Warning,TEXT("%s 's Score : %d"), *InPlayerName, CurrentScore);
-		ControllersScore[InPlayerName] = CurrentScore++;
-	}
-}
-void AInGameMode::CalculatePlayerScore()
-{
-	// Give score to the characters who survive to the end
-	for (auto& Controller : ControllersScore)
-	{
-		if (Controller.Value == InitialScore)
-		{
-			Controller.Value = CurrentScore;
-			break;
-		}
-	}
-
-	// Access GameInstance and set player score
-	if (InGameInstance)
-	{
-		InGameInstance->SetPlayersScore(ControllersScore);
 	}
 }

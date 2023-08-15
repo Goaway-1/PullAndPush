@@ -4,29 +4,13 @@
 #include "Game/InGameMode.h"
 #include "Game/InGameInstance.h"
 #include "Character/PlayableCharacter.h"
-#include "GameFramework/PlayerState.h"
+#include "Player/PlayableState.h"
 
 void APlayableController::BeginPlay() 
 {
 	Super::BeginPlay();
 
  	InGameHUD = Cast<AInGameHUD>(GetHUD());
-}
-void APlayableController::OnPossess(APawn* InPawn)
-{
-	Super::OnPossess(InPawn);
-
-	// Set Player Name to GameMode
-	FString PlayerName = GetPawn()->GetPlayerState()->GetPlayerName();
-	ServerSetPlayerNameToMode(PlayerName);
-}
-void APlayableController::ServerSetPlayerNameToMode_Implementation(const FString& InPlayerName)
-{
-	CurGameMode = Cast<AInGameMode>(GetWorld()->GetAuthGameMode());
-	if (CurGameMode)
-	{
-		CurGameMode->InitPlayersScore(InPlayerName);
-	}
 }
 void APlayableController::UpdateItemUI(UDataAsset* CurrentItem, const bool IsPassvieItem)
 {
@@ -52,18 +36,26 @@ void APlayableController::UpdateStatUI(const FString& StatName, UMaterialInterfa
 }
 void APlayableController::ClientPlayerFellOutOfWorld_Implementation()
 {
-	FString PlayerName = GetPawn()->GetPlayerState()->GetPlayerName();
+	FString PlayerName = PlayerState->GetPlayerName();
 	ServerPlayerFellOutOfWorld(PlayerName);
-
+	
 	// @TEMP : 관전 중지
 	//ServerSetPlayerSpectate();
 }
 void APlayableController::ServerPlayerFellOutOfWorld_Implementation(const FString& InPlayerName)
 {
+	// Set Score & Dead
 	CurGameMode = Cast<AInGameMode>(GetWorld()->GetAuthGameMode());
 	if (CurGameMode)
 	{
-		CurGameMode->PlayerFellOutOfWorld(InPlayerName);
+		if (APlayableState* NewPlayerState = Cast<APlayableState>(PlayerState))
+		{
+			int8 CurrentScore = CurGameMode->GetCurrentScore() + NewPlayerState->GetRankScore();
+			NewPlayerState->SetRankScore(CurrentScore);
+			NewPlayerState->SetIsDead(true);
+
+			CurGameMode->PlayerFellOutOfWorld(InPlayerName);
+		}
 	}
 }
 void APlayableController::ClientInitPlayerCount_Implementation(int8 InTotalPlayerCount)
@@ -101,7 +93,7 @@ void APlayableController::ClientSetRoundStart_Implementation()
 void APlayableController::ClientSetRoundEnd_Implementation()
 {
 	// Enable Input & Hide Widgets
-	if (InGameHUD)
+	if (InGameHUD && GetPawn() != nullptr)
 	{
 		GetPawn()->EnableInput(this);
 		InGameHUD->SetRoundEnd();

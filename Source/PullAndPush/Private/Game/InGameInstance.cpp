@@ -14,25 +14,6 @@ void UInGameInstance::ResetData()
 {
 	CurrentRoundCount = 1;
 	TotalPlayerCount = 0;
-	PlayersScore.Reset();
-}
-void UInGameInstance::SetPlayersScore(TMap<FString, int8>& Controllers)
-{
-	for (auto Controller : Controllers)
-	{
-		if (PlayersScore.Contains(Controller.Key))
-		{
-			PlayersScore[Controller.Key] += Controller.Value;
-		}
-		else
-		{
-			PlayersScore.Add(Controller.Key, Controller.Value);
-		}
-	}
-}
-TMap<FString, int8>& UInGameInstance::GetPlayersScore()
-{
-	return PlayersScore;
 }
 void UInGameInstance::TravelLevel(ELevelType LevelType)
 {
