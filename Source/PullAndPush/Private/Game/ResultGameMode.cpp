@@ -1,6 +1,8 @@
 #include "Game/ResultGameMode.h"
 #include "Game/InGameInstance.h"
 #include "Player/UIController.h"
+#include "Player/PlayableState.h"
+#include "GameFramework/GameState.h"
 
 AResultGameMode::AResultGameMode()
 	:
@@ -24,9 +26,21 @@ void AResultGameMode::PostLogin(APlayerController* NewPlayer)
 {
 	Super::PostLogin(NewPlayer);
 
+	InitSetting(NewPlayer);
+}
+void AResultGameMode::SwapPlayerControllers(APlayerController* OldPC, APlayerController* NewPC)
+{
+	Super::SwapPlayerControllers(OldPC, NewPC);
+	
+	InitSetting(NewPC);
+
+	// @TODO : 기존 HUD 삭제
+}
+void AResultGameMode::InitSetting(APlayerController* NewPlayer)
+{
 	Controllers.Add(NewPlayer);
 
-	/** Round start when all players enter */
+	// Ready To Start
 	if (++CurrentPlayerCount >= TotalPlayerCount)
 	{
 		FTimerHandle Handler;
@@ -35,14 +49,23 @@ void AResultGameMode::PostLogin(APlayerController* NewPlayer)
 }
 void AResultGameMode::ShowScoreBoard()
 {	
-	if (!InGameInstance) return;
+	// Change rank-scores to TMap
+	TMap<FString, int8> RankScore;
+	for (auto PlayerState : GameState->PlayerArray)
+	{
+		if (APlayableState* NewPlayerState = Cast<APlayableState>(PlayerState))
+		{
+			RankScore.Emplace(NewPlayerState->GetPlayerName(), NewPlayerState->GetRankScore());
+		}
+	}
 
+	// Show Result Score
 	for (auto Controller : Controllers)
 	{
 		AUIController* PlayerUIController = Cast<AUIController>(Controller);
 		if (PlayerUIController)
 		{
-			PlayerUIController->ShowResult(InGameInstance->GetPlayersScore());
+			PlayerUIController->ShowResult(RankScore);
 		}
 	}
 }

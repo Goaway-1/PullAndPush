@@ -35,6 +35,10 @@
 		{
 			"Name": "OnlineServicesEOSGS",
 			"Enabled": true
+		},
+		{
+			"Name": "OnlineServicesNull",
+			"Enabled": true
 		}
 	]
 }

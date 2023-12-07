@@ -43,9 +43,6 @@ private:
 
 #pragma region GAMEMODE
 public:
-	UFUNCTION(Server, Reliable)
-	void ServerSetPlayerNameToMode(const FString& InPlayerName);
-
 	UFUNCTION(Client, Reliable)
 	void ClientPlayerFellOutOfWorld();
 
